@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CrazyUniverse.Core/CrazyUniverse.Core.csproj" />
+  <Project Path="CrazyUniverse.WpfApp/CrazyUniverse.WpfApp.csproj" />
+</Solution>
