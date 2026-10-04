@@ -13,10 +13,10 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 ---
 
 ## Technologies Used
-* **Programming Language**: C#
-* **Platform**: .NET / WPF
-* **Architectural Principles**: Object-Oriented Programming (encapsulation, abstraction, polymorphism, inheritance)
-* **Version Control**: Git
+- **Programming Language**: C#
+- **Platform**: .NET / WPF
+- **Architectural Principles**: Object-Oriented Programming (encapsulation, abstraction, polymorphism, inheritance)
+- **Version Control**: Git
 
 ---
 
@@ -25,15 +25,24 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 The core of the project contains the domain logic, completely separated from the user interface:
 
 ### 1. Models
-* **Animal.cs** (Abstract base class):
-  * Manages the shared state of all animals (encapsulated `Satiety` ranging from 0 to 100).
-  * Automatically generates a unique identifier `Id` using `Guid`.
-  * Contains the base feeding logic (`Feed`) and defines the contract through the abstract `CrazyAction()` method.
-* **Monkey.cs, Penguin.cs, Lion.cs** (Concrete subclass models):
-  * Inherit from `Animal` and use the base constructor (`: base(name)`).
-  * Implement unique versions of the `CrazyAction()` method, defining individual behaviors for each animal.
+- **Animal.cs** (Abstract base class):
+  - Manages the shared state of all animals (encapsulated `Satiety` ranging from 0 to 100 with `protected set`).
+  - Automatically generates a unique identifier `Id` using `Guid`.
+  - Contains the base feeding logic (`Feed`) and defines the contract through the abstract `CrazyAction()` method.
+- **Monkey.cs, Penguin.cs, Lion.cs** (Concrete subclass models):
+  - Inherit from `Animal` and use the base constructor (`: base(name)`).
+  - Implement unique versions of the `CrazyAction()` method, which dynamically impact and depend on the current `Satiety` state.
+  - Include defensive input validation (e.g., checking for positive distances/heights) ensuring that invalid inputs do not alter the object's state.
 
 ### 2. Interfaces
-* **IClimbable.cs** - Interface for animals that can climb (for example, monkeys).
-* **IFlyable.cs** - Interface for animals that can fly or glide.
-* **ISwimmable.cs** - Interface for animals that can swim (for example, penguins).
+- **IJumpable.cs**: Interface for animals that can jump.
+- **ISwimmable.cs**: Interface for animals that can swim (with distance parameter).
+- **IRunnable.cs**: Interface for animals that can run.
+- **IClimbable.cs**: Interface for animals that can climb (with height parameter).
+- **IVocalizable.cs**: Interface for animals that can make sounds.
+- **IFlyable.cs**: Interface for animals that can fly or glide.
+
+### 3. Helpers
+- **AnimalActionsHelper.cs**:
+  - Centralized component for checking animal capabilities dynamically.
+  - Explicitly demonstrates the use of both pattern matching (`is`) and traditional type casting (`as`) operators to invoke specific interface methods safely.
