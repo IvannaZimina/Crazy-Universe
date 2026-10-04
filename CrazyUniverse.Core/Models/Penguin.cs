@@ -21,10 +21,16 @@ namespace CrazyUniverse.Core.Models
             return $"{Name} the penguin slides on its belly across the ice!";
         }
 
-        // Implementing the ISwimmable interface contract with distance parameter
+        // Implementing the ISwimmable interface contract with distance parameter and input validation
         public string Swim(double distance)
         {
-            // TO DO: Implement satiety penalty based on distance
+            // Protecting object state: invalid input (negative or zero distance) does not change state
+            if (distance <= 0)
+            {
+                return $"Invalid input! Distance must be greater than zero. {Name} stays put, state remains unchanged.";
+            }
+
+            // TO DO: Implement satiety penalty based on distance when state rules are active
             // Satiety -= (int)distance;
 
             return $"{Name} the penguin swims gracefully, covering {distance} meters through the cold water!";
