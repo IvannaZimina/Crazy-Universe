@@ -1,11 +1,22 @@
 ﻿using System;
 using CrazyUniverse.Core.Interfaces;
+
 namespace CrazyUniverse.Core.Models
 {
     // Inheriting from the abstract Animal base class
     public class Monkey : Animal, IJumpable, IVocalizable
     {
-        // Constructor that passes the name up toeman base Animal constructor using 'base(name)'
+        // Implementing abstract properties required by the base Animal class
+        public override string TypeName => "Monkey";
+        public override string Description => "A professional chaos enthusiast who believes keyboards are edible and physics is optional. Constantly plots to steal the zookeeper's keys and throw banana peels.";
+
+        // Implementing the JumpCost property required by the IJumpable interface (specifies satiety cost for jumping)
+        public int JumpCost => 5;
+
+        // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)
+        public int SoundCost => 2;
+
+        // Constructor that passes the name up to the base Animal constructor using 'base(name)'
         public Monkey(string name) : base(name)
         {
             // The ': base(name)' part takes the name received here and sends it up 
@@ -32,8 +43,8 @@ namespace CrazyUniverse.Core.Models
         // Implementing the IJumpable interface contract
         public string Jump()
         {
-            // Satiety penalty for jumping implemented
-            Satiety -= 5;
+            // Satiety penalty for jumping implemented (uses JumpCost)
+            Satiety -= JumpCost;
 
             return $"{Name} the monkey jumps high from branch to branch! (Current Satiety: {Satiety})";
         }
@@ -41,8 +52,8 @@ namespace CrazyUniverse.Core.Models
         // Implementing the IVocalizable interface contract
         public string MakeSound()
         {
-            // Satiety penalty for making sound implemented
-            Satiety -= 2;
+            // Satiety penalty for making sound implemented (uses SoundCost)
+            Satiety -= SoundCost;
 
             return $"{Name} the monkey chatters loudly: 'Ooh-ooh, aah-aah!' (Current Satiety: {Satiety})";
         }

@@ -1,10 +1,18 @@
 ﻿using System;
 using CrazyUniverse.Core.Interfaces;
+
 namespace CrazyUniverse.Core.Models
 {
     // Inheriting from the abstract Animal base class and implementing IVocalizable interface
     public class Lion : Animal, IVocalizable
     {
+        // Implementing abstract properties required by the base Animal class
+        public override string TypeName => "Lion";
+        public override string Description => "A dramatic king of the concrete jungle suffering from existential dread and chronic hair gel addiction. Refuses to roar unless the echo sounds cool.";
+
+        // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)
+        public int SoundCost => 8;
+
         // Constructor that passes the name up to the base Animal constructor using 'base(name)'
         public Lion(string name) : base(name)
         {
@@ -28,8 +36,8 @@ namespace CrazyUniverse.Core.Models
         // Implementing the IVocalizable interface contract
         public string MakeSound()
         {
-            // Satiety penalty for roaring implemented
-            Satiety -= 8;
+            // Satiety penalty for roaring implemented (uses SoundCost)
+            Satiety -= SoundCost;
 
             return $"{Name} the lion lets out a deep, majestic roar! (Current Satiety: {Satiety})";
         }
