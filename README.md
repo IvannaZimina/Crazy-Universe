@@ -20,6 +20,30 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 
 ---
 
+## Running Guide
+1. Clone the repository to your local machine.
+2. Open the solution file (`.sln`) in **Visual Studio** (version 2022 or newer is recommended).
+3. Ensure that the `CrazyUniverse.WpfApp` project is set as the **Startup Project**.
+4. Press **F5** (or click the **Start** button) to run the application.
+
+---
+
+## Crazy Actions & State Rules
+- **Encapsulated State (`Satiety`)**: Every animal maintains a satiety level ranging from 0 to 100, protected from external modification via `protected set`.
+- **Defensive Input Validation**: Numerical parameters (such as swimming distance) are strictly validated. Negative or zero values do not alter the object's state.
+- **Polymorphic `CrazyAction()`**: Defined as an abstract method in the `Animal` base class and overridden in each subclass (`Penguin`, `Monkey`, `Lion`). It dynamically decreases satiety and changes the animal's reaction text depending on its exhaustion level (e.g., when satiety drops below 20).
+
+---
+
+## Verified Use Cases
+1. **Animal Initialization**: Creating an instance of a penguin named "Skipper" with an automatically generated `Guid` identifier and a starting satiety of 100.
+2. **Feeding an Animal**: Calling the `Feed()` method, which increases the animal's satiety level (capped at a maximum of 100).
+3. **Performing a Crazy Action**: Triggering `CrazyAction()` for a lion named "Simba", which reduces its satiety and outputs a majestic roar text reflecting its current energy state.
+4. **Capability Checking via Helper (`is`/`as`)**: Using `AnimalActionsHelper` to dynamically and safely verify whether a specific object implements `ISwimmable` or `IJumpable`.
+5. **Invalid Input Protection**: Passing a negative distance (`-10.0`) into the penguin's swim method — the system correctly handles the error, leaving the satiety state completely untouched.
+
+---
+
 ## Project Architecture (CrazyUniverse.Core)
 
 The core of the project contains the domain logic, completely separated from the user interface:
@@ -32,7 +56,7 @@ The core of the project contains the domain logic, completely separated from the
 - **Monkey.cs, Penguin.cs, Lion.cs** (Concrete subclass models):
   - Inherit from `Animal` and use the base constructor (`: base(name)`).
   - Implement unique versions of the `CrazyAction()` method, which dynamically impact and depend on the current `Satiety` state.
-  - Include defensive input validation (e.g., checking for positive distances/heights) ensuring that invalid inputs do not alter the object's state.
+  - Include defensive input validation ensuring that invalid inputs do not alter the object's state.
 
 ### 2. Interfaces
 - **IJumpable.cs**: Interface for animals that can jump.
