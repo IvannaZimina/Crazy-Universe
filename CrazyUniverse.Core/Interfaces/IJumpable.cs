@@ -2,6 +2,7 @@
 {
     public interface IJumpable
     {
+        int JumpCost { get; }
         string Jump();
     }
 }

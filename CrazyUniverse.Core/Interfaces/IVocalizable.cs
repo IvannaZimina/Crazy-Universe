@@ -2,6 +2,7 @@
 {
     public interface IVocalizable
     {
+        int SoundCost { get; }
         string MakeSound();
     }
 }
