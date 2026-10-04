@@ -1,6 +1,5 @@
 ﻿using System;
 using CrazyUniverse.Core.Interfaces;
-
 namespace CrazyUniverse.Core.Models
 {
     // Inheriting from the abstract Animal base class and implementing IVocalizable interface
@@ -15,19 +14,24 @@ namespace CrazyUniverse.Core.Models
         // the Lion class implements it with its own unique logic.
         public override string CrazyAction()
         {
-            // TO DO: Uncomment when state-changing game rules are implemented
-            // Satiety -= 10;
+            // State-changing game rules implemented
+            Satiety -= 20;
 
-            return $"{Name} the lion roars so loud that the whole zoo shakes!";
+            if (Satiety < 20)
+            {
+                return $"{Name} the lion lets out a weak, tired grumble. (Current Satiety: {Satiety})";
+            }
+
+            return $"{Name} the lion roars so loud that the whole zoo shakes! (Current Satiety: {Satiety})";
         }
 
         // Implementing the IVocalizable interface contract
         public string MakeSound()
         {
-            // TO DO: Implement satiety penalty for roaring
-            // Satiety -= 5;
+            // Satiety penalty for roaring implemented
+            Satiety -= 8;
 
-            return $"{Name} the lion lets out a deep, majestic roar!";
+            return $"{Name} the lion lets out a deep, majestic roar! (Current Satiety: {Satiety})";
         }
     }
 }

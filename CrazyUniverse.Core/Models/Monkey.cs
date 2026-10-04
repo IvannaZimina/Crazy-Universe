@@ -1,6 +1,5 @@
 ﻿using System;
 using CrazyUniverse.Core.Interfaces;
-
 namespace CrazyUniverse.Core.Models
 {
     // Inheriting from the abstract Animal base class
@@ -19,28 +18,33 @@ namespace CrazyUniverse.Core.Models
         // override - keyword meaning "redefine" or "fill in". 
         public override string CrazyAction()
         {
-            // TO DO: Uncomment when state-changing game rules are implemented
-            // Satiety -= 10;
+            // State-changing game rules implemented
+            Satiety -= 15;
 
-            return $"{Name} the monkey throws a banana at the visitors!";
+            if (Satiety < 20)
+            {
+                return $"{Name} the monkey is too tired to throw anything and sits quietly. (Current Satiety: {Satiety})";
+            }
+
+            return $"{Name} the monkey excitedly throws a banana at the visitors! (Current Satiety: {Satiety})";
         }
 
         // Implementing the IJumpable interface contract
         public string Jump()
         {
-            // TO DO: Implement satiety penalty for jumping
-            // Satiety -= 5;
+            // Satiety penalty for jumping implemented
+            Satiety -= 5;
 
-            return $"{Name} the monkey jumps high from branch to branch!";
+            return $"{Name} the monkey jumps high from branch to branch! (Current Satiety: {Satiety})";
         }
 
         // Implementing the IVocalizable interface contract
         public string MakeSound()
         {
-            // TO DO: Implement satiety penalty for making sound
-            // Satiety -= 2;
+            // Satiety penalty for making sound implemented
+            Satiety -= 2;
 
-            return $"{Name} the monkey chatters loudly: 'Ooh-ooh, aah-aah!'";
+            return $"{Name} the monkey chatters loudly: 'Ooh-ooh, aah-aah!' (Current Satiety: {Satiety})";
         }
     }
 }

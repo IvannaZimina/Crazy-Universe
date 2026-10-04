@@ -15,10 +15,15 @@ namespace CrazyUniverse.Core.Models
         // the Penguin class implements it with its own unique logic.
         public override string CrazyAction()
         {
-            // TO DO: Uncomment when state-changing game rules are implemented
-            // Satiety -= 10;
+            // State-changing game rules: decreases satiety and depends on current state
+            Satiety -= 10;
 
-            return $"{Name} the penguin slides on its belly across the ice!";
+            if (Satiety < 20)
+            {
+                return $"{Name} the penguin is too exhausted and sluggishly slides on the ice! (Current Satiety: {Satiety})";
+            }
+
+            return $"{Name} the penguin enthusiastically slides on its belly across the ice! (Current Satiety: {Satiety})";
         }
 
         // Implementing the ISwimmable interface contract with distance parameter and input validation
@@ -30,10 +35,10 @@ namespace CrazyUniverse.Core.Models
                 return $"Invalid input! Distance must be greater than zero. {Name} stays put, state remains unchanged.";
             }
 
-            // TO DO: Implement satiety penalty based on distance when state rules are active
-            // Satiety -= (int)distance;
+            // State-changing rule based on the distance parameter[cite: 8]
+            Satiety -= (int)distance;
 
-            return $"{Name} the penguin swims gracefully, covering {distance} meters through the cold water!";
+            return $"{Name} the penguin swims gracefully, covering {distance} meters through the cold water! (Current Satiety: {Satiety})";
         }
     }
 }
