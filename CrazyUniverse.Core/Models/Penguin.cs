@@ -21,13 +21,13 @@ namespace CrazyUniverse.Core.Models
             return $"{Name} the penguin slides on its belly across the ice!";
         }
 
-        // Implementing the ISwimmable interface contract
-        public string Swim()
+        // Implementing the ISwimmable interface contract with distance parameter
+        public string Swim(double distance)
         {
-            // TO DO: Implement satiety penalty for swimming
-            // Satiety -= 4;
+            // TO DO: Implement satiety penalty based on distance
+            // Satiety -= (int)distance;
 
-            return $"{Name} the penguin swims gracefully through the cold water!";
+            return $"{Name} the penguin swims gracefully, covering {distance} meters through the cold water!";
         }
     }
 }
