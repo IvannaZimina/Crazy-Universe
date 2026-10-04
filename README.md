@@ -83,6 +83,7 @@ The core of the project contains the domain logic, completely separated from the
 - **Peer Name**: [Insert classmate's name]
 - **Issue Link**: [Insert link to the GitHub issue]
 - **Pull Request (PR) Link**: [Insert link to the pull request and code review]
+
 ---
 
 ## Artificial Intelligence (AI) Usage Declaration
@@ -91,3 +92,15 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 - OOP principles & code refinement: Assisting in structuring abstract classes and applying polymorphism correctly.
 - Validation & state management: Discussing logic for defensive input validation to protect object states from corruption.
 - Documentation: Structuring and refining the README.md file and drafting professional code comments in English.
+
+---
+
+## View
+<img width="1157" height="786" alt="image" src="https://github.com/user-attachments/assets/47fbdcfc-406e-4cb1-a3ae-294a2dfa4a03" />
+<img width="1157" height="794" alt="image" src="https://github.com/user-attachments/assets/ed924d92-668f-489c-86ad-99219e4d7df6" />
+<img width="1157" height="773" alt="image" src="https://github.com/user-attachments/assets/6532a6d7-d4ef-4ec2-984b-6a41aa9bb780" />
+<img width="1157" height="789" alt="image" src="https://github.com/user-attachments/assets/e6eaa3b7-4309-4479-b83a-08def38ad165" />
+
+
+
+
