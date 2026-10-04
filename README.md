@@ -1,13 +1,13 @@
 # Crazy Universe (Crazy Zoo + WPF Design)
 
 Welcome to the **Crazy Universe** repository!  
-This is a humorous WPF application where different types of objects live in the same world but behave differently.  
+This is a humorous WPF application where different types of objects live in the same world but behave differently.
 
 ---
 
 ## Application Description
 **Crazy Zoo** is a humorous simulator where every animal has a unique behavior, a satiety state, and characteristics.  
-Users can interact with the animals (such as feeding them) and observe their unique crazy actions in real-time.
+Users can interact with the animals (such as feeding them) and observe their unique crazy actions in real-time.  
 The solution consists of separate Core and WPF projects and uses inheritance, interfaces, polymorphism, and collections, following the course assignment requirements.
 
 ---
@@ -15,7 +15,7 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 ## Technologies Used
 - **Programming Language**: C#
 - **Platform**: .NET / WPF
-- **Architectural Principles**: Object-Oriented Programming (encapsulation, abstraction, polymorphism, inheritance)
+- **Architectural Principles**: Object-Oriented Programming (encapsulation, abstraction, polymorphism, inheritance), MVVM-like separation (Core & UI split)
 - **Version Control**: Git
 
 ---
@@ -37,6 +37,7 @@ The core of the project contains the domain logic, completely separated from the
   - Manages the shared state of all animals (encapsulated `Satiety` ranging from 0 to 100 with `protected set`).
   - Automatically generates a unique identifier `Id` using `Guid`.
   - Contains the base feeding logic (`Feed`) and defines the contract through the abstract `CrazyAction()` method.
+  - Implements `INotifyPropertyChanged` to support reactive UI updates.
 - **Monkey.cs, Penguin.cs, Lion.cs** (Concrete subclass models):
   - Inherit from `Animal` and use the base constructor (`: base(name)`).
   - Implement unique versions of the `CrazyAction()` method, which dynamically impact and depend on the current `Satiety` state.
@@ -55,7 +56,24 @@ The core of the project contains the domain logic, completely separated from the
   - Centralized component for checking animal capabilities dynamically.
   - Explicitly demonstrates the use of both pattern matching (`is`) and traditional type casting (`as`) operators to invoke specific interface methods safely.
 
-  ---
+---
+
+## 3. Collection & WPF User Interface
+
+- **Dynamic Collection**: Objects are stored in an `ObservableCollection<Animal>`, allowing automatic synchronization of list modifications with the visual UI.
+- **Data Display**: The main application window displays the full list of animals alongside detailed information regarding the currently selected object.
+- **Object Management**: Users can interactively add new instances, select them from the list to inspect details, and remove unwanted items.
+- **Dynamic Actions**: Action buttons (Feed, Swim, Jump, Make Sound, Crazy Action) dynamically adapt to the selected animal and invoke the corresponding methods of the object or its implemented interfaces.
+- **Event Log**: Core and action methods return meaningful timestamped messages that are recorded in a dedicated user interface event log with automatic scrolling.
+- **Fault Tolerance & Validation**: Text and numerical inputs are strictly validated; invalid parameters do not cause application crashes.
+- **Clean Architecture**: Domain business rules are isolated within the `CrazyUniverse.Core` project, while the WPF application project is strictly responsible for presentation management and user input.
+
+### Justification of Self-Studied WPF UI Elements (`DataTemplate` & `ProgressBar`)
+To implement the user interface, the following WPF features were self-studied and integrated:
+- **`DataTemplate` (within `ListBox` / content areas)**: Chosen to build custom visual layouts for each animal item in the collection. This allows clean, declarative data binding connecting model properties (`Name`, `TypeName`, `Satiety`) directly to UI elements without writing bloated procedural code-behind.
+- **`ProgressBar`**: Utilized to visually represent the animal's current satiety level in real-time (both inside the list view on the left and the detailed center card), making the application state intuitive and lively.
+
+---
 
 ## Crazy Actions & State Rules
 - **Encapsulated State (`Satiety`)**: Every animal maintains a satiety level ranging from 0 to 100, protected from external modification via `protected set`.
@@ -64,18 +82,12 @@ The core of the project contains the domain logic, completely separated from the
 
 ---
 
-## TO DO: Verified Use Cases
+## Verified Use Cases
 1. **Animal Initialization**: Creating an instance of a penguin named "Skipper" with an automatically generated `Guid` identifier and a starting satiety of 100.
 2. **Feeding an Animal**: Calling the `Feed()` method, which increases the animal's satiety level (capped at a maximum of 100).
 3. **Performing a Crazy Action**: Triggering `CrazyAction()` for a lion named "Simba", which reduces its satiety and outputs a majestic roar text reflecting its current energy state.
 4. **Capability Checking via Helper (`is`/`as`)**: Using `AnimalActionsHelper` to dynamically and safely verify whether a specific object implements `ISwimmable` or `IJumpable`.
 5. **Invalid Input Protection**: Passing a negative distance (`-10.0`) into the penguin's swim method — the system correctly handles the error, leaving the satiety state completely untouched.
-
----
-
-## TO DO: WPF UI Element Justification
-- **Selected Element**: [e.g., ListView with custom DataTemplates]
-- **Justification**: [Explain why this self-studied WPF component was chosen to display and manage the collection of animals, allowing flexible data binding and custom visual layouts for each animal type.]
 
 ---
 
@@ -88,10 +100,10 @@ The core of the project contains the domain logic, completely separated from the
 
 ## Artificial Intelligence (AI) Usage Declaration
 While developing this project, I used artificial intelligence (Gemini) as an architectural and technical support assistant. It was used for:
-- Task analysis & action planning: Breaking down course assignment requirements into structured steps and defining the Core/WPF project architecture.
+- Task analysis & action planning: Breaking down course assignment requirements into structured steps and defining the Core/WpfApp project architecture.
 - OOP principles & code refinement: Assisting in structuring abstract classes and applying polymorphism correctly.
 - Validation & state management: Discussing logic for defensive input validation to protect object states from corruption.
-- Documentation: Structuring and refining the README.md file and drafting professional code comments in English.
+- Documentation: Structuring and refining the README.md file and drafting professional code comments.
 
 ---
 
