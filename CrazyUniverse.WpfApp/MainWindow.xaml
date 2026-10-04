@@ -1,12 +1,232 @@
 ﻿<Window x:Class="CrazyUniverse.WpfApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CrazyUniverse.WpfApp"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Crazy Zoo" Height="750" Width="1100"
+        WindowStartupLocation="CenterScreen" Background="#F4F6F9">
 
+    <!-- ========================================== -->
+    <!-- STYLES & RESOURCES                         -->
+    <!-- ========================================== -->
+    <Window.Resources>
+        <Style x:Key="CardBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#CCCCCC" Direction="270" ShadowDepth="2" BlurRadius="8" Opacity="0.3"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ProgressBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid x:Name="PART_Track">
+                                <Border x:Name="PART_Indicator" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" CornerRadius="4"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FeedButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="#10B981"/>
+        </Style>
+
+        <Style x:Key="SpecialActionButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="#8B5CF6"/>
+        </Style>
+
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="#EF4444"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- ========================================== -->
+    <!-- MAIN LAYOUT                                -->
+    <!-- ========================================== -->
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
+        </Grid.RowDefinitions>
+
+        <!-- TOP HEADER BAR -->
+        <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,12" Padding="15,10">
+            <Grid>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="🐾 Crazy Zoo" FontSize="22" FontWeight="Bold" Foreground="#1E293B"/>
+                    <TextBlock Text="Different animals. Same crazy world." FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
+                </StackPanel>
+                <Border Background="#E0F2FE" CornerRadius="15" Padding="12,6" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock x:Name="PopulationText" Text="Zoo Population: 3" Foreground="#0369A1" FontWeight="SemiBold" FontSize="12"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 3-COLUMN CONTENT AREA (Row 1) -->
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="280"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT COLUMN: Animals List -->
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,8,0" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Content="+ Add Animal" Style="{StaticResource ActionButtonStyle}" Click="AddAnimal_Click" Margin="0,0,0,10"/>
+
+                    <ListBox x:Name="AnimalsListBox" Grid.Row="1" SelectionChanged="AnimalsListBox_SelectionChanged" 
+                             Background="Transparent" BorderBrush="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Margin" Value="0,0,0,6"/>
+                                <Setter Property="Padding" Value="0"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="10">
+                                    <StackPanel>
+                                        <Grid>
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#1E293B"/>
+                                            <TextBlock Text="{Binding TypeName}" HorizontalAlignment="Right" FontSize="10" Foreground="#64748B" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                                            <ProgressBar Value="{Binding Satiety, Mode=OneWay}" Minimum="0" Maximum="100" Width="150" Height="6" Foreground="#10B981" Background="#E2E8F0"/>
+                                            <TextBlock Text="{Binding Satiety, StringFormat={}{0}%}" FontSize="11" Foreground="#64748B" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock x:Name="TotalAnimalsText" Grid.Row="2" Text="Total animals: 3" FontSize="11" Foreground="#64748B" Margin="5,8,0,0"/>
+                </Grid>
+            </Border>
+
+            <!-- CENTER COLUMN: Detailed Information Card -->
+            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}" Margin="6,0,6,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel DataContext="{Binding ElementName=AnimalsListBox, Path=SelectedItem}">
+
+                        <!-- Header inside Card -->
+                        <Grid Margin="0,0,0,10">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,10,0"/>
+                                <Border Background="#E0F2FE" CornerRadius="10" Padding="8,3" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding TypeName}" Foreground="#0369A1" FontSize="11" FontWeight="SemiBold"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="{Binding Id, StringFormat=ID: {0}}" FontSize="11" Foreground="#64748B" Margin="0,0,0,10"/>
+
+                        <!-- Satiety Progress Bar -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <TextBlock Text="❤ Satiety:" FontWeight="Bold" Width="80" Foreground="#475569" VerticalAlignment="Center"/>
+                            <ProgressBar Value="{Binding Satiety, Mode=OneWay}" Minimum="0" Maximum="100" Width="200" Height="10" Foreground="#10B981" Background="#E2E8F0" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding Satiety, StringFormat={}{0}%}" FontWeight="Bold" Foreground="#1E293B" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Dynamic Abilities Status Indicators -->
+                        <StackPanel x:Name="AbilitiesPanel" Margin="0,0,0,15">
+                            <TextBlock Text="Abilities &amp; Features:" FontSize="13" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,5"/>
+                            <TextBlock x:Name="LblSwim" Text="🌊 Can Swim (ISwimmable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" Visibility="Collapsed"/>
+                            <TextBlock x:Name="LblJump" Text="🦘 Can Jump (IJumpable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" Visibility="Collapsed"/>
+                            <TextBlock x:Name="LblSound" Text="🔊 Can Make Sounds (IVocalizable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" Visibility="Collapsed"/>
+                        </StackPanel>
+
+                        <Separator Margin="0,5,0,12" Background="#E2E8F0"/>
+
+                        <TextBlock Text="Information" FontSize="14" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,8"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,4">
+                            <TextBlock Text="Name:" FontWeight="Bold" Width="110" Foreground="#475569"/>
+                            <TextBlock Text="{Binding Name}" FontSize="13" Foreground="#1E293B"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,4">
+                            <TextBlock Text="Species:" FontWeight="Bold" Width="110" Foreground="#475569"/>
+                            <TextBlock Text="{Binding TypeName}" FontSize="13" Foreground="#1E293B"/>
+                        </StackPanel>
+
+                        <Separator Margin="0,10" Background="#E2E8F0"/>
+
+                        <TextBlock Text="Description" FontSize="14" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,6"/>
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="#64748B" FontSize="12" LineHeight="18" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Behavioral Features" FontSize="14" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,6"/>
+                        <TextBlock Text="Satiety directly affects animal behavior. Performing crazy actions consumes energy. If satiety drops below 20%, the animal gets exhausted and starts acting totally weird!" 
+                                   TextWrapping="Wrap" Foreground="#64748B" FontSize="12" LineHeight="18"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- RIGHT COLUMN: Actions Panel -->
+            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" Margin="8,0,0,0" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,10"/>
+
+                    <!-- Добавлено x:Name="BtnFeed" для корректной динамической смены текста -->
+                    <Button x:Name="BtnFeed" Content="Feed (+5)" Style="{StaticResource FeedButtonStyle}" Click="Feed_Click" Margin="0,3"/>
+
+                    <Button x:Name="BtnSwim" Content="Swim (-10)" Style="{StaticResource ActionButtonStyle}" Click="Swim_Click" Margin="0,3" Visibility="Collapsed"/>
+                    <Button x:Name="BtnJump" Content="Jump (-5)" Style="{StaticResource ActionButtonStyle}" Click="Jump_Click" Margin="0,3" Visibility="Collapsed"/>
+                    <Button x:Name="BtnMakeSound" Content="Make Sound (-2)" Style="{StaticResource ActionButtonStyle}" Click="MakeSound_Click" Margin="0,3" Visibility="Collapsed"/>
+
+                    <Button Content="Crazy Action" Style="{StaticResource SpecialActionButtonStyle}" Click="CrazyAction_Click" Margin="0,3"/>
+
+                    <Separator Margin="0,8" Background="#E2E8F0"/>
+                    <Button Content="Remove Animal" Style="{StaticResource DangerButtonStyle}" Click="RemoveAnimal_Click" Margin="0,2"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- BOTTOM FULL-WIDTH ROW: Event Log (Row 2) -->
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Event Log" FontSize="14" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,6"/>
+                <TextBox x:Name="LogTextBox" Grid.Row="1" IsReadOnly="True" AcceptsReturn="True" 
+                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" 
+                         Background="#F8FAFC" BorderBrush="#E2E8F0" 
+                         FontSize="11" Foreground="#334155" Padding="6"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
