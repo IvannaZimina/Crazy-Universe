@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Log_AddedAnimal" xml:space="preserve">
+    <value>Added a new animal: {0}</value>
+  </data>
+  <data name="Action_AnimalFed" xml:space="preserve">
+    <value>{0} was fed. Current satiety: {1}</value>
+  </data>
+  <data name="Err_AnimalNameRequired" xml:space="preserve">
+    <value>Animal name is required.</value>
+  </data>
+  <data name="Action_FeedAlreadyFull" xml:space="preserve">
+    <value>{0} is already full (100/100) and cannot eat more!</value>
+  </data>
+  <data name="Action_FeedSuccess" xml:space="preserve">
+    <value>{0} was fed. Current satiety: {1}/100.</value>
+  </data>
+  <data name="Log_LangChanged" xml:space="preserve">
+    <value>[System] Language changed to: {0}</value>
+  </data>
+  <data name="Action_LionCrazyLow" xml:space="preserve">
+    <value>{0} the lion lets out a weak, tired grumble. (Current Satiety: {1})</value>
+  </data>
+  <data name="Action_LionCrazyNormal" xml:space="preserve">
+    <value>{0} the lion roars so loud that the whole zoo shakes! (Current Satiety: {1})</value>
+  </data>
+  <data name="Desc_LionDescription" xml:space="preserve">
+    <value>A dramatic king of the concrete jungle suffering from existential dread and chronic hair gel addiction. Refuses to roar unless the echo sounds cool.</value>
+  </data>
+  <data name="Action_LionMakeSound" xml:space="preserve">
+    <value>{0} the lion lets out a deep, majestic roar! (Current Satiety: {1})</value>
+  </data>
+  <data name="UI_LionTypeName" xml:space="preserve">
+    <value>Lion</value>
+  </data>
+  <data name="Action_MonkeyCrazyLow" xml:space="preserve">
+    <value>{0} the monkey is too tired to throw anything and sits quietly. (Current Satiety: {1})</value>
+  </data>
+  <data name="Action_MonkeyCrazyNormal" xml:space="preserve">
+    <value>{0} the monkey excitedly throws a banana at the visitors! (Current Satiety: {1})</value>
+  </data>
+  <data name="Desc_MonkeyDescription" xml:space="preserve">
+    <value>A professional chaos enthusiast who believes keyboards are edible and physics is optional. Constantly plots to steal the zookeeper's keys and throw banana peels.</value>
+  </data>
+  <data name="Action_MonkeyJump" xml:space="preserve">
+    <value>{0} the monkey jumps high from branch to branch! (Current Satiety: {1})</value>
+  </data>
+  <data name="Action_MonkeyMakeSound" xml:space="preserve">
+    <value>{0} the monkey chatters loudly: 'Ooh-ooh, aah-aah!' (Current Satiety: {1})</value>
+  </data>
+  <data name="UI_MonkeyTypeName" xml:space="preserve">
+    <value>Monkey</value>
+  </data>
+  <data name="Log_NoAnimalCrazy" xml:space="preserve">
+    <value>Warning: Please select an animal to perform a crazy action.</value>
+  </data>
+  <data name="Log_NoAnimalFeed" xml:space="preserve">
+    <value>Warning: Please select an animal to feed.</value>
+  </data>
+  <data name="Log_NoAnimalRemove" xml:space="preserve">
+    <value>Warning: No animal selected for removal.</value>
+  </data>
+  <data name="Action_PenguinCrazyLow" xml:space="preserve">
+    <value>{0} the penguin is too exhausted and sluggishly slides on the ice! (Current Satiety: {1})</value>
+  </data>
+  <data name="Action_PenguinCrazyNormal" xml:space="preserve">
+    <value>{0} the penguin enthusiastically slides on its belly across the ice! (Current Satiety: {1})</value>
+  </data>
+  <data name="Desc_PenguinDescription" xml:space="preserve">
+    <value>An elite tactical spy trapped in a tuxedo, plotting a global ice-cube robbery. Dances wildly on the ice whenever nobody is watching.</value>
+  </data>
+  <data name="Action_PenguinSwim" xml:space="preserve">
+    <value>{0} the penguin swims gracefully, covering {1} meters through the cold water! (Current Satiety: {2})</value>
+  </data>
+  <data name="UI_PenguinTypeName" xml:space="preserve">
+    <value>Penguin</value>
+  </data>
+  <data name="Log_RemovedAnimal" xml:space="preserve">
+    <value>{0} removed from the zoo.</value>
+  </data>
+  <data name="UI_TotalAnimals" xml:space="preserve">
+    <value>Total animals: {0}</value>
+  </data>
+  <data name="Log_ZooInit" xml:space="preserve">
+    <value>Zoo initialized with default animals.</value>
+  </data>
+  <data name="UI_ZooPopulation" xml:space="preserve">
+    <value>Zoo Population: {0}</value>
+  </data>
+  <data name="Err_InvalidDistance" xml:space="preserve">
+    <value>Invalid input! Distance must be greater than zero. {0} stays put, state remains unchanged.</value>
+  </data>
+</root>
