@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using CrazyUniverse.Core.Helpers;
 using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
 
@@ -9,7 +10,7 @@ namespace CrazyUniverse.WpfApp
 {
     public partial class MainWindow : Window
     {
-        // ObservableCollection to store and track animals dynamically in the UI
+        // ObservableCollection to store and track animals dynamically in the UI => from the task
         public ObservableCollection<Animal> Animals { get; set; }
 
         // Constructor of the main window class
@@ -32,14 +33,15 @@ namespace CrazyUniverse.WpfApp
             // Update population and total animal counter labels
             UpdateCounters();
 
-            // Log the initial application startup message into the activity journal
-            Log("Zoo initialized with default animals.");
+            // Log the initial application startup message using resource strings
+            Log(CrazyUniverse.Core.Resources.Messages.Log_ZooInit);
         }
 
         /* Event handler triggered when the user selects a different item in the ListBox */
         private void AnimalsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Handles selection changes and updates available action buttons based on animal interfaces
+            // Checks if the user actually clicked on an animal in the list. 
+            // If so, captures it into 'selectedAnimal'; if nothing is selected, safely does nothing.
             if (AnimalsListBox.SelectedItem is Animal selectedAnimal)
             {
                 // Dynamically set Feed button content using FeedCost from Core model
@@ -101,8 +103,8 @@ namespace CrazyUniverse.WpfApp
             // Refresh the population counters displayed in the header and footer
             UpdateCounters();
 
-            // Record the action into the activity log journal
-            Log($"Added a new animal: {newAnimal.Name}");
+            // Record the action into the activity log using resource string format
+            Log(string.Format(CrazyUniverse.Core.Resources.Messages.Log_AddedAnimal, newAnimal.Name));
         }
 
         /* Event handler for the button that removes the currently selected animal */
@@ -111,19 +113,21 @@ namespace CrazyUniverse.WpfApp
             // Check if an animal is actually selected in the ListBox
             if (AnimalsListBox.SelectedItem is Animal selectedAnimal)
             {
+                string name = selectedAnimal.Name;
+
                 // Remove the selected animal from the collection
                 Animals.Remove(selectedAnimal);
 
                 // Update the counters in the UI
                 UpdateCounters();
 
-                // Log the removal action with the animal's name
-                Log($"Removed {selectedAnimal.Name} from the zoo.");
+                // Log the removal action with the animal's name using resource format
+                Log(string.Format(CrazyUniverse.Core.Resources.Messages.Log_RemovedAnimal, name));
             }
             else
             {
-                // Log a warning message if no animal was selected
-                Log("Warning: No animal selected for removal.");
+                // Log a warning message if no animal was selected using resource string
+                Log(CrazyUniverse.Core.Resources.Messages.Log_NoAnimalRemove);
             }
         }
 
@@ -139,13 +143,13 @@ namespace CrazyUniverse.WpfApp
                 // Refresh the UI bindings to update progress bars
                 RefreshUI();
 
-                // Log the feeding action and the updated satiety value
-                Log($"{selectedAnimal.Name} was fed. Current satiety: {selectedAnimal.Satiety}");
+                // Log the feeding action and the updated satiety value using resource format
+                Log(string.Format(CrazyUniverse.Core.Resources.Messages.Log_AnimalFed, selectedAnimal.Name, selectedAnimal.Satiety));
             }
             else
             {
-                // Log a warning if the user clicked feed without selecting an animal
-                Log("Warning: Please select an animal to feed.");
+                // Log a warning if the user clicked feed without selecting an animal using resource string
+                Log(CrazyUniverse.Core.Resources.Messages.Log_NoAnimalFeed);
             }
         }
 
@@ -166,8 +170,8 @@ namespace CrazyUniverse.WpfApp
             }
             else
             {
-                // Log a warning if no animal is selected
-                Log("Warning: Please select an animal to perform a crazy action.");
+                // Log a warning if no animal is selected using resource string
+                Log(CrazyUniverse.Core.Resources.Messages.Log_NoAnimalCrazy);
             }
         }
 
@@ -204,6 +208,20 @@ namespace CrazyUniverse.WpfApp
             }
         }
 
+        /* Event handler for language switching buttons in XAML */
+        private void ChangeLanguage_Click(object sender, RoutedEventArgs e)
+        {
+            // Checks if the sender is actually a Button and its Tag property contains a string (culture code)
+            if (sender is Button button && button.Tag is string cultureCode)
+            {
+                // Set the selected culture globally using the helper from the Core project
+                LocalizationHelper.SetCulture(cultureCode);
+
+                // Record the language change event into the log using resource string format
+                Log(string.Format(CrazyUniverse.Core.Resources.Messages.Log_LangChanged, cultureCode));
+            }
+        }
+
         /* Forces UI elements (like ProgressBar) to refresh when underlying properties change */
         private void RefreshUI()
         {
@@ -223,11 +241,11 @@ namespace CrazyUniverse.WpfApp
             // Get the current number of animals in the collection
             int count = Animals.Count;
 
-            // Update the top header population text block
-            PopulationText.Text = $"Zoo Population: {count}";
+            // Update the top header population text block using resource format
+            PopulationText.Text = string.Format(CrazyUniverse.Core.Resources.Messages.UI_ZooPopulation, count);
 
-            // Update the left column total animals text block
-            TotalAnimalsText.Text = $"Total animals: {count}";
+            // Update the left column total animals text block using resource format
+            TotalAnimalsText.Text = string.Format(CrazyUniverse.Core.Resources.Messages.UI_TotalAnimals, count);
         }
 
         /* Registers meaningful messages into the UI activity log journal */

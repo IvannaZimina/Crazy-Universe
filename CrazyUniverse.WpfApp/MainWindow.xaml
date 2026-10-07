@@ -80,6 +80,15 @@
                     <TextBlock Text="🐾 Crazy Zoo" FontSize="22" FontWeight="Bold" Foreground="#1E293B"/>
                     <TextBlock Text="Different animals. Same crazy world." FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
                 </StackPanel>
+
+                <!-- SWITCH LANGUAGES -->
+                <!-- 
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Content="Русский" Tag="ru-RU" Click="ChangeLanguage_Click" Margin="5" Padding="8,4"/>
+                    <Button Content="English" Tag="en-US" Click="ChangeLanguage_Click" Margin="5" Padding="8,4"/>
+                </StackPanel>
+                -->
+
                 <Border Background="#E0F2FE" CornerRadius="15" Padding="12,6" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock x:Name="PopulationText" Text="Zoo Population: 3" Foreground="#0369A1" FontWeight="SemiBold" FontSize="12"/>
                 </Border>
@@ -199,7 +208,6 @@
                 <StackPanel>
                     <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,10"/>
 
-                    <!-- Добавлено x:Name="BtnFeed" для корректной динамической смены текста -->
                     <Button x:Name="BtnFeed" Content="Feed (+5)" Style="{StaticResource FeedButtonStyle}" Click="Feed_Click" Margin="0,3"/>
 
                     <Button x:Name="BtnSwim" Content="Swim (-10)" Style="{StaticResource ActionButtonStyle}" Click="Swim_Click" Margin="0,3" Visibility="Collapsed"/>
