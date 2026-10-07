@@ -1,5 +1,6 @@
 ﻿using System;
 using CrazyUniverse.Core.Interfaces;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.Core.Models
 {
@@ -7,8 +8,8 @@ namespace CrazyUniverse.Core.Models
     public class Penguin : Animal, ISwimmable
     {
         // Implementing abstract properties required by the base Animal class
-        public override string TypeName => "Penguin";
-        public override string Description => "An elite tactical spy trapped in a tuxedo, plotting a global ice-cube robbery. Dances wildly on the ice whenever nobody is watching.";
+        public override string TypeName => Messages.UI_PenguinTypeName;
+        public override string Description => Messages.Desc_PenguinDescription;
 
         // Implementing the SwimCost property required by the ISwimmable interface (base satiety cost per meter of swimming)
         public int SwimCost => 1;
@@ -27,10 +28,10 @@ namespace CrazyUniverse.Core.Models
 
             if (Satiety < 20)
             {
-                return $"{Name} the penguin is too exhausted and sluggishly slides on the ice! (Current Satiety: {Satiety})";
+                return string.Format(Messages.Action_PenguinCrazyLow, Name, Satiety);
             }
 
-            return $"{Name} the penguin enthusiastically slides on its belly across the ice! (Current Satiety: {Satiety})";
+            return string.Format(Messages.Action_PenguinCrazyNormal, Name, Satiety);
         }
 
         // Implementing the ISwimmable interface contract with distance parameter and input validation
@@ -39,13 +40,13 @@ namespace CrazyUniverse.Core.Models
             // Protecting object state: invalid input (negative or zero distance) does not change state
             if (distance <= 0)
             {
-                return $"Invalid input! Distance must be greater than zero. {Name} stays put, state remains unchanged.";
+                return string.Format(Messages.Err_InvalidDistance, Name);
             }
 
             // State-changing rule based on the distance parameter (multiplied by SwimCost or directly casted)
             Satiety -= (int)distance * SwimCost;
 
-            return $"{Name} the penguin swims gracefully, covering {distance} meters through the cold water! (Current Satiety: {Satiety})";
+            return string.Format(Messages.Action_PenguinSwim, Name, distance, Satiety);
         }
     }
 }

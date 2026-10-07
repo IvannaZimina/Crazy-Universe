@@ -1,5 +1,6 @@
-﻿using System;
-using CrazyUniverse.Core.Interfaces;
+﻿using CrazyUniverse.Core.Interfaces;
+using CrazyUniverse.Core.Resources;
+using System;
 
 namespace CrazyUniverse.Core.Models
 {
@@ -7,8 +8,8 @@ namespace CrazyUniverse.Core.Models
     public class Lion : Animal, IVocalizable
     {
         // Implementing abstract properties required by the base Animal class
-        public override string TypeName => "Lion";
-        public override string Description => "A dramatic king of the concrete jungle suffering from existential dread and chronic hair gel addiction. Refuses to roar unless the echo sounds cool.";
+        public override string TypeName => Messages.UI_LionTypeName;
+        public override string Description => Messages.Desc_LionDescription;
 
         // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)
         public int SoundCost => 8;
@@ -27,10 +28,10 @@ namespace CrazyUniverse.Core.Models
 
             if (Satiety < 20)
             {
-                return $"{Name} the lion lets out a weak, tired grumble. (Current Satiety: {Satiety})";
+                return string.Format(Messages.Action_LionCrazyLow, Name, Satiety);
             }
 
-            return $"{Name} the lion roars so loud that the whole zoo shakes! (Current Satiety: {Satiety})";
+            return string.Format(Messages.Action_LionCrazyNormal, Name, Satiety);
         }
 
         // Implementing the IVocalizable interface contract
@@ -39,7 +40,7 @@ namespace CrazyUniverse.Core.Models
             // Satiety penalty for roaring implemented (uses SoundCost)
             Satiety -= SoundCost;
 
-            return $"{Name} the lion lets out a deep, majestic roar! (Current Satiety: {Satiety})";
+            return string.Format(Messages.Action_LionMakeSound, Name, Satiety);
         }
     }
 }

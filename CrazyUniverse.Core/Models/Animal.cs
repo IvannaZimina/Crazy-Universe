@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.Core.Models
 {
@@ -45,7 +46,7 @@ namespace CrazyUniverse.Core.Models
         {
             // make sure the name is not null, empty, or just whitespace
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Animal name is required.", nameof(name));
+                throw new ArgumentException(Messages.Err_AnimalNameRequired, nameof(name));
 
             Name = name.Trim(); // Clean up any accidental spaces around the name and save it
             Satiety = 100;      // Give every new animal a maximum satiety level of 100 right from the start
@@ -57,23 +58,38 @@ namespace CrazyUniverse.Core.Models
             // Check if the animal is already at maximum satiety (100)
             if (Satiety >= 100)
             {
-                return $"{Name} is already full (100/100) and cannot eat more!";
+                return string.Format(Messages.Action_FeedAlreadyFull, Name);
             }
 
             Satiety += FeedCost;   // Increase satiety by 5 points per feeding action
 
             // Return a descriptive message about the feeding action and current state
-            return $"{Name} was fed. Current satiety: {Satiety}/100.";
+            return string.Format(Messages.Action_FeedSuccess, Name, Satiety);
         }
 
         // Abstract method: forces every child class (like Monkey or Lion) to create its own unique crazy action
         public abstract string CrazyAction();
 
         // INotifyPropertyChanged event implementation for WPF data binding updates
+
+        // [event PropertyChangedEventHandler:] is a special system event from the System.ComponentModel namespace.
+        // WPF listens to this event to know when to redraw the screen.
+
+        // Old method of fall protection:
+        // var handler = PropertyChanged;
+        // if (handler != null) {
+        //     handler(this, new PropertyChangedEventArgs(propertyName));
+        // ==}
+
+        // the new one: [= delegate { };] => makes it so that the PropertyChanged variable is never null. It always contains an "empty stub function."
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
+        // [virtual] allows to override this method in descendant classes if it needs to add some additional logic when properties change.
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            // Safely triggers the event if there are active subscribers (e.g., WPF UI elements).
+            // It notifies all listeners that a property value has changed by passing the current 
+            // object instance (this) and the name of the updated property (via PropertyChangedEventArgs)
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 

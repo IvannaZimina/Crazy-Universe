@@ -1,5 +1,6 @@
 ﻿using System;
 using CrazyUniverse.Core.Interfaces;
+using CrazyUniverse.Core.Resources; // Подключаем пространство имен с ресурсами
 
 namespace CrazyUniverse.Core.Models
 {
@@ -7,8 +8,8 @@ namespace CrazyUniverse.Core.Models
     public class Monkey : Animal, IJumpable, IVocalizable
     {
         // Implementing abstract properties required by the base Animal class
-        public override string TypeName => "Monkey";
-        public override string Description => "A professional chaos enthusiast who believes keyboards are edible and physics is optional. Constantly plots to steal the zookeeper's keys and throw banana peels.";
+        public override string TypeName => Messages.UI_MonkeyTypeName;
+        public override string Description => Messages.Desc_MonkeyDescription;
 
         // Implementing the JumpCost property required by the IJumpable interface (specifies satiety cost for jumping)
         public int JumpCost => 5;
@@ -34,10 +35,10 @@ namespace CrazyUniverse.Core.Models
 
             if (Satiety < 20)
             {
-                return $"{Name} the monkey is too tired to throw anything and sits quietly. (Current Satiety: {Satiety})";
+                return string.Format(Messages.Action_MonkeyCrazyLow, Name, Satiety);
             }
 
-            return $"{Name} the monkey excitedly throws a banana at the visitors! (Current Satiety: {Satiety})";
+            return string.Format(Messages.Action_MonkeyCrazyNormal, Name, Satiety);
         }
 
         // Implementing the IJumpable interface contract
@@ -46,7 +47,7 @@ namespace CrazyUniverse.Core.Models
             // Satiety penalty for jumping implemented (uses JumpCost)
             Satiety -= JumpCost;
 
-            return $"{Name} the monkey jumps high from branch to branch! (Current Satiety: {Satiety})";
+            return string.Format(Messages.Action_MonkeyJump, Name, Satiety);
         }
 
         // Implementing the IVocalizable interface contract
@@ -55,7 +56,7 @@ namespace CrazyUniverse.Core.Models
             // Satiety penalty for making sound implemented (uses SoundCost)
             Satiety -= SoundCost;
 
-            return $"{Name} the monkey chatters loudly: 'Ooh-ooh, aah-aah!' (Current Satiety: {Satiety})";
+            return string.Format(Messages.Action_MonkeyMakeSound, Name, Satiety);
         }
     }
 }
