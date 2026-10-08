@@ -20,7 +20,7 @@ namespace CrazyUniverse.Core.Models
         public abstract string TypeName { get; }
 
         // Abstract property for a funny description of the animal
-        public abstract string Description { get; }
+        public abstract string Description { get; set; }
 
         // Virtual property for feeding cost/gain, can be overridden by specific animals if needed
         public virtual int FeedCost => 5;
@@ -40,9 +40,14 @@ namespace CrazyUniverse.Core.Models
             }
         }
 
-        // Protected constructor: receives initial data, validates it,
-        // sets up the base state (max satiety & auto-generated ID) and initializes the new animal
-        protected Animal(string name)
+        // Protected constructor: receives initial name, validates it, and initializes the animal
+        protected Animal(string name) : this(name, null)
+        {
+        }
+
+        // Protected constructor: receives both name and optional description, validates name,
+        // sets up the base state (max satiety & auto-generated ID) and custom description if provided
+        protected Animal(string name, string? description)
         {
             // make sure the name is not null, empty, or just whitespace
             if (string.IsNullOrWhiteSpace(name))
@@ -50,6 +55,11 @@ namespace CrazyUniverse.Core.Models
 
             Name = name.Trim(); // Clean up any accidental spaces around the name and save it
             Satiety = 100;      // Give every new animal a maximum satiety level of 100 right from the start
+
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                Description = description.Trim();
+            }
         }
 
         // Virtual method for feeding: adds 5 points if the animal is not fully stuffed

@@ -9,13 +9,19 @@ namespace CrazyUniverse.Core.Models
     {
         // Implementing abstract properties required by the base Animal class
         public override string TypeName => Messages.UI_PenguinTypeName;
-        public override string Description => Messages.Desc_PenguinDescription;
+
+        private string? _customDescription;
+        public override string Description
+        {
+            get => _customDescription ?? Messages.Desc_PenguinDescription;
+            set => _customDescription = value;
+        }
 
         // Implementing the SwimCost property required by the ISwimmable interface (base satiety cost per meter of swimming)
         public int SwimCost => 1;
 
-        // Constructor that passes the name up to the base Animal constructor using 'base(name)'
-        public Penguin(string name) : base(name)
+        // Constructor that passes the name and optional description up to the base Animal constructor
+        public Penguin(string name, string? description = null) : base(name, description)
         {
         }
 
@@ -43,8 +49,8 @@ namespace CrazyUniverse.Core.Models
                 return string.Format(Messages.Err_InvalidDistance, Name);
             }
 
-            // State-changing rule based on the distance parameter (multiplied by SwimCost or directly casted)
-            Satiety -= (int)distance * SwimCost;
+            // State-changing rule based on the distance parameter multiplied by SwimCost
+            Satiety -= (int)(distance * SwimCost);
 
             return string.Format(Messages.Action_PenguinSwim, Name, distance, Satiety);
         }

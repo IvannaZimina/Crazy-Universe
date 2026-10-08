@@ -9,13 +9,19 @@ namespace CrazyUniverse.Core.Models
     {
         // Implementing abstract properties required by the base Animal class
         public override string TypeName => Messages.UI_LionTypeName;
-        public override string Description => Messages.Desc_LionDescription;
+
+        private string? _customDescription;
+        public override string Description
+        {
+            get => _customDescription ?? Messages.Desc_LionDescription;
+            set => _customDescription = value;
+        }
 
         // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)
         public int SoundCost => 8;
 
-        // Constructor that passes the name up to the base Animal constructor using 'base(name)'
-        public Lion(string name) : base(name)
+        // Constructor that passes the name and optional description up to the base Animal constructor
+        public Lion(string name, string? description = null) : base(name, description)
         {
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using CrazyUniverse.Core.Interfaces;
-using CrazyUniverse.Core.Resources; // Подключаем пространство имен с ресурсами
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.Core.Models
 {
@@ -9,7 +9,13 @@ namespace CrazyUniverse.Core.Models
     {
         // Implementing abstract properties required by the base Animal class
         public override string TypeName => Messages.UI_MonkeyTypeName;
-        public override string Description => Messages.Desc_MonkeyDescription;
+
+        private string? _customDescription;
+        public override string Description
+        {
+            get => _customDescription ?? Messages.Desc_MonkeyDescription;
+            set => _customDescription = value;
+        }
 
         // Implementing the JumpCost property required by the IJumpable interface (specifies satiety cost for jumping)
         public int JumpCost => 5;
@@ -17,12 +23,12 @@ namespace CrazyUniverse.Core.Models
         // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)
         public int SoundCost => 2;
 
-        // Constructor that passes the name up to the base Animal constructor using 'base(name)'
-        public Monkey(string name) : base(name)
+        // Constructor that passes the name and optional description up to the base Animal constructor
+        public Monkey(string name, string? description = null) : base(name, description)
         {
-            // The ': base(name)' part takes the name received here and sends it up 
-            // to the parent Animal constructor, making sure the base class handles 
-            // name validation, ID generation, and sets the starting satiety to 100.
+            // The ': base(name, description)' part takes the name and description received here 
+            // and sends them up to the parent Animal constructor, making sure the base class handles 
+            // name validation, ID generation, custom description, and sets the starting satiety to 100.
         }
 
         // Since the CrazyAction() method was abstract (empty) in the parent Animal class, 
