@@ -119,12 +119,14 @@
   </resheader>
   <data name="Log_AddedAnimal" xml:space="preserve">
     <value>Added a new animal: {0}</value>
+    <comment>Log message</comment>
   </data>
   <data name="Action_AnimalFed" xml:space="preserve">
     <value>{0} was fed. Current satiety: {1}</value>
   </data>
   <data name="Err_AnimalNameRequired" xml:space="preserve">
     <value>Animal name is required.</value>
+    <comment>Error message</comment>
   </data>
   <data name="Action_FeedAlreadyFull" xml:space="preserve">
     <value>{0} is already full (100/100) and cannot eat more!</value>
@@ -134,12 +136,15 @@
   </data>
   <data name="Log_LangChanged" xml:space="preserve">
     <value>[System] Language changed to: {0}</value>
+    <comment>Log message</comment>
   </data>
   <data name="Action_LionCrazyLow" xml:space="preserve">
     <value>{0} the lion lets out a weak, tired grumble. (Current Satiety: {1})</value>
+    <comment>Lion</comment>
   </data>
   <data name="Action_LionCrazyNormal" xml:space="preserve">
     <value>{0} the lion roars so loud that the whole zoo shakes! (Current Satiety: {1})</value>
+    <comment>Lion</comment>
   </data>
   <data name="Action_HoneyBadgerCrazyNormal" xml:space="preserve">
     <value>{0} the honey badger lets out a furious growl, and the entire zoo suddenly remembers who is in charge! (Current Satiety: {1})</value>
@@ -147,6 +152,7 @@
   </data>
   <data name="Desc_LionDescription" xml:space="preserve">
     <value>A dramatic king of the concrete jungle suffering from existential dread and chronic hair gel addiction. Refuses to roar unless the echo sounds cool.</value>
+    <comment>Lion</comment>
   </data>
   <data name="Desc_HoneyBadgerDescription" xml:space="preserve">
     <value>A tiny, furious legend who does not care. Hungry? Picks a fight with a lion. Full? Still picks a fight, but with style.</value>
@@ -154,9 +160,11 @@
   </data>
   <data name="Action_LionMakeSound" xml:space="preserve">
     <value>{0} the lion lets out a deep, majestic roar! (Current Satiety: {1})</value>
+    <comment>Lion</comment>
   </data>
   <data name="UI_LionTypeName" xml:space="preserve">
     <value>Lion</value>
+    <comment>Lion</comment>
   </data>
   <data name="Action_HoneyBadgerCrazyLow" xml:space="preserve">
     <value>{0} the honey badger is stuffed with honey and has decided that today nothing matters. (Current Satiety: {1})</value>
@@ -164,21 +172,27 @@
   </data>
   <data name="Action_MonkeyCrazyLow" xml:space="preserve">
     <value>{0} the monkey is too tired to throw anything and sits quietly. (Current Satiety: {1})</value>
+    <comment>Monkey</comment>
   </data>
   <data name="Action_MonkeyCrazyNormal" xml:space="preserve">
     <value>{0} the monkey excitedly throws a banana at the visitors! (Current Satiety: {1})</value>
+    <comment>Monkey</comment>
   </data>
   <data name="Desc_MonkeyDescription" xml:space="preserve">
     <value>A professional chaos enthusiast who believes keyboards are edible and physics is optional. Constantly plots to steal the zookeeper's keys and throw banana peels.</value>
+    <comment>Monkey</comment>
   </data>
   <data name="Action_MonkeyJump" xml:space="preserve">
     <value>{0} the monkey jumps high from branch to branch! (Current Satiety: {1})</value>
+    <comment>Monkey</comment>
   </data>
   <data name="Action_MonkeyMakeSound" xml:space="preserve">
     <value>{0} the monkey chatters loudly: 'Ooh-ooh, aah-aah!' (Current Satiety: {1})</value>
+    <comment>Monkey</comment>
   </data>
   <data name="UI_MonkeyTypeName" xml:space="preserve">
     <value>Monkey</value>
+    <comment>Monkey</comment>
   </data>
   <data name="UI_HoneyBadgerTypeName" xml:space="preserve">
     <value>Honey Badger</value>
@@ -186,42 +200,53 @@
   </data>
   <data name="Log_NoAnimalCrazy" xml:space="preserve">
     <value>Warning: Please select an animal to perform a crazy action.</value>
+    <comment>Log message</comment>
   </data>
   <data name="Log_NoAnimalFeed" xml:space="preserve">
     <value>Warning: Please select an animal to feed.</value>
+    <comment>Log message</comment>
   </data>
   <data name="Log_NoAnimalRemove" xml:space="preserve">
     <value>Warning: No animal selected for removal.</value>
+    <comment>Log message</comment>
   </data>
   <data name="Action_PenguinCrazyLow" xml:space="preserve">
     <value>{0} the penguin is too exhausted and sluggishly slides on the ice! (Current Satiety: {1})</value>
+    <comment>Penguin</comment>
   </data>
   <data name="Action_PenguinCrazyNormal" xml:space="preserve">
     <value>{0} the penguin enthusiastically slides on its belly across the ice! (Current Satiety: {1})</value>
+    <comment>Penguin</comment>
   </data>
   <data name="Desc_PenguinDescription" xml:space="preserve">
     <value>An elite tactical spy trapped in a tuxedo, plotting a global ice-cube robbery. Dances wildly on the ice whenever nobody is watching.</value>
+    <comment>Penguin</comment>
   </data>
   <data name="Action_PenguinSwim" xml:space="preserve">
     <value>{0} the penguin swims gracefully, covering {1} meters through the cold water! (Current Satiety: {2})</value>
+    <comment>Penguin</comment>
   </data>
   <data name="UI_PenguinTypeName" xml:space="preserve">
     <value>Penguin</value>
+    <comment>Penguin</comment>
   </data>
   <data name="Log_RemovedAnimal" xml:space="preserve">
     <value>{0} removed from the zoo.</value>
+    <comment>Log message</comment>
   </data>
   <data name="UI_TotalAnimals" xml:space="preserve">
     <value>Total animals: {0}</value>
   </data>
   <data name="Log_ZooInit" xml:space="preserve">
     <value>Zoo initialized with default animals.</value>
+    <comment>Log message</comment>
   </data>
   <data name="UI_ZooPopulation" xml:space="preserve">
     <value>Zoo Population: {0}</value>
   </data>
   <data name="Err_InvalidDistance" xml:space="preserve">
     <value>Invalid input! Distance must be greater than zero. {0} stays put, state remains unchanged.</value>
+    <comment>Error message</comment>
   </data>
   <data name="Action_HoneyBadgerClimb" xml:space="preserve">
     <value>{0} the honey badger scales a tree like it owes him money and raids the beehive. (Current Satiety: {1})</value>
@@ -238,5 +263,13 @@
   <data name="Action_HoneyBadgerRun" xml:space="preserve">
     <value>{0} the honey badger runs at full speed straight toward trouble, because running away is not in its vocabulary. (Current Satiety: {1})</value>
     <comment>HoneyBadger</comment>
+  </data>
+  <data name="Err_InvalidAnimalType" xml:space="preserve">
+    <value>Please select a valid animal type.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_DescriptionRequired" xml:space="preserve">
+    <value>Animal description cannot be empty.</value>
+    <comment>Error message</comment>
   </data>
 </root>
