@@ -21,7 +21,7 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 ---
 
 ## Running Guide
-1. Clone the repository to your local machine.
+1. Clone the repository to your local machine: `https://github.com/IvannaZimina/Crazy-Universe`
 2. Open the solution file (`.sln`) in **Visual Studio** (version 2022 or newer is recommended).
 3. Ensure that the `CrazyUniverse.WpfApp` project is set as the **Startup Project**.
 4. Press **F5** (or click the **Start** button) to run the application.
@@ -51,14 +51,16 @@ The core of the project contains the domain logic, completely separated from the
 - **IVocalizable.cs**: Interface for animals that can make sounds.
 - **IFlyable.cs**: Interface for animals that can fly or glide.
 
-### 3. Helpers
+### 3. Helpers & Resources
 - **AnimalActionsHelper.cs**:
   - Centralized component for checking animal capabilities dynamically.
   - Explicitly demonstrates the use of both pattern matching (`is`) and traditional type casting (`as`) operators to invoke specific interface methods safely.
+- **Localization / Resource Files**:
+  - Centralized string resources (`Messages.resx`) used for multi-language support and maintaining clean separation of hardcoded UI strings.
 
 ---
 
-## 3. Collection & WPF User Interface
+## Collection & WPF User Interface
 
 - **Dynamic Collection**: Objects are stored in an `ObservableCollection<Animal>`, allowing automatic synchronization of list modifications with the visual UI.
 - **Data Display**: The main application window displays the full list of animals alongside detailed information regarding the currently selected object.
@@ -92,9 +94,16 @@ To implement the user interface, the following WPF features were self-studied an
 ---
 
 ## TO DO: Peer Review & Collaboration
-- **Peer Name**: [Insert classmate's name]
-- **Issue Link**: [Insert link to the GitHub issue]
-- **Pull Request (PR) Link**: [Insert link to the pull request and code review]
+- **Peer Name**: Maksym Kotkov
+- **Repository Link**: [https://github.com/IvannaZimina/Crazy-Universe](https://github.com/IvannaZimina/Crazy-Universe)
+- **Task for Reviewer / Classmate**: 
+  - Create a new concrete animal subclass inheriting from `Animal` (e.g., `Elephant`, `Giraffe`, or `Kangaroo`).
+  - Implement the abstract `CrazyAction()` method with unique behavior based on `Satiety`.
+  - Implement at least two relevant interfaces available in the project (such as `IJumpable`, `ISwimmable`, or `IVocalizable`) to utilize the existing action architecture and capability-checking helpers.
+- **Guidelines & Recommendations for Maksym**:
+  - **Clean Code**: Follow consistent naming conventions, keep methods short and focused, and avoid code duplication.
+  - **Comments**: Add XML documentation comments (`///`) to public classes and methods.
+  - **Git Commits**: Write clear, descriptive commit messages with prefixes (e.g., `feat: add Elephant model`, `fix: validate satiety range`).
 
 ---
 
@@ -112,7 +121,3 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 <img width="1157" height="794" alt="image" src="https://github.com/user-attachments/assets/ed924d92-668f-489c-86ad-99219e4d7df6" />
 <img width="1157" height="773" alt="image" src="https://github.com/user-attachments/assets/6532a6d7-d4ef-4ec2-984b-6a41aa9bb780" />
 <img width="1157" height="789" alt="image" src="https://github.com/user-attachments/assets/e6eaa3b7-4309-4479-b83a-08def38ad165" />
-
-
-
-
