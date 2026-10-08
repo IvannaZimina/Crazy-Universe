@@ -141,14 +141,26 @@
   <data name="Action_LionCrazyNormal" xml:space="preserve">
     <value>{0} the lion roars so loud that the whole zoo shakes! (Current Satiety: {1})</value>
   </data>
+  <data name="Action_HoneyBadgerCrazyNormal" xml:space="preserve">
+    <value>{0} the honey badger lets out a furious growl, and the entire zoo suddenly remembers who is in charge! (Current Satiety: {1})</value>
+    <comment>HoneyBadger</comment>
+  </data>
   <data name="Desc_LionDescription" xml:space="preserve">
     <value>A dramatic king of the concrete jungle suffering from existential dread and chronic hair gel addiction. Refuses to roar unless the echo sounds cool.</value>
+  </data>
+  <data name="Desc_HoneyBadgerDescription" xml:space="preserve">
+    <value>A tiny, furious legend who does not care. Hungry? Picks a fight with a lion. Full? Still picks a fight, but with style.</value>
+    <comment>HoneyBadger</comment>
   </data>
   <data name="Action_LionMakeSound" xml:space="preserve">
     <value>{0} the lion lets out a deep, majestic roar! (Current Satiety: {1})</value>
   </data>
   <data name="UI_LionTypeName" xml:space="preserve">
     <value>Lion</value>
+  </data>
+  <data name="Action_HoneyBadgerCrazyLow" xml:space="preserve">
+    <value>{0} the honey badger is stuffed with honey and has decided that today nothing matters. (Current Satiety: {1})</value>
+    <comment>HoneyBadger</comment>
   </data>
   <data name="Action_MonkeyCrazyLow" xml:space="preserve">
     <value>{0} the monkey is too tired to throw anything and sits quietly. (Current Satiety: {1})</value>
@@ -167,6 +179,10 @@
   </data>
   <data name="UI_MonkeyTypeName" xml:space="preserve">
     <value>Monkey</value>
+  </data>
+  <data name="UI_HoneyBadgerTypeName" xml:space="preserve">
+    <value>Honey Badger</value>
+    <comment>HoneyBadger</comment>
   </data>
   <data name="Log_NoAnimalCrazy" xml:space="preserve">
     <value>Warning: Please select an animal to perform a crazy action.</value>
@@ -206,5 +222,21 @@
   </data>
   <data name="Err_InvalidDistance" xml:space="preserve">
     <value>Invalid input! Distance must be greater than zero. {0} stays put, state remains unchanged.</value>
+  </data>
+  <data name="Action_HoneyBadgerClimb" xml:space="preserve">
+    <value>{0} the honey badger scales a tree like it owes him money and raids the beehive. (Current Satiety: {1})</value>
+    <comment>HoneyBadger</comment>
+  </data>
+  <data name="Action_HoneyBadgerSwim" xml:space="preserve">
+    <value>{0} the honey badger swims across the river out of pure spite. (Current Satiety: {1})</value>
+    <comment>HoneyBadger</comment>
+  </data>
+  <data name="Action_HoneyBadgerMakeSound" xml:space="preserve">
+    <value>{0} the honey badger growls so fiercely that even the lions pretend not to hear it! (Current Satiety: {1})</value>
+    <comment>HoneyBadger</comment>
+  </data>
+  <data name="Action_HoneyBadgerRun" xml:space="preserve">
+    <value>{0} the honey badger runs at full speed straight toward trouble, because running away is not in its vocabulary. (Current Satiety: {1})</value>
+    <comment>HoneyBadger</comment>
   </data>
 </root>
