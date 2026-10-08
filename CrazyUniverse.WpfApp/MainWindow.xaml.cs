@@ -144,7 +144,7 @@ namespace CrazyUniverse.WpfApp
                 RefreshUI();
 
                 // Log the feeding action and the updated satiety value using resource format
-                Log(string.Format(CrazyUniverse.Core.Resources.Messages.Log_AnimalFed, selectedAnimal.Name, selectedAnimal.Satiety));
+                Log(string.Format(CrazyUniverse.Core.Resources.Messages.Action_AnimalFed, selectedAnimal.Name, selectedAnimal.Satiety));
             }
             else
             {
