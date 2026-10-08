@@ -82,10 +82,10 @@ namespace CrazyUniverse.Core.Models
         // ==}
 
         // the new one: [= delegate { };] => makes it so that the PropertyChanged variable is never null. It always contains an "empty stub function."
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public event PropertyChangedEventHandler? PropertyChanged = delegate { };
 
         // [virtual] allows to override this method in descendant classes if it needs to add some additional logic when properties change.
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             // Safely triggers the event if there are active subscribers (e.g., WPF UI elements).
             // It notifies all listeners that a property value has changed by passing the current 
