@@ -24,7 +24,8 @@ namespace CrazyUniverse.WpfApp
             {
                 new Monkey("George"),
                 new Lion("Simba"),
-                new Penguin("Skipper")
+                new Penguin("Skipper"),
+                new HoneyBadger("Rambo")
             };
 
             // Bind the animal collection to the ListBox control in the UI
