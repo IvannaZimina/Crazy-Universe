@@ -1,42 +1,46 @@
-﻿using System;
-using CrazyUniverse.Core.Interfaces;
-using CrazyUniverse.Core.Resources; // Подключаем пространство имен с ресурсами
+﻿using CrazyUniverse.Core.Interfaces;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.Core.Models
 {
-    // Inheriting from the abstract Animal base class
-    public class HoneyBadger : Animal, IClimbable, ISwimmable, IRunnable , IVocalizable
+    /// <summary>
+    /// A tiny, furious legend who does not care. Climbs, swims, runs and growls,
+    /// and every action costs satiety.
+    /// </summary>
+    public class HoneyBadger : Animal, IClimbable, ISwimmable, IRunnable, IVocalizable
     {
-        // Implementing abstract properties required by the base Animal class
+        /// <inheritdoc/>
         public override string TypeName => Messages.UI_HoneyBadgerTypeName;
+
+        /// <inheritdoc/>
         public override string Description => Messages.Desc_HoneyBadgerDescription;
 
-        // Implementing the ClimbCost property required by the IClimbable interface (specifies satiety cost for climbing)
+        /// <summary>Satiety cost of climbing.</summary>
         public int ClimbCost => 5;
 
-        // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)
+        /// <summary>Satiety cost of making a sound.</summary>
         public int SoundCost => 2;
 
-        // Implementing the SwimCost property required by the ISwimmable interface (specifies satiety cost for swimming)
+        /// <summary>Satiety cost of swimming.</summary>
         public int SwimCost => 10;
 
-        // Implementing the RunCost property required by the IRunnable interface (specifies satiety cost for running)
-        public int RunCost => 8; 
+        /// <summary>Satiety cost of running.</summary>
+        public int RunCost => 8;
 
-        // Constructor that passes the name up to the base Animal constructor using 'base(name)'
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HoneyBadger"/> class.
+        /// </summary>
+        /// <param name="name">The name of the honey badger.</param>
         public HoneyBadger(string name) : base(name)
         {
-            // The ': base(name)' part takes the name received here and sends it up 
-            // to the parent Animal constructor, making sure the base class handles 
-            // name validation, ID generation, and sets the starting satiety to 100.
         }
 
-        // Since the CrazyAction() method was abstract (empty) in the parent Animal class, 
-        // the Monkey class is required to implement it with its own unique logic.
-        // override - keyword meaning "redefine" or "fill in". 
+        /// <summary>
+        /// Performs a crazy action. The message depends on the remaining satiety.
+        /// </summary>
+        /// <returns>A message describing what the honey badger did.</returns>
         public override string CrazyAction()
         {
-            // State-changing game rules implemented
             Satiety -= 15;
 
             if (Satiety < 20)
@@ -47,37 +51,45 @@ namespace CrazyUniverse.Core.Models
             return string.Format(Messages.Action_HoneyBadgerCrazyNormal, Name, Satiety);
         }
 
-        // Implementing the IClimbable interface contract
+        /// <summary>
+        /// Climbs to the given height and lowers satiety by <see cref="ClimbCost"/>.
+        /// </summary>
+        /// <param name="height">The height to climb.</param>
+        /// <returns>A message describing the climb.</returns>
         public string Climb(double height)
         {
-            // Satiety penalty for climbing implemented (uses ClimbCost)
             Satiety -= ClimbCost;
-
             return string.Format(Messages.Action_HoneyBadgerClimb, Name, Satiety);
         }
 
-        // Implementing the IVocalizable interface contract
+        /// <summary>
+        /// Growls and lowers satiety by <see cref="SoundCost"/>.
+        /// </summary>
+        /// <returns>A message describing the growl.</returns>
         public string MakeSound()
         {
-            // Satiety penalty for making sound implemented (uses SoundCost)
             Satiety -= SoundCost;
-
             return string.Format(Messages.Action_HoneyBadgerMakeSound, Name, Satiety);
         }
 
-        // Implementing the ISwimmable interface contract
+        /// <summary>
+        /// Swims the given distance and lowers satiety by <see cref="SwimCost"/>.
+        /// </summary>
+        /// <param name="distance">The distance to swim.</param>
+        /// <returns>A message describing the swim.</returns>
         public string Swim(double distance)
         {
-            // Satiety penalty for swimming implemented (uses SwimCost)
             Satiety -= SwimCost;
-
             return string.Format(Messages.Action_HoneyBadgerSwim, Name, Satiety);
         }
 
+        /// <summary>
+        /// Runs and lowers satiety by <see cref="RunCost"/>.
+        /// </summary>
+        /// <returns>A message describing the run.</returns>
         public string Run()
         {
-            // Satiety penalty for running implemented
-            Satiety -= 8;
+            Satiety -= RunCost;
             return string.Format(Messages.Action_HoneyBadgerRun, Name, Satiety);
         }
     }
