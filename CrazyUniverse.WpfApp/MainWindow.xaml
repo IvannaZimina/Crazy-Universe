@@ -81,7 +81,7 @@
                     <TextBlock Text="Different animals. Same crazy world." FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <!-- SWITCH LANGUAGES -->
+                <!-- ЗАКОММЕНТИРОВАННЫЕ КНОПКИ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА -->
                 <!-- 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Button Content="Русский" Tag="ru-RU" Click="ChangeLanguage_Click" Margin="5" Padding="8,4"/>
