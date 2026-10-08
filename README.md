@@ -6,13 +6,15 @@ This is a humorous WPF application where different types of objects live in the 
 ---
 
 ## Application Description
+
 **Crazy Zoo** is a humorous simulator where every animal has a unique behavior, a satiety state, and characteristics.  
-Users can interact with the animals (such as feeding them) and observe their unique crazy actions in real-time.  
+Users can interact with the animals (such as feeding them, making them perform actions via a modal dialog for adding new items) and observe their unique crazy actions in real-time.  
 The solution consists of separate Core and WPF projects and uses inheritance, interfaces, polymorphism, and collections, following the course assignment requirements.
 
 ---
 
 ## Technologies Used
+
 - **Programming Language**: C#
 - **Platform**: .NET / WPF
 - **Architectural Principles**: Object-Oriented Programming (encapsulation, abstraction, polymorphism, inheritance), MVVM-like separation (Core & UI split)
@@ -21,7 +23,9 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 ---
 
 ## Running Guide
-1. Clone the repository to your local machine: `https://github.com/IvannaZimina/Crazy-Universe`
+
+1. Clone the repository to your local machine: 
+   `https://github.com/IvannaZimina/Crazy-Universe`
 2. Open the solution file (`.sln`) in **Visual Studio** (version 2022 or newer is recommended).
 3. Ensure that the `CrazyUniverse.WpfApp` project is set as the **Startup Project**.
 4. Press **F5** (or click the **Start** button) to run the application.
@@ -38,7 +42,7 @@ The core of the project contains the domain logic, completely separated from the
   - Automatically generates a unique identifier `Id` using `Guid`.
   - Contains the base feeding logic (`Feed`) and defines the contract through the abstract `CrazyAction()` method.
   - Implements `INotifyPropertyChanged` to support reactive UI updates.
-- **Monkey.cs, Penguin.cs, Lion.cs** (Concrete subclass models):
+- **Monkey.cs, Penguin.cs, Lion.cs, HoneyBadger.cs** (Concrete subclass models):
   - Inherit from `Animal` and use the base constructor (`: base(name)`).
   - Implement unique versions of the `CrazyAction()` method, which dynamically impact and depend on the current `Satiety` state.
   - Include defensive input validation ensuring that invalid inputs do not alter the object's state.
@@ -64,7 +68,7 @@ The core of the project contains the domain logic, completely separated from the
 
 - **Dynamic Collection**: Objects are stored in an `ObservableCollection<Animal>`, allowing automatic synchronization of list modifications with the visual UI.
 - **Data Display**: The main application window displays the full list of animals alongside detailed information regarding the currently selected object.
-- **Object Management**: Users can interactively add new instances, select them from the list to inspect details, and remove unwanted items.
+- **Object Management & Modal Dialog**: Users can interactively add new instances via a dedicated modal dialog window (`AddAnimal`), select them from the list to inspect details, and remove unwanted items. The dialog dynamically binds available animal types supporting localization.
 - **Dynamic Actions**: Action buttons (Feed, Swim, Jump, Make Sound, Crazy Action) dynamically adapt to the selected animal and invoke the corresponding methods of the object or its implemented interfaces.
 - **Event Log**: Core and action methods return meaningful timestamped messages that are recorded in a dedicated user interface event log with automatic scrolling.
 - **Fault Tolerance & Validation**: Text and numerical inputs are strictly validated; invalid parameters do not cause application crashes.
@@ -78,22 +82,26 @@ To implement the user interface, the following WPF features were self-studied an
 ---
 
 ## Crazy Actions & State Rules
+
 - **Encapsulated State (`Satiety`)**: Every animal maintains a satiety level ranging from 0 to 100, protected from external modification via `protected set`.
 - **Defensive Input Validation**: Numerical parameters (such as swimming distance) are strictly validated. Negative or zero values do not alter the object's state.
-- **Polymorphic `CrazyAction()`**: Defined as an abstract method in the `Animal` base class and overridden in each subclass (`Penguin`, `Monkey`, `Lion`). It dynamically decreases satiety and changes the animal's reaction text depending on its exhaustion level (e.g., when satiety drops below 20).
+- **Polymorphic `CrazyAction()`**: Defined as an abstract method in the `Animal` base class and overridden in each subclass (`Penguin`, `Monkey`, `Lion`, etc.). It dynamically decreases satiety and changes the animal's reaction text depending on its exhaustion level (e.g., when satiety drops below 20).
 
 ---
 
 ## Verified Use Cases
+
 1. **Animal Initialization**: Creating an instance of a penguin named "Skipper" with an automatically generated `Guid` identifier and a starting satiety of 100.
 2. **Feeding an Animal**: Calling the `Feed()` method, which increases the animal's satiety level (capped at a maximum of 100).
-3. **Performing a Crazy Action**: Triggering `CrazyAction()` for a lion named "Simba", which reduces its satiety and outputs a majestic roar text reflecting its current energy state.
-4. **Capability Checking via Helper (`is`/`as`)**: Using `AnimalActionsHelper` to dynamically and safely verify whether a specific object implements `ISwimmable` or `IJumpable`.
-5. **Invalid Input Protection**: Passing a negative distance (`-10.0`) into the penguin's swim method — the system correctly handles the error, leaving the satiety state completely untouched.
+3. **Adding via Dialog**: Opening the `AddAnimal` modal window, selecting an animal type from the localized dropdown, entering a custom name/description, and inserting it into the main zoo collection.
+4. **Performing a Crazy Action**: Triggering `CrazyAction()` for a lion named "Simba", which reduces its satiety and outputs a majestic roar text reflecting its current energy state.
+5. **Capability Checking via Helper (`is`/`as`)**: Using `AnimalActionsHelper` to dynamically and safely verify whether a specific object implements `ISwimmable` or `IJumpable`.
+6. **Invalid Input Protection**: Passing a negative distance into the penguin's swim method — the system correctly handles the error, leaving the satiety state completely untouched.
 
 ---
 
 ## TO DO: Peer Review & Collaboration
+
 - **Peer Name**: Maksym Kotkov
 - **Repository Link**: [https://github.com/IvannaZimina/Crazy-Universe](https://github.com/IvannaZimina/Crazy-Universe)
 - **Task for Reviewer / Classmate**: 
@@ -108,6 +116,7 @@ To implement the user interface, the following WPF features were self-studied an
 ---
 
 ## Artificial Intelligence (AI) Usage Declaration
+
 While developing this project, I used artificial intelligence (Gemini) as an architectural and technical support assistant. It was used for:
 - Task analysis & action planning: Breaking down course assignment requirements into structured steps and defining the Core/WpfApp project architecture.
 - OOP principles & code refinement: Assisting in structuring abstract classes and applying polymorphism correctly.
@@ -117,6 +126,7 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 ---
 
 ## View
+
 <img width="1157" height="786" alt="image" src="https://github.com/user-attachments/assets/47fbdcfc-406e-4cb1-a3ae-294a2dfa4a03" />
 <img width="1157" height="794" alt="image" src="https://github.com/user-attachments/assets/ed924d92-668f-489c-86ad-99219e4d7df6" />
 <img width="1157" height="773" alt="image" src="https://github.com/user-attachments/assets/6532a6d7-d4ef-4ec2-984b-6a41aa9bb780" />
