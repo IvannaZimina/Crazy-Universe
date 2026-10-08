@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using CrazyUniverse.Core.Helpers;
 using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.WpfApp
 {
@@ -92,20 +93,53 @@ namespace CrazyUniverse.WpfApp
             }
         }
 
-        /* Event handler for the button that adds a new animal to the collection */
+        /* Event handler for the button that opens the AddAnimal dialog to add a new animal */
         private void AddAnimal_Click(object sender, RoutedEventArgs e)
         {
-            // Create a new instance of Monkey with a dynamically generated name based on count
-            var newAnimal = new Monkey($"Monkey #{Animals.Count + 1}");
+            // Create an instance of our AddAnimal dialog window
+            var addWindow = new AddAnimal();
+            addWindow.Owner = this; // Set main window as owner for proper modal positioning
 
-            // Add the newly created animal to the observable collection
-            Animals.Add(newAnimal);
+            // Show the dialog and check if the user clicked "Add Animal" (DialogResult == true)
+            if (addWindow.ShowDialog() == true)
+            {
+                Animal? newAnimal = null;
 
-            // Refresh the population counters displayed in the header and footer
-            UpdateCounters();
+                // Create the appropriate animal instance based on the user's selection in the ComboBox
+                switch (addWindow.AnimalType)
+                {
+                    case "Monkey":
+                        newAnimal = new Monkey(addWindow.AnimalName ?? Messages.UI_MonkeyTypeName);
+                        break;
+                    case "Lion":
+                        newAnimal = new Lion(addWindow.AnimalName ?? Messages.UI_LionTypeName);
+                        break;
+                    case "Penguin":
+                        newAnimal = new Penguin(addWindow.AnimalName ?? Messages.UI_PenguinTypeName);
+                        break;
+                    case "HoneyBadger":
+                        newAnimal = new HoneyBadger(addWindow.AnimalName ?? Messages.UI_HoneyBadgerTypeName);
+                        break;
+                    default:
+                        newAnimal = new Monkey(addWindow.AnimalName ?? Messages.UI_MonkeyTypeName);
+                        break;
+                }
 
-            // Record the action into the activity log using resource string format
-            Log(string.Format(CrazyUniverse.Core.Resources.Messages.Log_AddedAnimal, newAnimal.Name));
+                // Override default resource description if the user entered a custom description
+                if (!string.IsNullOrWhiteSpace(addWindow.AnimalDescription))
+                {
+                    newAnimal.Description = addWindow.AnimalDescription;
+                }
+
+                // Add the newly created animal to the observable collection
+                Animals.Add(newAnimal);
+
+                // Refresh the population counters displayed in the header and footer
+                UpdateCounters();
+
+                // Record the action into the activity log using resource string format
+                Log(string.Format(CrazyUniverse.Core.Resources.Messages.Log_AddedAnimal, newAnimal.Name));
+            }
         }
 
         /* Event handler for the button that removes the currently selected animal */
