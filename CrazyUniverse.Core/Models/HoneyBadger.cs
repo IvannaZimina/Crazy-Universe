@@ -25,6 +25,11 @@ namespace CrazyUniverse.Core.Models
 
         public override string CrazyAction()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             Satiety -= 15;
 
             if (Satiety < 20)
@@ -37,24 +42,44 @@ namespace CrazyUniverse.Core.Models
 
         public string Climb(double height)
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             Satiety -= ClimbCost;
             return string.Format(Messages.Action_HoneyBadgerClimb, Name, Satiety);
         }
 
         public string MakeSound()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             Satiety -= SoundCost;
             return string.Format(Messages.Action_HoneyBadgerMakeSound, Name, Satiety);
         }
 
         public string Swim(double distance)
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             Satiety -= SwimCost;
             return string.Format(Messages.Action_HoneyBadgerSwim, Name, Satiety);
         }
 
         public string Run()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             Satiety -= RunCost;
             return string.Format(Messages.Action_HoneyBadgerRun, Name, Satiety);
         }

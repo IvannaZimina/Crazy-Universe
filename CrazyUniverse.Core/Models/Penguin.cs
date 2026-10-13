@@ -29,6 +29,12 @@ namespace CrazyUniverse.Core.Models
         // the Penguin class implements it with its own unique logic.
         public override string CrazyAction()
         {
+            // Check if animal has enough energy to act
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             // State-changing game rules: decreases satiety and depends on current state
             Satiety -= 10;
 
@@ -43,6 +49,12 @@ namespace CrazyUniverse.Core.Models
         // Implementing the ISwimmable interface contract with distance parameter and input validation
         public string Swim(double distance)
         {
+            // Check if animal has enough energy to act
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             // Protecting object state: invalid input (negative or zero distance) does not change state
             if (distance <= 0)
             {

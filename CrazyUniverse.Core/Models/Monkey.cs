@@ -36,6 +36,11 @@ namespace CrazyUniverse.Core.Models
         // override - keyword meaning "redefine" or "fill in". 
         public override string CrazyAction()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             // State-changing game rules implemented
             Satiety -= 15;
 
@@ -50,6 +55,12 @@ namespace CrazyUniverse.Core.Models
         // Implementing the IJumpable interface contract
         public string Jump()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
+
             // Satiety penalty for jumping implemented (uses JumpCost)
             Satiety -= JumpCost;
 
@@ -59,6 +70,11 @@ namespace CrazyUniverse.Core.Models
         // Implementing the IVocalizable interface contract
         public string MakeSound()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             // Satiety penalty for making sound implemented (uses SoundCost)
             Satiety -= SoundCost;
 
