@@ -8,6 +8,9 @@
     <!-- STYLES & RESOURCES                         -->
     <!-- ========================================== -->
     <Window.Resources>
+        <!-- Boolean to Visibility converter for dynamic abilities indicators -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
         <Style x:Key="CardBorderStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="10"/>
@@ -42,14 +45,22 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1D4ED8" TargetName="border"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#E2E8F0" TargetName="border"/>
+                                <Setter Property="Foreground" Value="#94A3B8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-
         <Style x:Key="FeedButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
             <Setter Property="Background" Value="#10B981"/>
         </Style>
@@ -81,16 +92,9 @@
                     <TextBlock Text="Different animals. Same crazy world." FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <!-- ЗАКОММЕНТИРОВАННЫЕ КНОПКИ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА -->
-                <!-- 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Button Content="Русский" Tag="ru-RU" Click="ChangeLanguage_Click" Margin="5" Padding="8,4"/>
-                    <Button Content="English" Tag="en-US" Click="ChangeLanguage_Click" Margin="5" Padding="8,4"/>
-                </StackPanel>
-                -->
-
+                <!-- Bind population counter to ZooPopulation property -->
                 <Border Background="#E0F2FE" CornerRadius="15" Padding="12,6" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock x:Name="PopulationText" Text="Zoo Population: 3" Foreground="#0369A1" FontWeight="SemiBold" FontSize="12"/>
+                    <TextBlock Text="{Binding ZooPopulation, StringFormat='Zoo Population: {0}'}" Foreground="#0369A1" FontWeight="SemiBold" FontSize="12"/>
                 </Border>
             </Grid>
         </Border>
@@ -112,9 +116,13 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Button Content="+ Add Animal" Style="{StaticResource ActionButtonStyle}" Click="AddAnimal_Click" Margin="0,0,0,10"/>
+                    <!-- Bind add button to AddAnimalCommand -->
+                    <Button Content="+ Add Animal" Style="{StaticResource ActionButtonStyle}" Command="{Binding AddAnimalCommand}" Margin="0,0,0,10"/>
 
-                    <ListBox x:Name="AnimalsListBox" Grid.Row="1" SelectionChanged="AnimalsListBox_SelectionChanged" 
+                    <!-- Bind ListBox to Animals collection and track SelectedAnimal -->
+                    <ListBox x:Name="AnimalsListBox" Grid.Row="1" 
+                             ItemsSource="{Binding Animals}" 
+                             SelectedItem="{Binding SelectedAnimal, Mode=TwoWay}" 
                              Background="Transparent" BorderBrush="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
@@ -141,14 +149,16 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
 
-                    <TextBlock x:Name="TotalAnimalsText" Grid.Row="2" Text="Total animals: 3" FontSize="11" Foreground="#64748B" Margin="5,8,0,0"/>
+                    <!-- Bind total animals counter to TotalAnimalsCount property -->
+                    <TextBlock Grid.Row="2" Text="{Binding TotalAnimalsCount, StringFormat='Total animals: {0}'}" FontSize="11" Foreground="#64748B" Margin="5,8,0,0"/>
                 </Grid>
             </Border>
 
             <!-- CENTER COLUMN: Detailed Information Card -->
             <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}" Margin="6,0,6,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel DataContext="{Binding ElementName=AnimalsListBox, Path=SelectedItem}">
+                    <!-- Set DataContext to currently selected animal -->
+                    <StackPanel DataContext="{Binding SelectedAnimal}">
 
                         <!-- Header inside Card -->
                         <Grid Margin="0,0,0,10">
@@ -172,9 +182,16 @@
                         <!-- Dynamic Abilities Status Indicators -->
                         <StackPanel x:Name="AbilitiesPanel" Margin="0,0,0,15">
                             <TextBlock Text="Abilities &amp; Features:" FontSize="13" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,5"/>
-                            <TextBlock x:Name="LblSwim" Text="🌊 Can Swim (ISwimmable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" Visibility="Collapsed"/>
-                            <TextBlock x:Name="LblJump" Text="🦘 Can Jump (IJumpable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" Visibility="Collapsed"/>
-                            <TextBlock x:Name="LblSound" Text="🔊 Can Make Sounds (IVocalizable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" Visibility="Collapsed"/>
+
+                            <!-- Bound visibility to ViewModel properties using BoolToVis converter -->
+                            <TextBlock Text="🌊 Can Swim (ISwimmable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" 
+                                       Visibility="{Binding DataContext.CanSelectedAnimalSwim, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"/>
+
+                            <TextBlock Text="🦘 Can Jump (IJumpable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" 
+                                       Visibility="{Binding DataContext.CanSelectedAnimalJump, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"/>
+
+                            <TextBlock Text="🔊 Can Make Sounds (IVocalizable)" FontSize="12" Foreground="#3B82F6" Margin="0,2" 
+                                       Visibility="{Binding DataContext.CanSelectedAnimalMakeSound, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"/>
                         </StackPanel>
 
                         <Separator Margin="0,5,0,12" Background="#E2E8F0"/>
@@ -208,16 +225,18 @@
                 <StackPanel>
                     <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,10"/>
 
-                    <Button x:Name="BtnFeed" Content="Feed (+5)" Style="{StaticResource FeedButtonStyle}" Click="Feed_Click" Margin="0,3"/>
+                    <!-- Actions Panel Buttons with Commands and Dynamic Texts -->
+                    <Button x:Name="BtnFeed" Content="Feed (+5)" Style="{StaticResource FeedButtonStyle}" Command="{Binding FeedCommand}" Margin="0,3"/>
 
-                    <Button x:Name="BtnSwim" Content="Swim (-10)" Style="{StaticResource ActionButtonStyle}" Click="Swim_Click" Margin="0,3" Visibility="Collapsed"/>
-                    <Button x:Name="BtnJump" Content="Jump (-5)" Style="{StaticResource ActionButtonStyle}" Click="Jump_Click" Margin="0,3" Visibility="Collapsed"/>
-                    <Button x:Name="BtnMakeSound" Content="Make Sound (-2)" Style="{StaticResource ActionButtonStyle}" Click="MakeSound_Click" Margin="0,3" Visibility="Collapsed"/>
+                    <Button x:Name="BtnSwim" Content="{Binding SwimButtonText}" Style="{StaticResource ActionButtonStyle}" Command="{Binding SwimCommand}" Margin="0,3"/>
+                    <Button x:Name="BtnJump" Content="{Binding JumpButtonText}" Style="{StaticResource ActionButtonStyle}" Command="{Binding JumpCommand}" Margin="0,3"/>
+                    <Button x:Name="BtnMakeSound" Content="{Binding MakeSoundButtonText}" Style="{StaticResource ActionButtonStyle}" Command="{Binding MakeSoundCommand}" Margin="0,3"/>
 
-                    <Button Content="Crazy Action" Style="{StaticResource SpecialActionButtonStyle}" Click="CrazyAction_Click" Margin="0,3"/>
+                    <Button Content="Crazy Action" Style="{StaticResource SpecialActionButtonStyle}" Command="{Binding CrazyActionCommand}" Margin="0,3"/>
 
                     <Separator Margin="0,8" Background="#E2E8F0"/>
-                    <Button Content="Remove Animal" Style="{StaticResource DangerButtonStyle}" Click="RemoveAnimal_Click" Margin="0,2"/>
+
+                    <Button Content="Remove Animal" Style="{StaticResource DangerButtonStyle}" Command="{Binding RemoveAnimalCommand}" Margin="0,2"/>
                 </StackPanel>
             </Border>
         </Grid>
@@ -230,10 +249,17 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Event Log" FontSize="14" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,6"/>
-                <TextBox x:Name="LogTextBox" Grid.Row="1" IsReadOnly="True" AcceptsReturn="True" 
-                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" 
-                         Background="#F8FAFC" BorderBrush="#E2E8F0" 
-                         FontSize="11" Foreground="#334155" Padding="6"/>
+
+                <!-- Bind ItemsControl to LogMessages collection -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding LogMessages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="11" Foreground="#334155" Margin="0,1"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Grid>
         </Border>
     </Grid>
