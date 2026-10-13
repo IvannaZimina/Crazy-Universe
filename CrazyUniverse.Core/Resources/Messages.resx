@@ -236,6 +236,7 @@
   </data>
   <data name="UI_TotalAnimals" xml:space="preserve">
     <value>Total animals: {0}</value>
+    <comment>UI</comment>
   </data>
   <data name="Log_ZooInit" xml:space="preserve">
     <value>Zoo initialized with default animals.</value>
@@ -243,6 +244,7 @@
   </data>
   <data name="UI_ZooPopulation" xml:space="preserve">
     <value>Zoo Population: {0}</value>
+    <comment>UI</comment>
   </data>
   <data name="Err_InvalidDistance" xml:space="preserve">
     <value>Invalid input! Distance must be greater than zero. {0} stays put, state remains unchanged.</value>
@@ -271,5 +273,24 @@
   <data name="Err_DescriptionRequired" xml:space="preserve">
     <value>Animal description cannot be empty.</value>
     <comment>Error message</comment>
+  </data>
+  <data name="Action_NoEnergy" xml:space="preserve">
+    <value>{0} is completely exhausted and refuses to move! Feed this poor creature immediately so it gets some energy back! 🍔</value>
+  </data>
+  <data name="UI_BtnSwim" xml:space="preserve">
+    <value>Swim (-{0})</value>
+    <comment>UI</comment>
+  </data>
+  <data name="UI_BtnJump" xml:space="preserve">
+    <value>Jump (-{0})</value>
+    <comment>UI</comment>
+  </data>
+  <data name="UI_BtnMakeSound" xml:space="preserve">
+    <value>Make Sound (-{0})</value>
+    <comment>UI</comment>
+  </data>
+  <data name="UI_BtnCrazyAction" xml:space="preserve">
+    <value>Crazy Action</value>
+    <comment>UI</comment>
   </data>
 </root>

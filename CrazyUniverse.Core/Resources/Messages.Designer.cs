@@ -205,6 +205,15 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} is completely exhausted and refuses to move! Feed this poor creature immediately so it gets some energy back! 🍔.
+        /// </summary>
+        public static string Action_NoEnergy {
+            get {
+                return ResourceManager.GetString("Action_NoEnergy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на {0} the penguin is too exhausted and sluggishly slides on the ice! (Current Satiety: {1}).
         /// </summary>
         public static string Action_PenguinCrazyLow {
@@ -363,6 +372,42 @@ namespace CrazyUniverse.Core.Resources {
         public static string Log_ZooInit {
             get {
                 return ResourceManager.GetString("Log_ZooInit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Crazy Action.
+        /// </summary>
+        public static string UI_BtnCrazyAction {
+            get {
+                return ResourceManager.GetString("UI_BtnCrazyAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Jump (-{0}).
+        /// </summary>
+        public static string UI_BtnJump {
+            get {
+                return ResourceManager.GetString("UI_BtnJump", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Make Sound (-{0}).
+        /// </summary>
+        public static string UI_BtnMakeSound {
+            get {
+                return ResourceManager.GetString("UI_BtnMakeSound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Swim (-{0}).
+        /// </summary>
+        public static string UI_BtnSwim {
+            get {
+                return ResourceManager.GetString("UI_BtnSwim", resourceCulture);
             }
         }
         
