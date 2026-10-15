@@ -1,15 +1,16 @@
 # Crazy Universe (Crazy Zoo + WPF Design)
 
 Welcome to the **Crazy Universe** repository!  
-This is a humorous WPF application where different types of objects live in the same world but behave differently.
+This is a humorous WPF application where different types of objects live in the same world but behave, interact, and react to each other dynamically.
 
 ---
 
 ## Application Description
 
-**Crazy Zoo** is a humorous simulator where every animal has a unique behavior, a satiety state, and characteristics.  
-Users can interact with the animals (such as feeding them, making them perform actions via a modal dialog for adding new items) and observe their unique crazy actions in real-time.  
-The solution consists of separate Core and WPF projects and uses inheritance, interfaces, polymorphism, and collections, following the course assignment requirements.
+**Crazy Zoo** is a humorous simulator where every animal has a unique behavior, a satiety state, and specific traits.  
+Users can interact with the animals (such as feeding them, making them perform actions, or adding new characters via a modal dialog) and observe their unique crazy actions and neighborhood reactions in real-time.  
+
+The solution consists of separate Core and WPF projects and uses inheritance, generics, interfaces, polymorphism, events, and collections, fully adhering to advanced course assignment requirements.
 
 ---
 
@@ -19,11 +20,12 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 - **Platform**: .NET / WPF
 - **Version Control**: Git
 - **Development Environment**: Visual Studio 2022+
+
 ---
 
 ## Running Guide
 
-1. Clone the repository to your local machine: 
+1. Clone the repository to your local machine:  
    `https://github.com/IvannaZimina/Crazy-Universe`
 2. Open the solution file (`.sln`) in **Visual Studio** (version 2022 or newer is recommended).
 3. Ensure that the `CrazyUniverse.WpfApp` project is set as the **Startup Project**.
@@ -31,67 +33,72 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 
 ---
 
+## Core Assignment Requirements & Implementation Status
+
+### 1. Type-Based Generic Repositories (`IRepository<T>` & `Repository<T>`)
+- **Generic Architecture**: Built using a general `IRepository<T>` interface and concrete `Repository<T>` implementation supporting methods: `Add(T item)`, `Remove(T item)`, `IEnumerable<T> GetAll()`, and `T? Find(Func<T, bool> predicate)`.
+- **Type Segregation**: Uses dedicated repositories for each concrete animal type (e.g., `Repository<Monkey>`, `Repository<Lion>`, `Repository<Penguin>`, `Repository<HoneyBadger>`).
+- **Compile-Time Safety**: Implements strict type constraints (`where T : Animal`), preventing improper types at compile time without relying on UI name-matching.
+
+### 2. Domain Events & Neighbor Reactions (`Core/Model`)
+Events and reactions are fully managed within the domain layer (`Core/Model`), entirely decoupled from WPF button click handlers:
+- **Addition (Welcome)**: When a new character is added to a repository, existing objects in the same enclosure greet the newcomer. The new object does not greet itself.
+- **Removal (Farewell)**: When a character is removed, remaining objects bid farewell. The removed object unsubscribes from events and ceases to respond to subsequent triggers.
+- **CrazyAction**: The selected character performs its unique special action. Other objects in the same enclosure react according to world logic. The initiator does not react to itself.
+- **Isolation**: Objects in different repositories (enclosures) do not answer or react. Every response creates an event log entry, and specific reactions affect the responding object's state (e.g., energy/satiety changes).
+
+---
+
 ## Architectural & Design Principles
 
-- **Architectural Pattern**: MVVM (Model-View-ViewModel) with strict separation of concerns (Core & UI split)
-- **Design Patterns**: Factory Pattern (`AnimalFactory`) for decoupled object creation
-- **Object-Oriented Programming**: Encapsulation, abstraction, polymorphism, and inheritance
+- **Architectural Pattern**: MVVM (Model-View-ViewModel) with strict separation of concerns (Core & UI split).
+- **Design Patterns**: Factory Pattern (`AnimalFactory`) for decoupled object creation.
+- **Object-Oriented Programming**: Encapsulation, abstraction, polymorphism, generics, and inheritance.
 
 ---
 
 ## Project Architecture & MVVM Implementation
 
-The solution is split into two independent projects, fully satisfying the requirements of the MVVM pattern and clean architecture:
+The solution is split into independent projects, fully satisfying the MVVM pattern and clean architecture:
 
 ### 1. Model / Core (`CrazyUniverse.Core`)
-- **Independent Business Logic**: Contains characters (animals), interfaces, events, and reaction rules completely separated from UI buttons, windows, or WPF dependencies.
+- **Independent Business Logic**: Contains characters (animals), generic repositories, interfaces, domain events, and reaction rules completely separated from UI buttons, windows, or WPF dependencies.
 - **Animal.cs** (Abstract base class): Manages shared state (`Satiety` from 0 to 100 with `protected set`), generates unique identifiers via `Guid`, handles base feeding logic (`Feed`), and defines the abstract `CrazyAction()` contract. Implements `INotifyPropertyChanged`.
-- **Concrete Models**: `Monkey`, `Penguin`, `Lion`, `HoneyBadger` implement unique polymorphic behaviors depending on their current satiety state.
-- **Interfaces**: Contracts for capabilities (`IJumpable`, `ISwimmable`, `IRunnable`, `IClimbable`, `IVocalizable`).
+- **Concrete Models**: `Monkey`, `Penguin`, `Lion`, and `HoneyBadger` implement unique polymorphic behaviors and reaction handlers.
+- **Interfaces**: Contracts for capabilities (`IJumpable`, `ISwimmable`, `IRunnable`, `IClimbable`, `IVocalizable`) and generic repositories (`IRepository<T>`).
 - **Helpers & Resources**:
   - **AnimalActionsHelper.cs**: Helper utilities for checking animal capabilities dynamically using pattern matching (`is`) and type casting (`as`).
-  - **Messages.resx (Resource File)**: Centralized string resource file storing all localized messages, action descriptions, error strings, and UI labels. Keeps core business logic completely free of hardcoded strings.
+  - **Messages.resx (Resource File)**: Centralized string resource file storing all localized messages, action descriptions, error strings, and event log formats.
 
 ### 2. ViewModel (`CrazyUniverse.WpfApp/ViewModels`)
-- **State & Binding Management**: `MainViewModel` and `AddAnimalViewModel` manage the selected animal storage, displayed lists, user inputs, LINQ-derived state, and user command execution.
+- **State & Binding Management**: `MainViewModel` manages selected animals, enclosure collections, global zoo population tracking (`ZooPopulation`), LINQ-derived state, and user commands.
 - **Commands (`ICommand`)**: User actions (Feed, Swim, Jump, Make Sound, Crazy Action, Add, Remove) are encapsulated via `RelayCommand`. 
-- **Command Guards (`CanExecute`)**: Dynamically disables commands and UI elements if no suitable animal/option is selected or if required inputs are missing (e.g., when energy is exhausted or fields are empty).
-- **Reactive Updates**: Utilizes `ObservableCollection<Animal>` and `INotifyPropertyChanged` to automatically synchronize lists, progress bars, counters, and event logs without placing business logic in code-behind.
+- **Command Guards (`CanExecute`)**: Dynamically disables commands and UI elements if no suitable animal is selected or if energy is depleted.
+- **Reactive Updates**: Utilizes `ObservableCollection<Animal>` and `INotifyPropertyChanged` to automatically synchronize lists, progress bars, counters, and event logs.
 
 ### 3. View (`CrazyUniverse.WpfApp`)
-- **WPF Presentation Layer**: XAML windows (`MainWindow`, `AddAnimal`) bound directly to ViewModels via data bindings, converters, and styles. Users can select repositories/animals, manage items interactively, and view real-time logs.
+- **WPF Presentation Layer**: XAML windows (`MainWindow`, `AddAnimal`) bound directly to ViewModels via data bindings, converters, and styles. Features accordion-style enclosures with empty-state placeholders ("Пока здесь никто не живет 🐾").
 
 ---
 
 ## Design Patterns
 
 ### Factory Pattern (`AnimalFactory`)
-To adhere to the Single Responsibility Principle and decouple object creation from UI and business logic, the application implements the **Factory Pattern**:
-- Located in `CrazyUniverse.WpfApp/Services/AnimalFactory.cs`.
-- Encapsulates the instantiation logic for all concrete animal types (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`).
-- Dynamically creates objects based on parameters passed from the modal dialog (`AddAnimal`), ensuring clean, extensible, and maintainable code architecture.
-
----
-
-## Collection & WPF User Interface
-
-- **Dynamic Collection**: Objects are stored in an `ObservableCollection<Animal>`, allowing automatic synchronization of list modifications with the visual UI.
-- **Data Display**: The main application window displays the full list of animals alongside detailed information regarding the currently selected object.
-- **Object Management & Modal Dialog**: Users can interactively add new instances via a dedicated modal dialog window (`AddAnimal`), select them from the list to inspect details, and remove unwanted items. The dialog dynamically binds available animal types supporting localization and mandatory field validation (Name & Description with red asterisk indicators).
-- **Dynamic Actions**: Action buttons dynamically adapt to the selected animal, reflecting accurate energy costs and invoking corresponding methods.
-- **Event Log**: Core and action methods return meaningful timestamped messages recorded in a dedicated user interface event log with automatic scrolling.
-- **Fault Tolerance & Validation**: Text and numerical inputs are strictly validated; invalid parameters do not cause application crashes.
+To adhere to the Single Responsibility Principle and decouple object creation from UI and business logic:
+- Located in `CrazyUniverse.WpfApp/Factories/AnimalFactory.cs`.
+- Encapsulates instantiation logic for all concrete animal types (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`).
+- Dynamically creates objects based on parameters passed from the modal dialog (`AddAnimal`), ensuring clean architecture.
 
 ---
 
 ## Verified Use Cases
 
-1. **Animal Initialization**: Creating default zoo animals with unique `Guid` identifiers and starting satiety levels through the factory service.
-2. **Feeding an Animal**: Calling the `Feed()` method to increase satiety (capped at 100).
-3. **Adding via Dialog**: Opening the `AddAnimal` modal window, selecting a localized animal type, filling mandatory fields, and instantiating via `AnimalFactory`.
-4. **Performing a Crazy Action**: Triggering `CrazyAction()` to reduce energy and output exhausted or normal behavioral messages.
-5. **Capability Checking via Helper (`is`/`as`)**: Using `AnimalActionsHelper` to dynamically verify interface implementations safely.
-6. **Invalid Input Protection**: Guarding against negative distances or zero values to protect object states.
+1. **Animal Initialization & Generics**: Creating typed repositories and populating default zoo animals with unique identifiers and starting satiety levels.
+2. **Repository Addition & Welcome Events**: Adding a new character triggers greeting logs from existing enclosure neighbors without self-greeting.
+3. **Repository Removal & Farewell Events**: Removing a character triggers farewell logs from remaining neighbors; the deleted instance safely unsubscribes and stops responding.
+4. **Crazy Action Execution**: Triggering `CrazyAction()` causes neighbor reactions and state updates within the isolated enclosure while keeping other enclosures unaffected.
+5. **Capability Checking (`is`/`as`)**: Using `AnimalActionsHelper` to verify interface implementations safely.
+6. **Global Population Tracking**: Real-time synchronization of the `ZooPopulation` counter across all enclosure repositories.
 
 ---
 
