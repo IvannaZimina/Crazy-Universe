@@ -99,7 +99,7 @@
             </Grid>
         </Border>
 
-        <!-- 3-COLUMN CONTENT AREA (Row 1) -->
+        <!-- 3-COLUMN CONTENT AREA (Row 1) - Rebalanced widths: Left (280), Center (*), Right (280) -->
         <Grid Grid.Row="1" Margin="0,0,0,12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="280"/>
@@ -107,8 +107,8 @@
                 <ColumnDefinition Width="280"/>
             </Grid.ColumnDefinitions>
 
-            <!-- LEFT COLUMN: Animals List -->
-            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,8,0" Padding="10">
+            <!-- LEFT COLUMN: Enclosures Accordion List -->
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,6,0" Padding="10">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -116,41 +116,86 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Bind add button to AddAnimalCommand -->
-                    <Button Content="+ Add Animal" Style="{StaticResource ActionButtonStyle}" Command="{Binding AddAnimalCommand}" Margin="0,0,0,10"/>
+                    <!-- Section Title -->
+                    <TextBlock Text="Enclosures" FontSize="15" FontWeight="Bold" Foreground="#1E293B" Margin="4,0,0,8"/>
 
-                    <!-- Bind ListBox to Animals collection and track SelectedAnimal -->
-                    <ListBox x:Name="AnimalsListBox" Grid.Row="1" 
-                             ItemsSource="{Binding Animals}" 
-                             SelectedItem="{Binding SelectedAnimal, Mode=TwoWay}" 
-                             Background="Transparent" BorderBrush="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Margin" Value="0,0,0,6"/>
-                                <Setter Property="Padding" Value="0"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="10">
-                                    <StackPanel>
-                                        <Grid>
-                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#1E293B"/>
-                                            <TextBlock Text="{Binding TypeName}" HorizontalAlignment="Right" FontSize="10" Foreground="#64748B" VerticalAlignment="Center"/>
+                    <!-- Accordion view of Enclosures using ItemsControl with Expander -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding Enclosures}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!-- Expander is set to be expanded by default on startup -->
+                                    <Expander Header="{Binding DisplayName}" IsExpanded="True" Margin="0,0,0,6">
+                                        <Grid Margin="0,4,0,4">
+                                            <!-- ListBox with animals (visible when Animals.Count > 0) -->
+                                            <ListBox ItemsSource="{Binding Animals}"
+                                                     SelectedItem="{Binding DataContext.SelectedAnimal, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                                                     Background="Transparent" BorderBrush="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                                <ListBox.Style>
+                                                    <Style TargetType="ListBox">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Animals.Count}" Value="0">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ListBox.Style>
+                                                <ListBox.ItemContainerStyle>
+                                                    <Style TargetType="ListBoxItem">
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                        <Setter Property="Margin" Value="0,0,0,4"/>
+                                                        <Setter Property="Padding" Value="0"/>
+                                                    </Style>
+                                                </ListBox.ItemContainerStyle>
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <!-- Compact Row Design with MouseBinding to SelectAnimalCommand -->
+                                                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="8,6">
+                                                            <Border.InputBindings>
+                                                                <MouseBinding MouseAction="LeftClick" 
+                                                                              Command="{Binding DataContext.SelectAnimalCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                                                              CommandParameter="{Binding}"/>
+                                                            </Border.InputBindings>
+                                                            <StackPanel>
+                                                                <Grid>
+                                                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="12" Foreground="#1E293B"/>
+                                                                    <TextBlock Text="{Binding TypeName}" HorizontalAlignment="Right" FontSize="10" Foreground="#64748B" VerticalAlignment="Center"/>
+                                                                </Grid>
+                                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0" VerticalAlignment="Center">
+                                                                    <ProgressBar Value="{Binding Satiety, Mode=OneWay}" Minimum="0" Maximum="100" Width="120" Height="5" Foreground="#10B981" Background="#E2E8F0"/>
+                                                                    <TextBlock Text="{Binding Satiety, StringFormat={}{0}%}" FontSize="10" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+
+                                            <!-- Placeholder text (visible when Animals.Count == 0) -->
+                                            <TextBlock Text="Пока здесь никто не живет 🐾" 
+                                                       FontStyle="Italic" FontSize="11" Foreground="#94A3B8" 
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Animals.Count}" Value="0">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
                                         </Grid>
-                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
-                                            <ProgressBar Value="{Binding Satiety, Mode=OneWay}" Minimum="0" Maximum="100" Width="150" Height="6" Foreground="#10B981" Background="#E2E8F0"/>
-                                            <TextBlock Text="{Binding Satiety, StringFormat={}{0}%}" FontSize="11" Foreground="#64748B" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
 
                     <!-- Bind total animals counter to TotalAnimalsCount property -->
-                    <TextBlock Grid.Row="2" Text="{Binding TotalAnimalsCount, StringFormat='Total animals: {0}'}" FontSize="11" Foreground="#64748B" Margin="5,8,0,0"/>
+                    <TextBlock Grid.Row="2" Text="{Binding TotalAnimalsCount, StringFormat='Total animals: {0}'}" FontSize="11" Foreground="#64748B" Margin="4,8,0,0"/>
                 </Grid>
             </Border>
 
@@ -175,7 +220,7 @@
                         <!-- Satiety Progress Bar -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                             <TextBlock Text="❤ Satiety:" FontWeight="Bold" Width="80" Foreground="#475569" VerticalAlignment="Center"/>
-                            <ProgressBar Value="{Binding Satiety, Mode=OneWay}" Minimum="0" Maximum="100" Width="200" Height="10" Foreground="#10B981" Background="#E2E8F0" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <ProgressBar Value="{Binding Satiety, Mode=OneWay}" Minimum="0" Maximum="100" Width="180" Height="10" Foreground="#10B981" Background="#E2E8F0" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             <TextBlock Text="{Binding Satiety, StringFormat={}{0}%}" FontWeight="Bold" Foreground="#1E293B" VerticalAlignment="Center"/>
                         </StackPanel>
 
@@ -221,7 +266,7 @@
             </Border>
 
             <!-- RIGHT COLUMN: Actions Panel -->
-            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" Margin="8,0,0,0" VerticalAlignment="Top">
+            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" Margin="6,0,0,0" VerticalAlignment="Top">
                 <StackPanel>
                     <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,10"/>
 
@@ -236,7 +281,9 @@
 
                     <Separator Margin="0,8" Background="#E2E8F0"/>
 
-                    <Button Content="Remove Animal" Style="{StaticResource DangerButtonStyle}" Command="{Binding RemoveAnimalCommand}" Margin="0,2"/>
+                    <!-- Management Buttons Group (+ Add Animal moved above Remove Animal) -->
+                    <Button Content="+ Add Animal" Style="{StaticResource ActionButtonStyle}" Command="{Binding AddAnimalCommand}" Margin="0,3"/>
+                    <Button Content="Remove Animal" Style="{StaticResource DangerButtonStyle}" Command="{Binding RemoveAnimalCommand}" Margin="0,3"/>
                 </StackPanel>
             </Border>
         </Grid>

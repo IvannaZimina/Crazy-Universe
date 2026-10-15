@@ -16,4 +16,5 @@ namespace CrazyUniverse.WpfApp
             DataContext = new MainViewModel();
         }
     }
+
 }
