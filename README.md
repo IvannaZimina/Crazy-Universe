@@ -159,13 +159,24 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 ---
 
 ## View
-<img width="1069" height="700" alt="image" src="https://github.com/user-attachments/assets/b6fecf06-71ee-485b-b70e-c53997757f4b" />
-<img width="1076" height="701" alt="image" src="https://github.com/user-attachments/assets/727371fc-c095-4eb8-96d9-650266e8750f" />
-<img width="1074" height="701" alt="image" src="https://github.com/user-attachments/assets/ba06f3a8-8f39-4f20-94da-6e24679981c4" />
-<img width="1073" height="707" alt="image" src="https://github.com/user-attachments/assets/34d61f97-35bf-49a9-9d8f-1ada7eddac95" />
-<img width="1072" height="706" alt="image" src="https://github.com/user-attachments/assets/fa931c13-3119-428c-af0e-6273fae7ef7f" />
-<img width="1074" height="698" alt="image" src="https://github.com/user-attachments/assets/414842c4-af28-4aec-bf4d-68d46a20a882" />
-<img width="1075" height="704" alt="image" src="https://github.com/user-attachments/assets/6a4b66af-5072-4503-813b-59b305a32ffb" />
+<img width="1157" height="756" alt="image" src="https://github.com/user-attachments/assets/3cf83345-3282-45f3-bf0c-8860704978d8" />
+<img width="1157" height="755" alt="image" src="https://github.com/user-attachments/assets/8f5ff066-1607-4655-9ac1-f7953c3bb759" />
+<img width="1157" height="755" alt="image" src="https://github.com/user-attachments/assets/38e6c4b7-7dfa-4710-befb-ed820dd00176" />
+<img width="1157" height="784" alt="image" src="https://github.com/user-attachments/assets/2d944963-2a0b-4ded-8682-70c6fee4ef5a" />
+<img width="1157" height="761" alt="image" src="https://github.com/user-attachments/assets/ad51419d-4f82-4adb-9e65-952406e0efbb" />
+<img width="1157" height="758" alt="image" src="https://github.com/user-attachments/assets/ab0f1695-3140-4337-be95-77a5b6580604" />
+<img width="1079" height="705" alt="image" src="https://github.com/user-attachments/assets/6cc11e82-72fb-4a23-b373-91224e65a7e2" />
+<img width="1075" height="701" alt="image" src="https://github.com/user-attachments/assets/cb0ef99e-0e34-45a0-9831-f67415138dda" />
+
+<img width="1080" height="697" alt="image" src="https://github.com/user-attachments/assets/0421d6af-369d-4187-a7c3-8a59fb4a8887" />
+
+
+
+
+
+
+
+
 
 
 
