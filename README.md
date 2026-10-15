@@ -47,6 +47,12 @@ Events and reactions are fully managed within the domain layer (`Core/Model`), e
 - **CrazyAction**: The selected character performs its unique special action. Other objects in the same enclosure react according to world logic. The initiator does not react to itself.
 - **Isolation**: Objects in different repositories (enclosures) do not answer or react. Every response creates an event log entry, and specific reactions affect the responding object's state (e.g., energy/satiety changes).
 
+### 3. LINQ: Search, Sorting & Grouping
+The application implements three primary LINQ queries integrated into the UI:
+- **Search / Filtering (`Where`)**: Filters characters by name across enclosures in real-time using case-insensitive comparison (`StringComparison.OrdinalIgnoreCase`).
+- **Sorting (`OrderBy` / `OrderByDescending`)**: Toggles enclosure sorting direction by animal name (`A-Z` / `Z-A`) via interface command bindings.
+- **Grouping (`GroupBy`)**: Aggregates statistics (`SatietyGroupsSummary`) grouping all zoo animals by satiety ranges (`Low` $\le$ 30, `Medium` $\le$ 70, `High` > 70) utilizing centralized resource keys for stable category display.
+
 ---
 
 ## Architectural & Design Principles
@@ -77,7 +83,7 @@ The solution is split into independent projects, fully satisfying the MVVM patte
 - **Reactive Updates**: Utilizes `ObservableCollection<Animal>` and `INotifyPropertyChanged` to automatically synchronize lists, progress bars, counters, and event logs.
 
 ### 3. View (`CrazyUniverse.WpfApp`)
-- **WPF Presentation Layer**: XAML windows (`MainWindow`, `AddAnimal`) bound directly to ViewModels via data bindings, converters, and styles. Features accordion-style enclosures with empty-state placeholders ("Пока здесь никто не живет 🐾").
+- **WPF Presentation Layer**: XAML windows (`MainWindow`, `AddAnimal`) bound directly to ViewModels via data bindings, converters, and styles. Features accordion-style enclosures with empty-state placeholders.
 
 ---
 
@@ -99,6 +105,7 @@ To adhere to the Single Responsibility Principle and decouple object creation fr
 4. **Crazy Action Execution**: Triggering `CrazyAction()` causes neighbor reactions and state updates within the isolated enclosure while keeping other enclosures unaffected.
 5. **Capability Checking (`is`/`as`)**: Using `AnimalActionsHelper` to verify interface implementations safely.
 6. **Global Population Tracking**: Real-time synchronization of the `ZooPopulation` counter across all enclosure repositories.
+7. **LINQ Data Operations**: Live filtering by name, alphabetical sorting toggles, and grouped satiety range statistics.
 
 ---
 
