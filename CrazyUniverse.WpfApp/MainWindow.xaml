@@ -40,7 +40,7 @@
             <Setter Property="Background" Value="#3B82F6"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Padding" Value="10,8"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -84,16 +84,33 @@
             <RowDefinition Height="140"/>
         </Grid.RowDefinitions>
 
-        <!-- TOP HEADER BAR -->
+        <!-- TOP HEADER BAR with Search Input (LINQ Where) -->
         <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,12" Padding="15,10">
             <Grid>
-                <StackPanel Orientation="Vertical">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
                     <TextBlock Text="🐾 Crazy Zoo" FontSize="22" FontWeight="Bold" Foreground="#1E293B"/>
                     <TextBlock Text="Different animals. Same crazy world." FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
                 </StackPanel>
 
+                <!-- Search Input Box for filtering animals strictly by name -->
+                <TextBox Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" 
+                         Width="320" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"
+                         Padding="8,6" FontSize="13" BorderBrush="#CBD5E1" Background="#F8FAFC">
+                    <TextBox.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+
                 <!-- Bind population counter to ZooPopulation property -->
-                <Border Background="#E0F2FE" CornerRadius="15" Padding="12,6" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Border Grid.Column="2" Background="#E0F2FE" CornerRadius="15" Padding="12,6" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="{Binding ZooPopulation, StringFormat='Zoo Population: {0}'}" Foreground="#0369A1" FontWeight="SemiBold" FontSize="12"/>
                 </Border>
             </Grid>
@@ -125,12 +142,31 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <!-- Expander is set to be expanded by default on startup -->
-                                    <Expander Header="{Binding DisplayName}" IsExpanded="True" Margin="0,0,0,6">
+                                    <Expander IsExpanded="True" Margin="0,0,0,6">
+                                        <Expander.Header>
+                                            <Grid Width="205">
+                                                <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                <!-- Sort button on the right edge of Expander header with proper font size and width -->
+                                                <Button Content="⇅" HorizontalAlignment="Right" Width="28" Height="22" 
+                                                        Background="#E2E8F0" Foreground="#1E293B" FontWeight="Bold" FontSize="13"
+                                                        Command="{Binding DataContext.ToggleSortCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Toggle sorting (Name / Satiety)"/>
+                                            </Grid>
+                                        </Expander.Header>
                                         <Grid Margin="0,4,0,4">
-                                            <!-- ListBox with animals (visible when Animals.Count > 0) -->
+                                            <!-- ListBox with animals (visible when Animals.Count > 0) featuring a thin scrollbar -->
                                             <ListBox ItemsSource="{Binding Animals}"
                                                      SelectedItem="{Binding DataContext.SelectedAnimal, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
-                                                     Background="Transparent" BorderBrush="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                                     Background="Transparent" BorderBrush="Transparent" 
+                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                                <ListBox.Resources>
+                                                    <Style TargetType="ScrollBar">
+                                                        <Setter Property="Width" Value="6"/>
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Style>
+                                                </ListBox.Resources>
                                                 <ListBox.Style>
                                                     <Style TargetType="ListBox">
                                                         <Setter Property="Visibility" Value="Visible"/>
@@ -173,9 +209,9 @@
                                             </ListBox>
 
                                             <!-- Placeholder text (visible when Animals.Count == 0) -->
-                                            <TextBlock Text="Пока здесь никто не живет 🐾" 
+                                            <TextBlock Text="No such animal found here." 
                                                        FontStyle="Italic" FontSize="11" Foreground="#94A3B8" 
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8">
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8" TextWrapping="Wrap" TextAlignment="Center">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -265,10 +301,10 @@
                 </ScrollViewer>
             </Border>
 
-            <!-- RIGHT COLUMN: Actions Panel -->
+            <!-- RIGHT COLUMN: Actions Panel & LINQ GroupBy Statistics -->
             <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" Margin="6,0,0,0" VerticalAlignment="Top">
                 <StackPanel>
-                    <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,10"/>
+                    <TextBlock Text="Actions" FontSize="16" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,8"/>
 
                     <!-- Actions Panel Buttons with Commands and Dynamic Texts -->
                     <Button x:Name="BtnFeed" Content="Feed (+5)" Style="{StaticResource FeedButtonStyle}" Command="{Binding FeedCommand}" Margin="0,3"/>
@@ -279,11 +315,40 @@
 
                     <Button Content="Crazy Action" Style="{StaticResource SpecialActionButtonStyle}" Command="{Binding CrazyActionCommand}" Margin="0,3"/>
 
-                    <Separator Margin="0,8" Background="#E2E8F0"/>
+                    <Separator Margin="0,6" Background="#E2E8F0"/>
 
-                    <!-- Management Buttons Group (+ Add Animal moved above Remove Animal) -->
-                    <Button Content="+ Add Animal" Style="{StaticResource ActionButtonStyle}" Command="{Binding AddAnimalCommand}" Margin="0,3"/>
-                    <Button Content="Remove Animal" Style="{StaticResource DangerButtonStyle}" Command="{Binding RemoveAnimalCommand}" Margin="0,3"/>
+                    <!-- Management Buttons Group: Placed side by side in a Grid to save vertical space -->
+                    <Grid Margin="0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Content="+ Add" Style="{StaticResource ActionButtonStyle}" Command="{Binding AddAnimalCommand}" Margin="0,0,3,0"/>
+                        <Button Grid.Column="1" Content="Remove" Style="{StaticResource DangerButtonStyle}" Command="{Binding RemoveAnimalCommand}" Margin="3,0,0,0"/>
+                    </Grid>
+
+                    <Separator Margin="0,6" Background="#E2E8F0"/>
+
+                    <!-- LINQ GroupBy Summary Statistics inside a full-sized GroupBox frame -->
+                    <GroupBox Header="GroupBy Feeding" FontSize="12" FontWeight="Bold" Foreground="#1E293B" Margin="0,2,0,0" Padding="8">
+                        <GroupBox.Style>
+                            <Style TargetType="GroupBox">
+                                <Setter Property="BorderBrush" Value="#CBD5E1"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Style>
+                        </GroupBox.Style>
+                        <ItemsControl ItemsSource="{Binding SatietyGroupsSummary}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,3">
+                                        <TextBlock Text="{Binding GroupName}" FontSize="11" FontWeight="Normal" Foreground="#475569"/>
+                                        <TextBlock Text="{Binding Count, StringFormat='Count: {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#3B82F6" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </GroupBox>
                 </StackPanel>
             </Border>
         </Grid>
