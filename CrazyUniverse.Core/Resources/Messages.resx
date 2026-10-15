@@ -373,4 +373,24 @@
     <value>{0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!</value>
     <comment>Event</comment>
   </data>
+  <data name="SatietyGroup_Low" xml:space="preserve">
+    <value>Low (0 - 30%)</value>
+    <comment>SatietyGroup</comment>
+  </data>
+  <data name="SatietyGroup_Medium" xml:space="preserve">
+    <value>Medium (30 - 70%)</value>
+    <comment>SatietyGroup</comment>
+  </data>
+  <data name="SatietyGroup_High" xml:space="preserve">
+    <value>High (70 - 100%)</value>
+    <comment>SatietyGroup</comment>
+  </data>
+  <data name="UI_Enclosure_Empty" xml:space="preserve">
+    <value>No one lives here yet 🐾</value>
+    <comment>UI</comment>
+  </data>
+  <data name="UI_Enclosure_NotFound" xml:space="preserve">
+    <value>No such animal found here.</value>
+    <comment>UI</comment>
+  </data>
 </root>

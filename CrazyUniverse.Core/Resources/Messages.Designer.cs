@@ -511,6 +511,33 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to High (70 - 100%).
+        /// </summary>
+        public static string SatietyGroup_High {
+            get {
+                return ResourceManager.GetString("SatietyGroup_High", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low (0 - 30%).
+        /// </summary>
+        public static string SatietyGroup_Low {
+            get {
+                return ResourceManager.GetString("SatietyGroup_Low", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium (30 - 70%).
+        /// </summary>
+        public static string SatietyGroup_Medium {
+            get {
+                return ResourceManager.GetString("SatietyGroup_Medium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Crazy Action.
         /// </summary>
         public static string UI_BtnCrazyAction {
@@ -543,6 +570,24 @@ namespace CrazyUniverse.Core.Resources {
         public static string UI_BtnSwim {
             get {
                 return ResourceManager.GetString("UI_BtnSwim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No one lives here yet 🐾.
+        /// </summary>
+        public static string UI_Enclosure_Empty {
+            get {
+                return ResourceManager.GetString("UI_Enclosure_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No such animal found here..
+        /// </summary>
+        public static string UI_Enclosure_NotFound {
+            get {
+                return ResourceManager.GetString("UI_Enclosure_NotFound", resourceCulture);
             }
         }
         

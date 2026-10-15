@@ -120,13 +120,7 @@ namespace CrazyUniverse.Core.Models
                     };
 
                 case "CrazyAction":
-                    // State change requirement: reacting neighbor consumes a small amount of energy/satiety during neighbor's frenzy
-                    if (Satiety > 0)
-                    {
-                        Satiety = Math.Max(0, Satiety - 2);
-                    }
-
-                    // Format crazy action reaction message depending on animal type or fallback default
+                    // Соседи теперь только реагируют в логе, не теряя сытость при чужом безумии
                     return this switch
                     {
                         Monkey => string.Format(Messages.Event_Crazy_Monkey, initiator.Name),
