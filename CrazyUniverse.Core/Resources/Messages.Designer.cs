@@ -70,6 +70,42 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} the dolphin makes one last splash and floats tiredly in the water. (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_DolphinCrazyLow {
+            get {
+                return ResourceManager.GetString("Action_DolphinCrazyLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the dolphin starts an impressive water show with wild jumps and splashes! (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_DolphinCrazyNormal {
+            get {
+                return ResourceManager.GetString("Action_DolphinCrazyNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the dolphin whistles and clicks loudly. (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_DolphinMakeSound {
+            get {
+                return ResourceManager.GetString("Action_DolphinMakeSound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the dolphin swims {1} meters at impressive speed! (Current Satiety: {2}).
+        /// </summary>
+        public static string Action_DolphinSwim {
+            get {
+                return ResourceManager.GetString("Action_DolphinSwim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} is already full (100/100) and cannot eat more!.
         /// </summary>
         public static string Action_FeedAlreadyFull {
@@ -84,6 +120,42 @@ namespace CrazyUniverse.Core.Resources {
         public static string Action_FeedSuccess {
             get {
                 return ResourceManager.GetString("Action_FeedSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the frog manages one final dramatic hop and collapses dramatically. (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_FrogCrazyLow {
+            get {
+                return ResourceManager.GetString("Action_FrogCrazyLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the frog launches itself around the enclosure like a tiny green rocket! (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_FrogCrazyNormal {
+            get {
+                return ResourceManager.GetString("Action_FrogCrazyNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the frog makes an enormous jump for such a tiny animal! (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_FrogJump {
+            get {
+                return ResourceManager.GetString("Action_FrogJump", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the frog swims {1} meters through the water. (Current Satiety: {2}).
+        /// </summary>
+        public static string Action_FrogSwim {
+            get {
+                return ResourceManager.GetString("Action_FrogSwim", resourceCulture);
             }
         }
         
@@ -138,6 +210,42 @@ namespace CrazyUniverse.Core.Resources {
         public static string Action_HoneyBadgerSwim {
             get {
                 return ResourceManager.GetString("Action_HoneyBadgerSwim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the kangaroo tries one last heroic jump and lands exhausted. (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_KangarooCrazyLow {
+            get {
+                return ResourceManager.GetString("Action_KangarooCrazyLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the kangaroo starts bouncing wildly around the zoo! (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_KangarooCrazyNormal {
+            get {
+                return ResourceManager.GetString("Action_KangarooCrazyNormal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the kangaroo makes a powerful jump! (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_KangarooJump {
+            get {
+                return ResourceManager.GetString("Action_KangarooJump", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} the kangaroo makes a strange grunting sound. (Current Satiety: {1}).
+        /// </summary>
+        public static string Action_KangarooMakeSound {
+            get {
+                return ResourceManager.GetString("Action_KangarooMakeSound", resourceCulture);
             }
         }
         
@@ -241,11 +349,38 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A cheerful dolphin who believes every pool is a stage for an aquatic show..
+        /// </summary>
+        public static string Desc_DolphinDescription {
+            get {
+                return ResourceManager.GetString("Desc_DolphinDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A tiny frog with huge ambitions and absolutely no respect for personal space..
+        /// </summary>
+        public static string Desc_FrogDescription {
+            get {
+                return ResourceManager.GetString("Desc_FrogDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A tiny, furious legend who does not care. Hungry? Picks a fight with a lion. Full? Still picks a fight, but with style..
         /// </summary>
         public static string Desc_HoneyBadgerDescription {
             get {
                 return ResourceManager.GetString("Desc_HoneyBadgerDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An energetic kangaroo who treats the entire zoo like one enormous trampoline..
+        /// </summary>
+        public static string Desc_KangarooDescription {
+            get {
+                return ResourceManager.GetString("Desc_KangarooDescription", resourceCulture);
             }
         }
         
@@ -574,6 +709,24 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dolphins.
+        /// </summary>
+        public static string UI_DolphinEnclosure {
+            get {
+                return ResourceManager.GetString("UI_DolphinEnclosure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dolphin.
+        /// </summary>
+        public static string UI_DolphinTypeName {
+            get {
+                return ResourceManager.GetString("UI_DolphinTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No one lives here yet 🐾.
         /// </summary>
         public static string UI_Enclosure_Empty {
@@ -601,6 +754,24 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Frogs.
+        /// </summary>
+        public static string UI_FrogEnclosure {
+            get {
+                return ResourceManager.GetString("UI_FrogEnclosure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frog.
+        /// </summary>
+        public static string UI_FrogTypeName {
+            get {
+                return ResourceManager.GetString("UI_FrogTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Honey Badges.
         /// </summary>
         public static string UI_HoneyBadgerEnclosure {
@@ -615,6 +786,24 @@ namespace CrazyUniverse.Core.Resources {
         public static string UI_HoneyBadgerTypeName {
             get {
                 return ResourceManager.GetString("UI_HoneyBadgerTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kangaroos.
+        /// </summary>
+        public static string UI_KangarooEnclosure {
+            get {
+                return ResourceManager.GetString("UI_KangarooEnclosure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kangaroo.
+        /// </summary>
+        public static string UI_KangarooTypeName {
+            get {
+                return ResourceManager.GetString("UI_KangarooTypeName", resourceCulture);
             }
         }
         

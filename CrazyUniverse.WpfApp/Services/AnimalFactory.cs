@@ -15,14 +15,17 @@ namespace CrazyUniverse.WpfApp.Factories
                 new Monkey("George"),
                 new Lion("Simba"),
                 new Penguin("Skipper"),
-                new HoneyBadger("Rambo")
+                new HoneyBadger("Rambo"),
+                new Kangaroo("Joey"),
+                new Dolphin("Flipper"),
+                new Frog("Freddy")
             };
         }
 
         // Returns technical keys for factory and repository logic
         public static List<string> GetAvailableTypes()
         {
-            return new List<string> { "Monkey", "Lion", "Penguin", "HoneyBadger" };
+            return new List<string> { "Monkey", "Lion", "Penguin", "HoneyBadger","Kangaroo", "Dolphin", "Frog" };
         }
 
         // Creates a specific animal based on type key from dialog
@@ -33,6 +36,9 @@ namespace CrazyUniverse.WpfApp.Factories
                 "Lion" => new Lion(name),
                 "Penguin" => new Penguin(name),
                 "HoneyBadger" => new HoneyBadger(name),
+                "Kangaroo" => new Kangaroo(name),
+                "Dolphin" => new Dolphin(name),
+                "Frog" => new Frog(name),
                 _ => new Monkey(name) // "Monkey" is default
             };
 
