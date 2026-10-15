@@ -1,9 +1,11 @@
 ﻿using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
+using CrazyUniverse.Core.Repositories;
 using CrazyUniverse.Core.Resources;
 using CrazyUniverse.WpfApp.Commands;
 using CrazyUniverse.WpfApp.Factories;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -14,8 +16,42 @@ namespace CrazyUniverse.WpfApp.ViewModels
     // Implement INotifyPropertyChanged interface to notify UI when property values change
     public class MainViewModel : INotifyPropertyChanged
     {
+        // ==========================================
+        // TYPE-BASED REPOSITORIES & UI SELECTION
+        // ==========================================
+        private readonly IRepository<Monkey> _monkeyRepository = new Repository<Monkey>();
+        private readonly IRepository<Lion> _lionRepository = new Repository<Lion>();
+        private readonly IRepository<Penguin> _penguinRepository = new Repository<Penguin>();
+        private readonly IRepository<HoneyBadger> _honeyBadgerRepository = new Repository<HoneyBadger>();
+
         // ObservableCollection to store and track animals dynamically
-        public ObservableCollection<Animal> Animals { get; set; }
+        public ObservableCollection<Animal> Animals { get; } = new ObservableCollection<Animal>();
+
+        // Available repository types for UI selection, fetched dynamically from factory.
+        public List<string> RepositoryTypes { get; } = AnimalFactory.GetAvailableTypes();
+
+        // currently selected repository type, defaulting to "Monkey" for initial view
+        private string _selectedRepositoryType = "Monkey";
+
+        // Selected repository type property with change notification
+        public string SelectedRepositoryType
+        {
+            get => _selectedRepositoryType;
+            set
+            {
+                // If the selected type is the same as before, do nothing
+                if (_selectedRepositoryType == value) return;
+
+                // Update the field with the new repository type
+                _selectedRepositoryType = value;
+
+                // Notify UI that the selected repository type has changed
+                OnPropertyChanged(nameof(SelectedRepositoryType));
+
+                // Refresh the list of displayed animals to match the new repository type
+                UpdateDisplayedAnimals();
+            }
+        }
 
         private Animal? _selectedAnimal;
 
@@ -45,6 +81,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         // PROPERTIES FOR UI COUNTERS & LOGS
         // ==========================================
+
+        // creates a collection of logs that is displayed in the user interface
         public ObservableCollection<string> LogMessages { get; } = new ObservableCollection<string>();
 
         public int ZooPopulation => Animals.Count;
@@ -119,9 +157,19 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         public MainViewModel()
         {
-            // Get initial animals from factory
+            // Get initial animals from factory and populate respective repositories
             var defaultAnimals = AnimalFactory.CreateDefaultAnimals();
-            Animals = new ObservableCollection<Animal>(defaultAnimals);
+
+            foreach (var animal in defaultAnimals)
+            {
+                if (animal is Monkey m) _monkeyRepository.Add(m);
+                else if (animal is Lion l) _lionRepository.Add(l);
+                else if (animal is Penguin p) _penguinRepository.Add(p);
+                else if (animal is HoneyBadger hb) _honeyBadgerRepository.Add(hb);
+            }
+
+            // Load initial view for default selected repository type ("Monkey")
+            UpdateDisplayedAnimals();
 
             // Initialize commands with actions and conditions
             AddAnimalCommand = new RelayCommand(ExecuteAddAnimal);
@@ -134,6 +182,39 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             // Log initial application startup message
             Log(Messages.Log_ZooInit);
+        }
+
+        // ==========================================
+        // REPOSITORY UPDATE HELPER
+        // ==========================================
+
+        // shows the animals of the selected repository type in the UI
+        private void UpdateDisplayedAnimals()
+        {
+            // Clears the current on-screen list of animals to remove old items from the previous category.
+            Animals.Clear();
+
+            // what exactly is currently selected in the interface drop-down list
+            IEnumerable<Animal> items = SelectedRepositoryType switch
+            {
+                "Lion" => _lionRepository.GetAll(),
+                "Penguin" => _penguinRepository.GetAll(),
+                "HoneyBadger" => _honeyBadgerRepository.GetAll(),
+                _ => _monkeyRepository.GetAll()
+            };
+
+            // The elements obtained from the desired repository are added one by one to the Animals collection
+            foreach (var item in items)
+            {
+                Animals.Add(item);
+            }
+
+            // Resets the currently selected animal to null
+            // so that the old selected animal does not “hang” in memory as allocated to a list that does not exist on the screen.
+            SelectedAnimal = null;
+
+            OnPropertyChanged(nameof(ZooPopulation));
+            OnPropertyChanged(nameof(TotalAnimalsCount));
         }
 
         // ==========================================
@@ -159,8 +240,20 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     dialog.AnimalDescription
                 );
 
+                // Add animal to the corresponding type repository
+                if (newAnimal is Monkey m) _monkeyRepository.Add(m);
+                else if (newAnimal is Lion l) _lionRepository.Add(l);
+                else if (newAnimal is Penguin p) _penguinRepository.Add(p);
+                else if (newAnimal is HoneyBadger hb) _honeyBadgerRepository.Add(hb);
+
+                // If created animal type matches currently viewed repository, refresh view
+                if (dialog.AnimalType == SelectedRepositoryType ||
+                    (SelectedRepositoryType == "Monkey" && dialog.AnimalType != "Lion" && dialog.AnimalType != "Penguin" && dialog.AnimalType != "HoneyBadger"))
+                {
+                    UpdateDisplayedAnimals();
+                }
+
                 // Add newly created animal to collection and set as selected
-                Animals.Add(newAnimal);
                 SelectedAnimal = newAnimal;
 
                 // Notify UI that counter properties have changed
@@ -179,9 +272,13 @@ namespace CrazyUniverse.WpfApp.ViewModels
             {
                 string name = SelectedAnimal.Name;
 
-                // Removes selected animal from Animals list
-                // ObservableCollection notifies WPF to remove item from UI automatically
-                Animals.Remove(SelectedAnimal);
+                // Remove from appropriate type repository
+                if (SelectedAnimal is Monkey m) _monkeyRepository.Remove(m);
+                else if (SelectedAnimal is Lion l) _lionRepository.Remove(l);
+                else if (SelectedAnimal is Penguin p) _penguinRepository.Remove(p);
+                else if (SelectedAnimal is HoneyBadger hb) _honeyBadgerRepository.Remove(hb);
+
+                UpdateDisplayedAnimals();
 
                 // After an animal is removed from the collection,
                 // it should be “reset” so that SelectedAnimal does not refer to the deleted object to nowhere.

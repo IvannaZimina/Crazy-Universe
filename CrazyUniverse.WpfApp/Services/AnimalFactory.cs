@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using CrazyUniverse.Core.Models;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.WpfApp.Factories
 {
+    // Factory class responsible for creating animal instances and managing available types
     public static class AnimalFactory
     {
         // Create and return default collection of animals
@@ -15,6 +17,12 @@ namespace CrazyUniverse.WpfApp.Factories
                 new Penguin("Skipper"),
                 new HoneyBadger("Rambo")
             };
+        }
+
+        // Returns technical keys for factory and repository logic
+        public static List<string> GetAvailableTypes()
+        {
+            return new List<string> { "Monkey", "Lion", "Penguin", "HoneyBadger" };
         }
 
         // Creates a specific animal based on type key from dialog
