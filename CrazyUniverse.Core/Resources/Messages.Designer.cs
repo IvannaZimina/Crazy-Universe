@@ -313,6 +313,141 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} walks into the enclosure. Everyone stares at the newcomer with mixed feelings..
+        /// </summary>
+        public static string Event_Add_Default {
+            get {
+                return ResourceManager.GetString("Event_Add_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} sniffs {1} aggressively, nods with mild approval, and steals its snack..
+        /// </summary>
+        public static string Event_Add_HoneyBadger {
+            get {
+                return ResourceManager.GetString("Event_Add_HoneyBadger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} lets out a majestic roar: &quot;Another challenger for our territory approaches, {1}!&quot;.
+        /// </summary>
+        public static string Event_Add_Lion {
+            get {
+                return ResourceManager.GetString("Event_Add_Lion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} throws a welcome banana at {1}, screeching cheerfully: &quot;Ooh-ooh, new friend!&quot;.
+        /// </summary>
+        public static string Event_Add_Monkey {
+            get {
+                return ResourceManager.GetString("Event_Add_Monkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} slides across the ice, tapping flippers and squawking a cold hello to {1}..
+        /// </summary>
+        public static string Event_Add_Penguin {
+            get {
+                return ResourceManager.GetString("Event_Add_Penguin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} does something totally bizarre! Everyone else blinks in absolute confusion..
+        /// </summary>
+        public static string Event_Crazy_Default {
+            get {
+                return ResourceManager.GetString("Event_Crazy_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!.
+        /// </summary>
+        public static string Event_Crazy_HoneyBadger {
+            get {
+                return ResourceManager.GetString("Event_Crazy_HoneyBadger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} roars so loud the ground shakes! The other lions puff out their manes proudly..
+        /// </summary>
+        public static string Event_Crazy_Lion {
+            get {
+                return ResourceManager.GetString("Event_Crazy_Lion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} goes bananas and jumps off the walls! The neighbor monkeys panic and jump along!.
+        /// </summary>
+        public static string Event_Crazy_Monkey {
+            get {
+                return ResourceManager.GetString("Event_Crazy_Monkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!.
+        /// </summary>
+        public static string Event_Crazy_Penguin {
+            get {
+                return ResourceManager.GetString("Event_Crazy_Penguin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} leaves the enclosure. The remaining animals share a quiet, awkward moment of silence..
+        /// </summary>
+        public static string Event_Remove_Default {
+            get {
+                return ResourceManager.GetString("Event_Remove_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is gone. The honey badgers don&apos;t care at all and immediately start a turf war..
+        /// </summary>
+        public static string Event_Remove_HoneyBadger {
+            get {
+                return ResourceManager.GetString("Event_Remove_HoneyBadger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The lions bow their heads solemnly as {0} departs, acknowledging a worthy neighbor..
+        /// </summary>
+        public static string Event_Remove_Lion {
+            get {
+                return ResourceManager.GetString("Event_Remove_Lion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The monkeys swing frantically on the vines, screeching &quot;Goodbye, {0}!&quot; and throwing empty peanut shells..
+        /// </summary>
+        public static string Event_Remove_Monkey {
+            get {
+                return ResourceManager.GetString("Event_Remove_Monkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The penguins stand in a neat line, saluting {0} with synchronized flipper waves..
+        /// </summary>
+        public static string Event_Remove_Penguin {
+            get {
+                return ResourceManager.GetString("Event_Remove_Penguin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Added a new animal: {0}.
         /// </summary>
         public static string Log_AddedAnimal {
@@ -412,11 +547,38 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enclosure.
+        /// </summary>
+        public static string UI_EnclosureSuffix {
+            get {
+                return ResourceManager.GetString("UI_EnclosureSuffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Honey Badges.
+        /// </summary>
+        public static string UI_HoneyBadgerEnclosure {
+            get {
+                return ResourceManager.GetString("UI_HoneyBadgerEnclosure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Honey Badger.
         /// </summary>
         public static string UI_HoneyBadgerTypeName {
             get {
                 return ResourceManager.GetString("UI_HoneyBadgerTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lions.
+        /// </summary>
+        public static string UI_LionEnclosure {
+            get {
+                return ResourceManager.GetString("UI_LionEnclosure", resourceCulture);
             }
         }
         
@@ -430,11 +592,29 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Monkeys.
+        /// </summary>
+        public static string UI_MonkeyEnclosure {
+            get {
+                return ResourceManager.GetString("UI_MonkeyEnclosure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monkey.
         /// </summary>
         public static string UI_MonkeyTypeName {
             get {
                 return ResourceManager.GetString("UI_MonkeyTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Penguins.
+        /// </summary>
+        public static string UI_PenguinEnclosure {
+            get {
+                return ResourceManager.GetString("UI_PenguinEnclosure", resourceCulture);
             }
         }
         

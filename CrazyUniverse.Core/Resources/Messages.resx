@@ -164,7 +164,7 @@
   </data>
   <data name="UI_LionTypeName" xml:space="preserve">
     <value>Lion</value>
-    <comment>Lion</comment>
+    <comment>UI name</comment>
   </data>
   <data name="Action_HoneyBadgerCrazyLow" xml:space="preserve">
     <value>{0} the honey badger is stuffed with honey and has decided that today nothing matters. (Current Satiety: {1})</value>
@@ -192,11 +192,11 @@
   </data>
   <data name="UI_MonkeyTypeName" xml:space="preserve">
     <value>Monkey</value>
-    <comment>Monkey</comment>
+    <comment>UI name</comment>
   </data>
   <data name="UI_HoneyBadgerTypeName" xml:space="preserve">
     <value>Honey Badger</value>
-    <comment>HoneyBadger</comment>
+    <comment>UI name</comment>
   </data>
   <data name="Log_NoAnimalCrazy" xml:space="preserve">
     <value>Warning: Please select an animal to perform a crazy action.</value>
@@ -228,7 +228,7 @@
   </data>
   <data name="UI_PenguinTypeName" xml:space="preserve">
     <value>Penguin</value>
-    <comment>Penguin</comment>
+    <comment>UI name</comment>
   </data>
   <data name="Log_RemovedAnimal" xml:space="preserve">
     <value>{0} removed from the zoo.</value>
@@ -279,18 +279,98 @@
   </data>
   <data name="UI_BtnSwim" xml:space="preserve">
     <value>Swim (-{0})</value>
-    <comment>UI</comment>
+    <comment>UI action</comment>
   </data>
   <data name="UI_BtnJump" xml:space="preserve">
     <value>Jump (-{0})</value>
-    <comment>UI</comment>
+    <comment>UI action</comment>
   </data>
   <data name="UI_BtnMakeSound" xml:space="preserve">
     <value>Make Sound (-{0})</value>
-    <comment>UI</comment>
+    <comment>UI action</comment>
   </data>
   <data name="UI_BtnCrazyAction" xml:space="preserve">
     <value>Crazy Action</value>
-    <comment>UI</comment>
+    <comment>UI action</comment>
+  </data>
+  <data name="UI_EnclosureSuffix" xml:space="preserve">
+    <value>Enclosure</value>
+    <comment>UI action</comment>
+  </data>
+  <data name="UI_MonkeyEnclosure" xml:space="preserve">
+    <value>Monkeys</value>
+    <comment>UI enclosure</comment>
+  </data>
+  <data name="UI_LionEnclosure" xml:space="preserve">
+    <value>Lions</value>
+    <comment>UI enclosure</comment>
+  </data>
+  <data name="UI_PenguinEnclosure" xml:space="preserve">
+    <value>Penguins</value>
+    <comment>UI enclosure</comment>
+  </data>
+  <data name="UI_HoneyBadgerEnclosure" xml:space="preserve">
+    <value>Honey Badges</value>
+    <comment>UI enclosure</comment>
+  </data>
+  <data name="Event_Add_Default" xml:space="preserve">
+    <value>{0} walks into the enclosure. Everyone stares at the newcomer with mixed feelings.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Add_Monkey" xml:space="preserve">
+    <value>{0} throws a welcome banana at {1}, screeching cheerfully: "Ooh-ooh, new friend!"</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Add_Lion" xml:space="preserve">
+    <value>{0} lets out a majestic roar: "Another challenger for our territory approaches, {1}!"</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Add_Penguin" xml:space="preserve">
+    <value>{0} slides across the ice, tapping flippers and squawking a cold hello to {1}.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Add_HoneyBadger" xml:space="preserve">
+    <value>{0} sniffs {1} aggressively, nods with mild approval, and steals its snack.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Remove_Default" xml:space="preserve">
+    <value>{0} leaves the enclosure. The remaining animals share a quiet, awkward moment of silence.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Remove_Monkey" xml:space="preserve">
+    <value>The monkeys swing frantically on the vines, screeching "Goodbye, {0}!" and throwing empty peanut shells.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Remove_Lion" xml:space="preserve">
+    <value>The lions bow their heads solemnly as {0} departs, acknowledging a worthy neighbor.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Remove_Penguin" xml:space="preserve">
+    <value>The penguins stand in a neat line, saluting {0} with synchronized flipper waves.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Remove_HoneyBadger" xml:space="preserve">
+    <value>{0} is gone. The honey badgers don't care at all and immediately start a turf war.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Crazy_Default" xml:space="preserve">
+    <value>{0} does something totally bizarre! Everyone else blinks in absolute confusion.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Crazy_Monkey" xml:space="preserve">
+    <value>{0} goes bananas and jumps off the walls! The neighbor monkeys panic and jump along!</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Crazy_Lion" xml:space="preserve">
+    <value>{0} roars so loud the ground shakes! The other lions puff out their manes proudly.</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Crazy_Penguin" xml:space="preserve">
+    <value>{0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!</value>
+    <comment>Event</comment>
+  </data>
+  <data name="Event_Crazy_HoneyBadger" xml:space="preserve">
+    <value>{0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!</value>
+    <comment>Event</comment>
   </data>
 </root>
