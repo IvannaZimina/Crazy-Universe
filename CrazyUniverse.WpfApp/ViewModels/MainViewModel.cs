@@ -28,6 +28,21 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Collection of animals living inside this specific enclosure
         public ObservableCollection<Animal> Animals { get; } = new ObservableCollection<Animal>();
 
+        // Property representing sorting mode inside this specific enclosure (false = A-Z, true = Z-A)
+        private bool _isSortedDescending;
+        public bool IsSortedDescending
+        {
+            get => _isSortedDescending;
+            set
+            {
+                if (_isSortedDescending != value)
+                {
+                    _isSortedDescending = value;
+                    OnPropertyChanged(nameof(IsSortedDescending));
+                }
+            }
+        }
+
         // Standard INotifyPropertyChanged implementation for enclosure updates
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null!)
@@ -56,6 +71,22 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         // ObservableCollection to store and track currently selected enclosure's animals or total view
         public ObservableCollection<Animal> Animals { get; } = new ObservableCollection<Animal>();
+
+        // Search query string used for LINQ Where filtering across enclosures
+        private string _searchQuery = string.Empty;
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                if (_searchQuery != value)
+                {
+                    _searchQuery = value;
+                    OnPropertyChanged(nameof(SearchQuery));
+                    RefreshEnclosures(); // Refreshes and filters animal lists dynamically using LINQ Where
+                }
+            }
+        }
 
         private EnclosureViewModel? _selectedEnclosure;
         // Currently selected enclosure in the accordion
@@ -121,7 +152,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         }
 
         // ==========================================
-        // PROPERTIES FOR UI COUNTERS & LOGS
+        // PROPERTIES FOR UI COUNTERS & LOGS & LINQ GROUP BY
         // ==========================================
 
         // creates a collection of logs that is displayed in the user interface
@@ -129,11 +160,46 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         // Общий подсчет животных во всех вольерах сразу
         public int ZooPopulation => _monkeyRepository.GetAll().Count()
-                                  + _lionRepository.GetAll().Count()
-                                  + _penguinRepository.GetAll().Count()
-                                  + _honeyBadgerRepository.GetAll().Count();
+                                    + _lionRepository.GetAll().Count()
+                                    + _penguinRepository.GetAll().Count()
+                                    + _honeyBadgerRepository.GetAll().Count();
 
         public int TotalAnimalsCount => ZooPopulation;
+
+        // LINQ GroupBy Statistics: groups all zoo animals by Satiety ranges using resource keys (guaranteeing all 3 rows always appear)
+        public IEnumerable<object> SatietyGroupsSummary
+        {
+            get
+            {
+                var allAnimals = _monkeyRepository.GetAll().Cast<Animal>()
+                    .Concat(_lionRepository.GetAll().Cast<Animal>())
+                    .Concat(_penguinRepository.GetAll().Cast<Animal>())
+                    .Concat(_honeyBadgerRepository.GetAll().Cast<Animal>())
+                    .ToList();
+
+                var predefinedCategories = new[]
+                {
+                    Messages.SatietyGroup_Low,
+                    Messages.SatietyGroup_Medium,
+                    Messages.SatietyGroup_High
+                };
+
+                var actualGroups = allAnimals
+                    .GroupBy(a =>
+                    {
+                        if (a.Satiety <= 30) return Messages.SatietyGroup_Low;
+                        if (a.Satiety <= 70) return Messages.SatietyGroup_Medium;
+                        return Messages.SatietyGroup_High;
+                    })
+                    .ToDictionary(g => g.Key, g => g.Count());
+
+                return predefinedCategories.Select(category => new
+                {
+                    GroupName = category,
+                    Count = actualGroups.ContainsKey(category) ? actualGroups[category] : 0
+                }).ToList();
+            }
+        }
 
         // ==========================================
         // COMMANDS FOR UI BINDING
@@ -146,6 +212,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public ICommand MakeSoundCommand { get; }
         public ICommand CrazyActionCommand { get; }
         public ICommand SelectAnimalCommand { get; } // Command to handle robust animal selection across multi-list accordions
+        public ICommand ToggleSortCommand { get; } // Command to toggle sorting direction inside specific enclosure via LINQ OrderBy
 
         // ==========================================
         // PROPERTIES FOR SELECTED ANIMAL ABILITIES
@@ -222,22 +289,18 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 if (animal is Monkey m)
                 {
                     _monkeyRepository.Add(m);
-                    GetEnclosure("Monkey")?.Animals.Add(m);
                 }
                 else if (animal is Lion l)
                 {
                     _lionRepository.Add(l);
-                    GetEnclosure("Lion")?.Animals.Add(l);
                 }
                 else if (animal is Penguin p)
                 {
                     _penguinRepository.Add(p);
-                    GetEnclosure("Penguin")?.Animals.Add(p);
                 }
                 else if (animal is HoneyBadger hb)
                 {
                     _honeyBadgerRepository.Add(hb);
-                    GetEnclosure("HoneyBadger")?.Animals.Add(hb);
                 }
             }
 
@@ -253,6 +316,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             MakeSoundCommand = new RelayCommand(ExecuteMakeSound, CanExecuteMakeSound);
             CrazyActionCommand = new RelayCommand(ExecuteCrazyAction, CanExecuteCrazyAction);
             SelectAnimalCommand = new RelayCommand(ExecuteSelectAnimal);
+            ToggleSortCommand = new RelayCommand(ExecuteToggleSort);
 
             // Log initial application startup message
             Log(Messages.Log_ZooInit);
@@ -263,29 +327,36 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         private void InitializeEnclosures()
         {
-            // Fetch all available animal types dynamically from the factory (e.g., "Monkey", "Lion", etc.)
             var types = AnimalFactory.GetAvailableTypes();
 
-            // Loop through each type to create a corresponding enclosure view model
             foreach (var type in types)
             {
-                // Create a new enclosure container for the accordion UI
                 var enclosure = new EnclosureViewModel
                 {
-                    // Set the technical identifier key used by repositories and logic
                     Name = type,
-
-                    // Map the technical key to a localized plural enclosure name from resources (e.g., "Lions", "Monkeys")
                     DisplayName = type switch
                     {
                         "Lion" => Messages.UI_LionEnclosure,
                         "Penguin" => Messages.UI_PenguinEnclosure,
                         "HoneyBadger" => Messages.UI_HoneyBadgerEnclosure,
-                        _ => Messages.UI_MonkeyEnclosure // Default fallback to Monkeys
+                        _ => Messages.UI_MonkeyEnclosure
                     }
                 };
 
-                // Add the configured enclosure to the main collection displayed in the accordion UI
+                // Безопасное получение списка животных для вольера при инициализации
+                IEnumerable<Animal> repoItems = type switch
+                {
+                    "Lion" => _lionRepository.GetAll().Cast<Animal>(),
+                    "Penguin" => _penguinRepository.GetAll().Cast<Animal>(),
+                    "HoneyBadger" => _honeyBadgerRepository.GetAll().Cast<Animal>(),
+                    _ => _monkeyRepository.GetAll().Cast<Animal>()
+                };
+
+                foreach (var item in repoItems.OrderBy(a => a.Name))
+                {
+                    enclosure.Animals.Add(item);
+                }
+
                 Enclosures.Add(enclosure);
             }
         }
@@ -301,59 +372,83 @@ namespace CrazyUniverse.WpfApp.ViewModels
         }
 
         // ==========================================
-        // REPOSITORY UPDATE HELPER
+        // REPOSITORY UPDATE & LINQ FILTERING/SORTING HELPER
         // ==========================================
 
-        // shows the animals of the selected repository type in the UI
-        private void UpdateDisplayedAnimals()
+        // Refreshes all enclosures applying LINQ Where (filtering) and sorting by name
+        private void RefreshEnclosures()
         {
-            // Clears the current on-screen list of animals to remove old items from the previous category.
-            Animals.Clear();
-
-            // what exactly is currently selected in the interface drop-down list or accordion
-            IEnumerable<Animal> items = SelectedRepositoryType switch
-            {
-                "Lion" => _lionRepository.GetAll(),
-                "Penguin" => _penguinRepository.GetAll(),
-                "HoneyBadger" => _honeyBadgerRepository.GetAll(),
-                _ => _monkeyRepository.GetAll()
-            };
-
-            // Синхронизируем списки по всем репозиториям для каждого вольера, чтобы вольери всегда хранили актуальные коллекции
             foreach (var enc in Enclosures)
             {
-                enc.Animals.Clear();
-
                 IEnumerable<Animal> repoItems = enc.Name switch
                 {
-                    "Lion" => _lionRepository.GetAll(),
-                    "Penguin" => _penguinRepository.GetAll(),
-                    "HoneyBadger" => _honeyBadgerRepository.GetAll(),
-                    _ => _monkeyRepository.GetAll()
+                    "Lion" => _lionRepository.GetAll().Cast<Animal>(),
+                    "Penguin" => _penguinRepository.GetAll().Cast<Animal>(),
+                    "HoneyBadger" => _honeyBadgerRepository.GetAll().Cast<Animal>(),
+                    _ => _monkeyRepository.GetAll().Cast<Animal>()
                 };
 
-                foreach (var item in repoItems)
+                if (!string.IsNullOrWhiteSpace(SearchQuery))
+                {
+                    repoItems = repoItems.Where(a =>
+                        a.Name != null && a.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)
+                    );
+                }
+
+                // Сортировка исключительно по имени (A-Z или Z-A)
+                var sortedItems = enc.IsSortedDescending
+                    ? repoItems.OrderByDescending(a => a.Name).ToList()
+                    : repoItems.OrderBy(a => a.Name).ToList();
+
+                enc.Animals.Clear();
+                foreach (var item in sortedItems)
                 {
                     enc.Animals.Add(item);
                 }
             }
 
-            foreach (var item in items)
+            // Sync main Animals collection with currently selected repository type view
+            Animals.Clear();
+            var selectedEncItems = GetEnclosure(SelectedRepositoryType)?.Animals;
+            if (selectedEncItems != null)
             {
-                Animals.Add(item);
+                foreach (var item in selectedEncItems)
+                {
+                    Animals.Add(item);
+                }
             }
+
+            OnPropertyChanged(nameof(ZooPopulation));
+            OnPropertyChanged(nameof(TotalAnimalsCount));
+            OnPropertyChanged(nameof(SatietyGroupsSummary));
+        }
+
+        // shows the animals of the selected repository type in the UI
+        private void UpdateDisplayedAnimals()
+        {
+            RefreshEnclosures();
 
             // Resets the currently selected animal to null
             // so that the old selected animal does not “hang” in memory as allocated to a list that does not exist on the screen.
             SelectedAnimal = null;
-
-            OnPropertyChanged(nameof(ZooPopulation));
-            OnPropertyChanged(nameof(TotalAnimalsCount));
         }
 
         // ==========================================
         // COMMAND LOGIC METHODS
         // ==========================================
+
+        // Command handler to toggle sorting direction inside an enclosure
+        private void ExecuteToggleSort(object? parameter)
+        {
+            if (parameter is EnclosureViewModel enc)
+            {
+                // Toggle sorting direction (A-Z <-> Z-A)
+                enc.IsSortedDescending = !enc.IsSortedDescending;
+
+                // Перезапускаем обновление, чтобы RefreshEnclosures применил новый порядок имени
+                RefreshEnclosures();
+            }
+        }
 
         // Logic to handle animal selection reliably across multiple enclosure lists
         private void ExecuteSelectAnimal(object? parameter)
@@ -392,22 +487,18 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 if (newAnimal is Monkey m)
                 {
                     _monkeyRepository.Add(m);
-                    GetEnclosure("Monkey")?.Animals.Add(m);
                 }
                 else if (newAnimal is Lion l)
                 {
                     _lionRepository.Add(l);
-                    GetEnclosure("Lion")?.Animals.Add(l);
                 }
                 else if (newAnimal is Penguin p)
                 {
                     _penguinRepository.Add(p);
-                    GetEnclosure("Penguin")?.Animals.Add(p);
                 }
                 else if (newAnimal is HoneyBadger hb)
                 {
                     _honeyBadgerRepository.Add(hb);
-                    GetEnclosure("HoneyBadger")?.Animals.Add(hb);
                 }
 
                 UpdateDisplayedAnimals();
@@ -418,6 +509,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 // Notify UI that counter properties have changed
                 OnPropertyChanged(nameof(ZooPopulation));
                 OnPropertyChanged(nameof(TotalAnimalsCount));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
 
                 // Log the addition action
                 Log(string.Format(Messages.Log_AddedAnimal, newAnimal.Name));
@@ -435,22 +527,18 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 if (SelectedAnimal is Monkey m)
                 {
                     _monkeyRepository.Remove(m);
-                    GetEnclosure("Monkey")?.Animals.Remove(m);
                 }
                 else if (SelectedAnimal is Lion l)
                 {
                     _lionRepository.Remove(l);
-                    GetEnclosure("Lion")?.Animals.Remove(l);
                 }
                 else if (SelectedAnimal is Penguin p)
                 {
                     _penguinRepository.Remove(p);
-                    GetEnclosure("Penguin")?.Animals.Remove(p);
                 }
                 else if (SelectedAnimal is HoneyBadger hb)
                 {
                     _honeyBadgerRepository.Remove(hb);
-                    GetEnclosure("HoneyBadger")?.Animals.Remove(hb);
                 }
 
                 UpdateDisplayedAnimals();
@@ -462,6 +550,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 // Notify UI that counter properties have changed
                 OnPropertyChanged(nameof(ZooPopulation));
                 OnPropertyChanged(nameof(TotalAnimalsCount));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
 
                 // Log the removal action
                 Log(string.Format(Messages.Log_RemovedAnimal, name));
@@ -489,6 +578,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
                 // Forces UI to update progress bars or values if needed
                 OnPropertyChanged(nameof(SelectedAnimal));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
 
                 // Refresh commands execution status so action buttons become active again
                 CommandManager.InvalidateRequerySuggested();
@@ -516,6 +606,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             {
                 string resultMessage = swimmable.Swim(15);
                 OnPropertyChanged(nameof(SelectedAnimal));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
                 Log(resultMessage);
 
                 if (SelectedAnimal?.Satiety == 0)
@@ -538,6 +629,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             {
                 string resultMessage = jumpable.Jump();
                 OnPropertyChanged(nameof(SelectedAnimal));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
                 Log(resultMessage);
 
                 if (SelectedAnimal?.Satiety == 0)
@@ -560,6 +652,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             {
                 string resultMessage = vocalizable.MakeSound();
                 OnPropertyChanged(nameof(SelectedAnimal));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
                 Log(resultMessage);
 
                 if (SelectedAnimal?.Satiety == 0)
@@ -578,7 +671,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Logic for crazy action (triggers domain events via repository)
         private void ExecuteCrazyAction(object? parameter)
         {
-            if (SelectedAnimal != null)
+            if (SelectedNameCheck() && SelectedAnimal != null)
             {
                 // Trigger crazy action through the appropriate repository to broadcast reactions to enclosure neighbors
                 if (SelectedAnimal is Monkey m)
@@ -599,6 +692,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 }
 
                 OnPropertyChanged(nameof(SelectedAnimal));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
 
                 if (SelectedAnimal.Satiety == 0)
                 {
@@ -610,6 +704,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 Log(Messages.Log_NoAnimalCrazy);
             }
         }
+
+        private bool SelectedNameCheck() => SelectedAnimal != null;
 
         // Condition: can perform crazy action only if an animal is selected
         private bool CanExecuteCrazyAction(object? parameter)
