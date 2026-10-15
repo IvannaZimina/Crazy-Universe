@@ -8,27 +8,72 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace CrazyUniverse.WpfApp.ViewModels
 {
+    // ==========================================
+    // ENCLOSURE VIEW MODEL (Represents a single repository/enclosure in the accordion)
+    // ==========================================
+    public class EnclosureViewModel : INotifyPropertyChanged
+    {
+        // Name of the enclosure (e.g., "Monkey", "Lion")
+        public string Name { get; set; } = string.Empty;
+
+        // Display name localized or formatted for UI
+        public string DisplayName { get; set; } = string.Empty;
+
+        // Collection of animals living inside this specific enclosure
+        public ObservableCollection<Animal> Animals { get; } = new ObservableCollection<Animal>();
+
+        // Standard INotifyPropertyChanged implementation for enclosure updates
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null!)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    // ==========================================
+    // MAIN VIEW MODEL
+    // ==========================================
+
     // Implement INotifyPropertyChanged interface to notify UI when property values change
     public class MainViewModel : INotifyPropertyChanged
     {
         // ==========================================
-        // TYPE-BASED REPOSITORIES & UI SELECTION
+        // TYPE-BASED REPOSITORIES & ENCLOSURES
         // ==========================================
         private readonly IRepository<Monkey> _monkeyRepository = new Repository<Monkey>();
         private readonly IRepository<Lion> _lionRepository = new Repository<Lion>();
         private readonly IRepository<Penguin> _penguinRepository = new Repository<Penguin>();
         private readonly IRepository<HoneyBadger> _honeyBadgerRepository = new Repository<HoneyBadger>();
 
-        // ObservableCollection to store and track animals dynamically
+        // Collection of enclosures for the accordion-based UI view
+        public ObservableCollection<EnclosureViewModel> Enclosures { get; } = new ObservableCollection<EnclosureViewModel>();
+
+        // ObservableCollection to store and track currently selected enclosure's animals or total view
         public ObservableCollection<Animal> Animals { get; } = new ObservableCollection<Animal>();
 
-        // Available repository types for UI selection, fetched dynamically from factory.
-        public List<string> RepositoryTypes { get; } = AnimalFactory.GetAvailableTypes();
+        private EnclosureViewModel? _selectedEnclosure;
+        // Currently selected enclosure in the accordion
+        public EnclosureViewModel? SelectedEnclosure
+        {
+            get => _selectedEnclosure;
+            set
+            {
+                if (_selectedEnclosure == value) return;
+                _selectedEnclosure = value;
+                OnPropertyChanged(nameof(SelectedEnclosure));
+
+                if (value != null)
+                {
+                    SelectedRepositoryType = value.Name;
+                }
+            }
+        }
 
         // currently selected repository type, defaulting to "Monkey" for initial view
         private string _selectedRepositoryType = "Monkey";
@@ -61,10 +106,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             get => _selectedAnimal;
             set
             {
-                // If the new animal that was chosen is exactly the same as the old one, then do nothing and leave.
-                if (_selectedAnimal == value) return;
-
-                // Update selected animal with new value
+                // Removed early return on equality to allow re-triggering selection across multi-list accordions
                 _selectedAnimal = value;
 
                 // Call OnPropertyChanged method to inform View that selected animal has changed
@@ -85,8 +127,13 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // creates a collection of logs that is displayed in the user interface
         public ObservableCollection<string> LogMessages { get; } = new ObservableCollection<string>();
 
-        public int ZooPopulation => Animals.Count;
-        public int TotalAnimalsCount => Animals.Count;
+        // Общий подсчет животных во всех вольерах сразу
+        public int ZooPopulation => _monkeyRepository.GetAll().Count()
+                                  + _lionRepository.GetAll().Count()
+                                  + _penguinRepository.GetAll().Count()
+                                  + _honeyBadgerRepository.GetAll().Count();
+
+        public int TotalAnimalsCount => ZooPopulation;
 
         // ==========================================
         // COMMANDS FOR UI BINDING
@@ -98,6 +145,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public ICommand JumpCommand { get; }
         public ICommand MakeSoundCommand { get; }
         public ICommand CrazyActionCommand { get; }
+        public ICommand SelectAnimalCommand { get; } // Command to handle robust animal selection across multi-list accordions
 
         // ==========================================
         // PROPERTIES FOR SELECTED ANIMAL ABILITIES
@@ -157,15 +205,40 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         public MainViewModel()
         {
-            // Get initial animals from factory and populate respective repositories
+            // Subscribe repositories to automatically route domain log messages to UI log collector
+            _monkeyRepository.LogMessageGenerated += (s, msg) => Log(msg);
+            _lionRepository.LogMessageGenerated += (s, msg) => Log(msg);
+            _penguinRepository.LogMessageGenerated += (s, msg) => Log(msg);
+            _honeyBadgerRepository.LogMessageGenerated += (s, msg) => Log(msg);
+
+            // Initialize enclosures collection based on available types from factory
+            InitializeEnclosures();
+
+            // Get initial animals from factory and populate respective repositories and enclosure view models
             var defaultAnimals = AnimalFactory.CreateDefaultAnimals();
 
             foreach (var animal in defaultAnimals)
             {
-                if (animal is Monkey m) _monkeyRepository.Add(m);
-                else if (animal is Lion l) _lionRepository.Add(l);
-                else if (animal is Penguin p) _penguinRepository.Add(p);
-                else if (animal is HoneyBadger hb) _honeyBadgerRepository.Add(hb);
+                if (animal is Monkey m)
+                {
+                    _monkeyRepository.Add(m);
+                    GetEnclosure("Monkey")?.Animals.Add(m);
+                }
+                else if (animal is Lion l)
+                {
+                    _lionRepository.Add(l);
+                    GetEnclosure("Lion")?.Animals.Add(l);
+                }
+                else if (animal is Penguin p)
+                {
+                    _penguinRepository.Add(p);
+                    GetEnclosure("Penguin")?.Animals.Add(p);
+                }
+                else if (animal is HoneyBadger hb)
+                {
+                    _honeyBadgerRepository.Add(hb);
+                    GetEnclosure("HoneyBadger")?.Animals.Add(hb);
+                }
             }
 
             // Load initial view for default selected repository type ("Monkey")
@@ -179,9 +252,52 @@ namespace CrazyUniverse.WpfApp.ViewModels
             JumpCommand = new RelayCommand(ExecuteJump, CanExecuteJump);
             MakeSoundCommand = new RelayCommand(ExecuteMakeSound, CanExecuteMakeSound);
             CrazyActionCommand = new RelayCommand(ExecuteCrazyAction, CanExecuteCrazyAction);
+            SelectAnimalCommand = new RelayCommand(ExecuteSelectAnimal);
 
             // Log initial application startup message
             Log(Messages.Log_ZooInit);
+        }
+
+        // ==========================================
+        // ENCLOSURES INITIALIZATION HELPER
+        // ==========================================
+        private void InitializeEnclosures()
+        {
+            // Fetch all available animal types dynamically from the factory (e.g., "Monkey", "Lion", etc.)
+            var types = AnimalFactory.GetAvailableTypes();
+
+            // Loop through each type to create a corresponding enclosure view model
+            foreach (var type in types)
+            {
+                // Create a new enclosure container for the accordion UI
+                var enclosure = new EnclosureViewModel
+                {
+                    // Set the technical identifier key used by repositories and logic
+                    Name = type,
+
+                    // Map the technical key to a localized plural enclosure name from resources (e.g., "Lions", "Monkeys")
+                    DisplayName = type switch
+                    {
+                        "Lion" => Messages.UI_LionEnclosure,
+                        "Penguin" => Messages.UI_PenguinEnclosure,
+                        "HoneyBadger" => Messages.UI_HoneyBadgerEnclosure,
+                        _ => Messages.UI_MonkeyEnclosure // Default fallback to Monkeys
+                    }
+                };
+
+                // Add the configured enclosure to the main collection displayed in the accordion UI
+                Enclosures.Add(enclosure);
+            }
+        }
+
+        // Helper method to find an enclosure by its name key
+        private EnclosureViewModel? GetEnclosure(string name)
+        {
+            foreach (var enc in Enclosures)
+            {
+                if (enc.Name == name) return enc;
+            }
+            return null;
         }
 
         // ==========================================
@@ -194,7 +310,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             // Clears the current on-screen list of animals to remove old items from the previous category.
             Animals.Clear();
 
-            // what exactly is currently selected in the interface drop-down list
+            // what exactly is currently selected in the interface drop-down list or accordion
             IEnumerable<Animal> items = SelectedRepositoryType switch
             {
                 "Lion" => _lionRepository.GetAll(),
@@ -203,7 +319,25 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 _ => _monkeyRepository.GetAll()
             };
 
-            // The elements obtained from the desired repository are added one by one to the Animals collection
+            // Синхронизируем списки по всем репозиториям для каждого вольера, чтобы вольери всегда хранили актуальные коллекции
+            foreach (var enc in Enclosures)
+            {
+                enc.Animals.Clear();
+
+                IEnumerable<Animal> repoItems = enc.Name switch
+                {
+                    "Lion" => _lionRepository.GetAll(),
+                    "Penguin" => _penguinRepository.GetAll(),
+                    "HoneyBadger" => _honeyBadgerRepository.GetAll(),
+                    _ => _monkeyRepository.GetAll()
+                };
+
+                foreach (var item in repoItems)
+                {
+                    enc.Animals.Add(item);
+                }
+            }
+
             foreach (var item in items)
             {
                 Animals.Add(item);
@@ -220,6 +354,20 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         // COMMAND LOGIC METHODS
         // ==========================================
+
+        // Logic to handle animal selection reliably across multiple enclosure lists
+        private void ExecuteSelectAnimal(object? parameter)
+        {
+            if (parameter is Animal animal)
+            {
+                // Force deselect then select to ensure UI notification fires even on re-selecting the same item
+                if (_selectedAnimal == animal)
+                {
+                    SelectedAnimal = null;
+                }
+                SelectedAnimal = animal;
+            }
+        }
 
         // Logic for opening dialog and adding a new animal
         private void ExecuteAddAnimal(object? parameter)
@@ -240,18 +388,29 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     dialog.AnimalDescription
                 );
 
-                // Add animal to the corresponding type repository
-                if (newAnimal is Monkey m) _monkeyRepository.Add(m);
-                else if (newAnimal is Lion l) _lionRepository.Add(l);
-                else if (newAnimal is Penguin p) _penguinRepository.Add(p);
-                else if (newAnimal is HoneyBadger hb) _honeyBadgerRepository.Add(hb);
-
-                // If created animal type matches currently viewed repository, refresh view
-                if (dialog.AnimalType == SelectedRepositoryType ||
-                    (SelectedRepositoryType == "Monkey" && dialog.AnimalType != "Lion" && dialog.AnimalType != "Penguin" && dialog.AnimalType != "HoneyBadger"))
+                // Add animal to the corresponding type repository and its enclosure (triggers welcome domain events)
+                if (newAnimal is Monkey m)
                 {
-                    UpdateDisplayedAnimals();
+                    _monkeyRepository.Add(m);
+                    GetEnclosure("Monkey")?.Animals.Add(m);
                 }
+                else if (newAnimal is Lion l)
+                {
+                    _lionRepository.Add(l);
+                    GetEnclosure("Lion")?.Animals.Add(l);
+                }
+                else if (newAnimal is Penguin p)
+                {
+                    _penguinRepository.Add(p);
+                    GetEnclosure("Penguin")?.Animals.Add(p);
+                }
+                else if (newAnimal is HoneyBadger hb)
+                {
+                    _honeyBadgerRepository.Add(hb);
+                    GetEnclosure("HoneyBadger")?.Animals.Add(hb);
+                }
+
+                UpdateDisplayedAnimals();
 
                 // Add newly created animal to collection and set as selected
                 SelectedAnimal = newAnimal;
@@ -272,11 +431,27 @@ namespace CrazyUniverse.WpfApp.ViewModels
             {
                 string name = SelectedAnimal.Name;
 
-                // Remove from appropriate type repository
-                if (SelectedAnimal is Monkey m) _monkeyRepository.Remove(m);
-                else if (SelectedAnimal is Lion l) _lionRepository.Remove(l);
-                else if (SelectedAnimal is Penguin p) _penguinRepository.Remove(p);
-                else if (SelectedAnimal is HoneyBadger hb) _honeyBadgerRepository.Remove(hb);
+                // Remove from appropriate type repository and its enclosure collection (triggers farewell domain events)
+                if (SelectedAnimal is Monkey m)
+                {
+                    _monkeyRepository.Remove(m);
+                    GetEnclosure("Monkey")?.Animals.Remove(m);
+                }
+                else if (SelectedAnimal is Lion l)
+                {
+                    _lionRepository.Remove(l);
+                    GetEnclosure("Lion")?.Animals.Remove(l);
+                }
+                else if (SelectedAnimal is Penguin p)
+                {
+                    _penguinRepository.Remove(p);
+                    GetEnclosure("Penguin")?.Animals.Remove(p);
+                }
+                else if (SelectedAnimal is HoneyBadger hb)
+                {
+                    _honeyBadgerRepository.Remove(hb);
+                    GetEnclosure("HoneyBadger")?.Animals.Remove(hb);
+                }
 
                 UpdateDisplayedAnimals();
 
@@ -400,14 +575,30 @@ namespace CrazyUniverse.WpfApp.ViewModels
             return SelectedAnimal is IVocalizable && SelectedAnimal.Satiety > 0;
         }
 
-        // Logic for crazy action
+        // Logic for crazy action (triggers domain events via repository)
         private void ExecuteCrazyAction(object? parameter)
         {
             if (SelectedAnimal != null)
             {
-                string resultMessage = SelectedAnimal.CrazyAction();
+                // Trigger crazy action through the appropriate repository to broadcast reactions to enclosure neighbors
+                if (SelectedAnimal is Monkey m)
+                {
+                    _monkeyRepository.TriggerCrazyAction(m);
+                }
+                else if (SelectedAnimal is Lion l)
+                {
+                    _lionRepository.TriggerCrazyAction(l);
+                }
+                else if (SelectedAnimal is Penguin p)
+                {
+                    _penguinRepository.TriggerCrazyAction(p);
+                }
+                else if (SelectedAnimal is HoneyBadger hb)
+                {
+                    _honeyBadgerRepository.TriggerCrazyAction(hb);
+                }
+
                 OnPropertyChanged(nameof(SelectedAnimal));
-                Log(resultMessage);
 
                 if (SelectedAnimal.Satiety == 0)
                 {
