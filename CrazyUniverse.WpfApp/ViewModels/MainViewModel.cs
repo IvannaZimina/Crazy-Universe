@@ -65,6 +65,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
         private readonly IRepository<Lion> _lionRepository = new Repository<Lion>();
         private readonly IRepository<Penguin> _penguinRepository = new Repository<Penguin>();
         private readonly IRepository<HoneyBadger> _honeyBadgerRepository = new Repository<HoneyBadger>();
+        private readonly IRepository<Kangaroo> _kangarooRepository = new Repository<Kangaroo>();
+        private readonly IRepository<Dolphin> _dolphinRepository = new Repository<Dolphin>();
+        private readonly IRepository<Frog> _frogRepository = new Repository<Frog>();
 
         // Collection of enclosures for the accordion-based UI view
         public ObservableCollection<EnclosureViewModel> Enclosures { get; } = new ObservableCollection<EnclosureViewModel>();
@@ -162,7 +165,10 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public int ZooPopulation => _monkeyRepository.GetAll().Count()
                                     + _lionRepository.GetAll().Count()
                                     + _penguinRepository.GetAll().Count()
-                                    + _honeyBadgerRepository.GetAll().Count();
+                                    + _honeyBadgerRepository.GetAll().Count()
+                                    + _kangarooRepository.GetAll().Count()
+                                    + _dolphinRepository.GetAll().Count()
+                                    + _frogRepository.GetAll().Count();
 
         public int TotalAnimalsCount => ZooPopulation;
 
@@ -175,6 +181,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     .Concat(_lionRepository.GetAll().Cast<Animal>())
                     .Concat(_penguinRepository.GetAll().Cast<Animal>())
                     .Concat(_honeyBadgerRepository.GetAll().Cast<Animal>())
+                    .Concat(_kangarooRepository.GetAll().Cast<Animal>())
+                    .Concat(_dolphinRepository.GetAll().Cast<Animal>())
+                    .Concat(_frogRepository.GetAll().Cast<Animal>())
                     .ToList();
 
                 var predefinedCategories = new[]
@@ -231,7 +240,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 int cost = SelectedAnimal switch
                 {
                     HoneyBadger hb => hb.SwimCost,
-                    Penguin p => p.SwimCost,
+                    Penguin p => p.SwimCost * 15,
+                    Dolphin d => d.SwimCost * 15,
+                    Frog f => f.SwimCost * 15,
                     _ => 10
                 };
                 return string.Format(Messages.UI_BtnSwim, cost);
@@ -245,6 +256,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 int cost = SelectedAnimal switch
                 {
                     Monkey m => m.JumpCost,
+                    Kangaroo k => k.JumpCost,
+                    Frog f => f.JumpCost,
                     _ => 5
                 };
                 return string.Format(Messages.UI_BtnJump, cost);
@@ -261,6 +274,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     Lion l => 2,
                     Monkey m => 2,
                     Penguin p => 2,
+                    Kangaroo k => k.SoundCost,
+                    Dolphin d => d.SoundCost,
                     _ => 2
                 };
                 return string.Format(Messages.UI_BtnMakeSound, cost);
@@ -277,6 +292,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
             _lionRepository.LogMessageGenerated += (s, msg) => Log(msg);
             _penguinRepository.LogMessageGenerated += (s, msg) => Log(msg);
             _honeyBadgerRepository.LogMessageGenerated += (s, msg) => Log(msg);
+            _kangarooRepository.LogMessageGenerated += (s, msg) => Log(msg);
+            _dolphinRepository.LogMessageGenerated += (s, msg) => Log(msg);
+            _frogRepository.LogMessageGenerated += (s, msg) => Log(msg);
 
             // Initialize enclosures collection based on available types from factory
             InitializeEnclosures();
@@ -301,6 +319,18 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 else if (animal is HoneyBadger hb)
                 {
                     _honeyBadgerRepository.Add(hb);
+                }
+                else if (animal is Kangaroo k)
+                {
+                    _kangarooRepository.Add(k);
+                }
+                else if (animal is Dolphin d)
+                {
+                    _dolphinRepository.Add(d);
+                }
+                else if (animal is Frog f)
+                {
+                    _frogRepository.Add(f);
                 }
             }
 
@@ -339,6 +369,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
                         "Lion" => Messages.UI_LionEnclosure,
                         "Penguin" => Messages.UI_PenguinEnclosure,
                         "HoneyBadger" => Messages.UI_HoneyBadgerEnclosure,
+                        "Kangaroo" => Messages.UI_KangarooEnclosure,
+                        "Dolphin" => Messages.UI_DolphinEnclosure,
+                        "Frog" => Messages.UI_FrogEnclosure,
                         _ => Messages.UI_MonkeyEnclosure
                     }
                 };
@@ -349,6 +382,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     "Lion" => _lionRepository.GetAll().Cast<Animal>(),
                     "Penguin" => _penguinRepository.GetAll().Cast<Animal>(),
                     "HoneyBadger" => _honeyBadgerRepository.GetAll().Cast<Animal>(),
+                    "Kangaroo" => _kangarooRepository.GetAll().Cast<Animal>(),
+                    "Dolphin" => _dolphinRepository.GetAll().Cast<Animal>(),
+                    "Frog" => _frogRepository.GetAll().Cast<Animal>(),
                     _ => _monkeyRepository.GetAll().Cast<Animal>()
                 };
 
@@ -385,6 +421,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     "Lion" => _lionRepository.GetAll().Cast<Animal>(),
                     "Penguin" => _penguinRepository.GetAll().Cast<Animal>(),
                     "HoneyBadger" => _honeyBadgerRepository.GetAll().Cast<Animal>(),
+                    "Kangaroo" => _kangarooRepository.GetAll().Cast<Animal>(),
+                    "Dolphin" => _dolphinRepository.GetAll().Cast<Animal>(),
+                    "Frog" => _frogRepository.GetAll().Cast<Animal>(),
                     _ => _monkeyRepository.GetAll().Cast<Animal>()
                 };
 
@@ -500,6 +539,18 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 {
                     _honeyBadgerRepository.Add(hb);
                 }
+                else if (newAnimal is Kangaroo k)
+                {
+                    _kangarooRepository.Add(k);
+                }
+                else if (newAnimal is Dolphin d)
+                {
+                    _dolphinRepository.Add(d);
+                }
+                else if (newAnimal is Frog f)
+                {
+                    _frogRepository.Add(f);
+                }
 
                 UpdateDisplayedAnimals();
 
@@ -539,6 +590,18 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 else if (SelectedAnimal is HoneyBadger hb)
                 {
                     _honeyBadgerRepository.Remove(hb);
+                }
+                else if (SelectedAnimal is Kangaroo k)
+                {
+                    _kangarooRepository.Remove(k);
+                }
+                else if (SelectedAnimal is Dolphin d)
+                {
+                    _dolphinRepository.Remove(d);
+                }
+                else if (SelectedAnimal is Frog f)
+                {
+                    _frogRepository.Remove(f);
                 }
 
                 UpdateDisplayedAnimals();
@@ -689,6 +752,18 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 else if (SelectedAnimal is HoneyBadger hb)
                 {
                     _honeyBadgerRepository.TriggerCrazyAction(hb);
+                }
+                else if (SelectedAnimal is Kangaroo k)
+                {
+                    _kangarooRepository.TriggerCrazyAction(k);
+                }
+                else if (SelectedAnimal is Dolphin d)
+                {
+                    _dolphinRepository.TriggerCrazyAction(d);
+                }
+                else if (SelectedAnimal is Frog f)
+                {
+                    _frogRepository.TriggerCrazyAction(f);
                 }
 
                 OnPropertyChanged(nameof(SelectedAnimal));

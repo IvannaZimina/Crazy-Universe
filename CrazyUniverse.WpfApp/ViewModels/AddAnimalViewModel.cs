@@ -20,7 +20,10 @@ namespace CrazyUniverse.WpfApp.ViewModels
             { "Monkey", Messages.UI_MonkeyTypeName },
             { "Lion", Messages.UI_LionTypeName },
             { "Penguin", Messages.UI_PenguinTypeName },
-            { "HoneyBadger", Messages.UI_HoneyBadgerTypeName }
+            { "HoneyBadger", Messages.UI_HoneyBadgerTypeName },
+            { "Kangaroo", Messages.UI_KangarooTypeName },
+            { "Dolphin", Messages.UI_DolphinTypeName },
+            { "Frog", Messages.UI_FrogTypeName }
         };
 
         // ==========================================
