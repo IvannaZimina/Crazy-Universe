@@ -108,32 +108,12 @@ To adhere to the Single Responsibility Principle and decouple object creation fr
 7. **LINQ Data Operations**: Live filtering by name, alphabetical sorting toggles, and grouped satiety range statistics.
 
 ---
-
 ## Peer Review & Collaboration
 
-### 1. **Peer Name**: Maksym Kotkov
-- **Repository Link**: [https://github.com/IvannaZimina/Crazy-Universe](https://github.com/IvannaZimina/Crazy-Universe)
-- **Status**: **Completed & Merged**
-- **Task for Reviewer / Classmate**: 
-  - Create a new concrete animal subclass inheriting from `Animal` (e.g., `Elephant`, `Giraffe`, or `Kangaroo`).
-  - Implement the abstract `CrazyAction()` method with unique behavior based on `Satiety`.
-  - Implement at least two relevant interfaces available in the project (such as `IJumpable`, `ISwimmable`, or `IVocalizable`) to utilize the existing action architecture and capability-checking helpers.
-
-**Guidelines & Recommendations for Maksym**:
-- **Clean Code**: Follow consistent naming conventions, keep methods short and focused, and avoid code duplication.
-- **Comments**: Add XML documentation comments (`///`) to public classes and methods.
-- **Git Commits**: Write clear, descriptive commit messages with prefixes (e.g., `feat: add Elephant model`, `fix: validate satiety range`).
-
----
-
-### 2. **Peer Name**: Arina Shishkova
-- **Repository Link**: [https://github.com/IvannaZimina/Crazy-Universe](https://github.com/IvannaZimina/Crazy-Universe)
-- **Status**: **In Progress / Invited for Collaboration**
-- **Task for Reviewer / Classmate**: 
-  - Add three new concrete animal subclasses inheriting from `Animal` (e.g., `Elephant`, `Kangaroo`, `Dolphin`, etc.), each featuring unique behavior.
-  - Implement the abstract `CrazyAction()` method with unique behavior based on `Satiety`.
-  - Implement at least two relevant capability interfaces available in the project (`IJumpable`, `ISwimmable`, `IVocalizable`, `IFlyable`, `IRunnable`, `IClimbable`).
-  - Register the new animal types in `AnimalFactory.cs` so they can be instantiated dynamically via the `AddAnimal` dialog and ensure initial instances are created in `AnimalFactory.CreateDefaultAnimals()`.
+Tasks, guidelines, and review status for project contributors and peer reviewers are tracked directly in the repository Issues:
+- **[Issue #5: Add new animal subclass and integrate capabilities (Maksym Kotkov)](https://github.com/IvannaZimina/Crazy-Universe/issues/5)** — Completed & Merged
+- **[Issue #6: Add and integrate three new animal types (Arina Shishkova)](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** — Completed & Merged
+- **[Issue #7: General Collaboration & PR Guidelines](https://github.com/IvannaZimina/Crazy-Universe/issues/7)** — Active Guidelines
 
 **Guidelines & Recommendations for collaborators**:
 - **Clean Code**: Follow consistent naming conventions, keep methods short and focused, and avoid code duplication.
