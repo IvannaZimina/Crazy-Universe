@@ -1,4 +1,4 @@
-# Crazy Universe (Crazy Zoo + WPF Design)
+# Crazy Universe (Vol.1 & Vol.2) 🚀
 
 Welcome to the **Crazy Universe** repository!  
 This is a humorous WPF application where different types of objects live in the same world but behave, interact, and react to each other dynamically.
@@ -6,7 +6,6 @@ This is a humorous WPF application where different types of objects live in the 
 ---
 
 ## Application Description
-
 **Crazy Zoo** is a humorous simulator where every animal has a unique behavior, a satiety state, and specific traits.  
 Users can interact with the animals (such as feeding them, making them perform actions, or adding new characters via a modal dialog) and observe their unique crazy actions and neighborhood reactions in real-time.  
 
@@ -27,7 +26,7 @@ The solution consists of separate Core and WPF projects and uses inheritance, ge
 
 1. Clone the repository to your local machine:  
    `https://github.com/IvannaZimina/Crazy-Universe`
-2. Open the solution file (`.sln`) in **Visual Studio** (version 2022 or newer is recommended).
+2. Open the solution file (`.slnx`) in **Visual Studio** (version 2022 or newer is recommended).
 3. Ensure that the `CrazyUniverse.WpfApp` project is set as the **Startup Project**.
 4. Press **F5** (or click the **Start** button) to run the application.
 
@@ -69,8 +68,8 @@ The solution is split into independent projects, fully satisfying the MVVM patte
 
 ### 1. Model / Core (`CrazyUniverse.Core`)
 - **Independent Business Logic**: Contains characters (animals), generic repositories, interfaces, domain events, and reaction rules completely separated from UI buttons, windows, or WPF dependencies.
-- **Animal.cs** (Abstract base class): Manages shared state (`Satiety` from 0 to 100 with `protected set`), generates unique identifiers via `Guid`, handles base feeding logic (`Feed`), and defines the abstract `CrazyAction()` contract. Implements `INotifyPropertyChanged`.
-- **Concrete Models**: `Monkey`, `Penguin`, `Lion`, and `HoneyBadger` implement unique polymorphic behaviors and reaction handlers.
+- **Animal.cs** (Abstract base class): Manages shared state (`Satiety` from 0 to 100 with `protected set` for strict encapsulation), generates unique identifiers via `Guid`, handles base feeding logic (`Feed`), and defines the abstract `CrazyAction()` contract. Implements `INotifyPropertyChanged`.
+- **Concrete Models**: `Monkey`, `Penguin`, `Lion`, `HoneyBadger`, etc., implement unique polymorphic behaviors, reaction handlers, and **defensive input validation** (negative inputs like `Climb(-200)` are safely caught and rejected without altering the valid `Satiety` state).
 - **Interfaces**: Contracts for capabilities (`IJumpable`, `ISwimmable`, `IRunnable`, `IClimbable`, `IVocalizable`) and generic repositories (`IRepository<T>`).
 - **Helpers & Resources**:
   - **AnimalActionsHelper.cs**: Helper utilities for checking animal capabilities dynamically using pattern matching (`is`) and type casting (`as`).
@@ -92,7 +91,7 @@ The solution is split into independent projects, fully satisfying the MVVM patte
 ### Factory Pattern (`AnimalFactory`)
 To adhere to the Single Responsibility Principle and decouple object creation from UI and business logic:
 - Located in `CrazyUniverse.WpfApp/Factories/AnimalFactory.cs`.
-- Encapsulates instantiation logic for all concrete animal types (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`).
+- Encapsulates instantiation logic for all concrete animal types (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`, etc.).
 - Dynamically creates objects based on parameters passed from the modal dialog (`AddAnimal`), ensuring clean architecture.
 
 ---
@@ -106,26 +105,21 @@ To adhere to the Single Responsibility Principle and decouple object creation fr
 5. **Capability Checking (`is`/`as`)**: Using `AnimalActionsHelper` to verify interface implementations safely.
 6. **Global Population Tracking**: Real-time synchronization of the `ZooPopulation` counter across all enclosure repositories.
 7. **LINQ Data Operations**: Live filtering by name, alphabetical sorting toggles, and grouped satiety range statistics.
+8. **Robust Input Validation**: Passing negative arguments (e.g., `Climb(-200)` or `Swim(-200)`) successfully triggers localized error messages while preserving the object's valid `Satiety` state.
 
 ---
+
 ## Peer Review & Collaboration
 
-Tasks, guidelines, and review status for project contributors and peer reviewers are tracked directly in the repository Issues:
-- **[Issue #5: Add new animal subclass and integrate capabilities (Maksym Kotkov)](https://github.com/IvannaZimina/Crazy-Universe/issues/5)** — Completed & Merged
-- **[Issue #6: Add and integrate three new animal types (Arina Shishkova)](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** — Completed & Merged
-- **[Issue #7: General Collaboration & PR Guidelines](https://github.com/IvannaZimina/Crazy-Universe/issues/7)** — Active Guidelines
+Tasks, guidelines, and review status for project contributors and peer reviewers are tracked directly via GitHub Issues and Pull Requests:
 
-**Guidelines & Recommendations for collaborators**:
-- **Clean Code**: Follow consistent naming conventions, keep methods short and focused, and avoid code duplication.
-- **Comments**: Add XML documentation comments (`///`) to public classes and methods.
-- **Git Commits**: Write clear, descriptive commit messages using Conventional Commit prefixes:
-  - `feat:` — for adding new features or models (e.g., `feat: add 3 new animal models`).
-  - `fix:` — for fixing bugs or UI glitches (e.g., `fix: update factory mapping and messages`).
-  - `docs:` — for updating documentation or comments (for README).
-  - `refactor:` — for code restructuring without changing functionality.
-  - `style:` — for formatting and visual adjustments.
-  - `chore:` — for configuration or project setting updates.
-- **PR & Merge Workflow**: Work in a separate feature branch (`feature/arina-new-animals`), create a Pull Request to `main`, and wait for code review and merge by the primary author.
+- **[Issue #5: Add new animal subclass and integrate capabilities](https://github.com/IvannaZimina/Crazy-Universe/issues/5)** (Maksym Kotkov)
+  - *Pull Request*: **[PR #1](https://github.com/IvannaZimina/Crazy-Universe/pull/1)** (HoneyBadger integration)
+  - *Code Review & Verification*: Checked by project owner for inheritance (`Animal` base class, `protected set` encapsulation), interface implementation (`IClimbable`, `ISwimmable`), clean compilation, and robust input validation (negative arguments like `-200` are safely rejected without altering `Satiety`).
+- **[Issue #6: Add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** (Arina Shishkova)
+  - *Pull Request*: **[PR #4](https://github.com/IvannaZimina/Crazy-Universe/pull/4)** (Adding three new animal types, integrating them into repositories, events, and UI)
+  - *Code Review & Verification*: Reviewed and approved by project owner. Verified proper implementation of generic repositories, domain events, MVVM data bindings, and clean compilation.
+- **[Issue #7: Guidelines & Recommendations for collaborators](https://github.com/IvannaZimina/Crazy-Universe/issues/7)** — General collaboration rules, clean code practices, and PR workflows managed via GitHub.
 
 ---
 
