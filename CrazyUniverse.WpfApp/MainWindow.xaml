@@ -81,7 +81,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="140"/>
+            <RowDefinition Height="180"/>
         </Grid.RowDefinitions>
 
         <!-- TOP HEADER BAR with Search Input (LINQ Where) -->
@@ -137,7 +137,11 @@
                     <TextBlock Text="Enclosures" FontSize="15" FontWeight="Bold" Foreground="#1E293B" Margin="4,0,0,8"/>
 
                     <!-- Accordion view of Enclosures using ItemsControl with Expander -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer Grid.Row="1" 
+                                  VerticalScrollBarVisibility="Auto" 
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  PanningMode="VerticalOnly"
+                                  CanContentScroll="False">
                         <ItemsControl ItemsSource="{Binding Enclosures}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -277,19 +281,7 @@
 
                         <Separator Margin="0,5,0,12" Background="#E2E8F0"/>
 
-                        <TextBlock Text="Information" FontSize="14" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,8"/>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,4">
-                            <TextBlock Text="Name:" FontWeight="Bold" Width="110" Foreground="#475569"/>
-                            <TextBlock Text="{Binding Name}" FontSize="13" Foreground="#1E293B"/>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,4">
-                            <TextBlock Text="Species:" FontWeight="Bold" Width="110" Foreground="#475569"/>
-                            <TextBlock Text="{Binding TypeName}" FontSize="13" Foreground="#1E293B"/>
-                        </StackPanel>
-
-                        <Separator Margin="0,10" Background="#E2E8F0"/>
+                        <!-- Дублирующий блок Information убран для освобождения места -->
 
                         <TextBlock Text="Description" FontSize="14" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,6"/>
                         <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="#64748B" FontSize="12" LineHeight="18" Margin="0,0,0,10"/>
