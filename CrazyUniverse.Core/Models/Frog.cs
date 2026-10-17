@@ -15,7 +15,7 @@ namespace CrazyUniverse.Core.Models
         public override string Description
         {
             get => _customDescription ?? Messages.Desc_FrogDescription;
-            set => _customDescription = value;
+            protected set => _customDescription = value;
         }
 
         public int JumpCost => 4;

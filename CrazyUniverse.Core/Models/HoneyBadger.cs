@@ -11,7 +11,7 @@ namespace CrazyUniverse.Core.Models
         public override string Description
         {
             get => _customDescription ?? Messages.Desc_HoneyBadgerDescription;
-            set => _customDescription = value;
+            protected set => _customDescription = value;
         }
 
         public int ClimbCost => 5;
@@ -42,6 +42,11 @@ namespace CrazyUniverse.Core.Models
 
         public string Climb(double height)
         {
+            if (height < 0)
+            {
+                return string.Format(Messages.Error_NegativeHeight, Name, height);
+            }
+
             if (Satiety <= 0)
             {
                 return string.Format(Messages.Action_NoEnergy, Name);
@@ -64,6 +69,11 @@ namespace CrazyUniverse.Core.Models
 
         public string Swim(double distance)
         {
+            if (distance < 0)
+            {
+                return string.Format(Messages.Error_NegativeDistance, Name, distance);
+            }
+
             if (Satiety <= 0)
             {
                 return string.Format(Messages.Action_NoEnergy, Name);

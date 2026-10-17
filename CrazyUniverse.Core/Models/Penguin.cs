@@ -14,7 +14,7 @@ namespace CrazyUniverse.Core.Models
         public override string Description
         {
             get => _customDescription ?? Messages.Desc_PenguinDescription;
-            set => _customDescription = value;
+            protected set => _customDescription = value;
         }
 
         // Implementing the SwimCost property required by the ISwimmable interface (base satiety cost per meter of swimming)

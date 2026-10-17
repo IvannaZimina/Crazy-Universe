@@ -15,7 +15,7 @@ namespace CrazyUniverse.Core.Models
         public override string Description
         {
             get => _customDescription ?? Messages.Desc_DolphinDescription;
-            set => _customDescription = value;
+            protected set => _customDescription = value;
         }
 
         public int SwimCost => 2;

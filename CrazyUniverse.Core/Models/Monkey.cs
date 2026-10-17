@@ -14,7 +14,7 @@ namespace CrazyUniverse.Core.Models
         public override string Description
         {
             get => _customDescription ?? Messages.Desc_MonkeyDescription;
-            set => _customDescription = value;
+            protected set => _customDescription = value;
         }
 
         // Implementing the JumpCost property required by the IJumpable interface (specifies satiety cost for jumping)

@@ -14,7 +14,7 @@ namespace CrazyUniverse.Core.Models
         public override string Description
         {
             get => _customDescription ?? Messages.Desc_LionDescription;
-            set => _customDescription = value;
+            protected set => _customDescription = value;
         }
 
         // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)

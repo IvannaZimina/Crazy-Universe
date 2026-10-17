@@ -448,6 +448,24 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} cannot swim a negative distance ({1}). Satiety remains unchanged..
+        /// </summary>
+        public static string Error_NegativeDistance {
+            get {
+                return ResourceManager.GetString("Error_NegativeDistance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} cannot climb a negative height ({1}). Satiety remains unchanged..
+        /// </summary>
+        public static string Error_NegativeHeight {
+            get {
+                return ResourceManager.GetString("Error_NegativeHeight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} walks into the enclosure. Everyone stares at the newcomer with mixed feelings..
         /// </summary>
         public static string Event_Add_Default {

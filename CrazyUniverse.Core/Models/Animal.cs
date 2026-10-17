@@ -21,7 +21,7 @@ namespace CrazyUniverse.Core.Models
         public abstract string TypeName { get; }
 
         // Abstract property for a funny description of the animal
-        public abstract string Description { get; set; }
+        public abstract string Description { get; protected set; }
 
         // Virtual property for feeding cost/gain, can be overridden by specific animals if needed
         public virtual int FeedCost => 5;

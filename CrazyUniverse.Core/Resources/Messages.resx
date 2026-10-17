@@ -117,110 +117,87 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-	<!-- Kangaroo -->
-	<data name="UI_KangarooTypeName" xml:space="preserve">
+  <data name="UI_KangarooTypeName" xml:space="preserve">
     <value>Kangaroo</value>
     <comment>UI name</comment>
   </data>
-
-	<data name="UI_KangarooEnclosure" xml:space="preserve">
+  <data name="UI_KangarooEnclosure" xml:space="preserve">
     <value>Kangaroos</value>
     <comment>UI enclosure</comment>
   </data>
-
-	<data name="Desc_KangarooDescription" xml:space="preserve">
+  <data name="Desc_KangarooDescription" xml:space="preserve">
     <value>An energetic kangaroo who treats the entire zoo like one enormous trampoline.</value>
     <comment>Kangaroo</comment>
   </data>
-
-	<data name="Action_KangarooCrazyNormal" xml:space="preserve">
+  <data name="Action_KangarooCrazyNormal" xml:space="preserve">
     <value>{0} the kangaroo starts bouncing wildly around the zoo! (Current Satiety: {1})</value>
     <comment>Kangaroo</comment>
   </data>
-
-	<data name="Action_KangarooCrazyLow" xml:space="preserve">
+  <data name="Action_KangarooCrazyLow" xml:space="preserve">
     <value>{0} the kangaroo tries one last heroic jump and lands exhausted. (Current Satiety: {1})</value>
     <comment>Kangaroo</comment>
   </data>
-
-	<data name="Action_KangarooJump" xml:space="preserve">
+  <data name="Action_KangarooJump" xml:space="preserve">
     <value>{0} the kangaroo makes a powerful jump! (Current Satiety: {1})</value>
     <comment>Kangaroo</comment>
   </data>
-
-	<data name="Action_KangarooMakeSound" xml:space="preserve">
+  <data name="Action_KangarooMakeSound" xml:space="preserve">
     <value>{0} the kangaroo makes a strange grunting sound. (Current Satiety: {1})</value>
     <comment>Kangaroo</comment>
   </data>
-
-	<!-- Dolphin -->
-	<data name="UI_DolphinTypeName" xml:space="preserve">
+  <data name="UI_DolphinTypeName" xml:space="preserve">
     <value>Dolphin</value>
     <comment>UI name</comment>
   </data>
-
-	<data name="UI_DolphinEnclosure" xml:space="preserve">
+  <data name="UI_DolphinEnclosure" xml:space="preserve">
     <value>Dolphins</value>
     <comment>UI enclosure</comment>
   </data>
-
-	<data name="Desc_DolphinDescription" xml:space="preserve">
+  <data name="Desc_DolphinDescription" xml:space="preserve">
     <value>A cheerful dolphin who believes every pool is a stage for an aquatic show.</value>
     <comment>Dolphin</comment>
   </data>
-
-	<data name="Action_DolphinCrazyNormal" xml:space="preserve">
+  <data name="Action_DolphinCrazyNormal" xml:space="preserve">
     <value>{0} the dolphin starts an impressive water show with wild jumps and splashes! (Current Satiety: {1})</value>
     <comment>Dolphin</comment>
   </data>
-
-	<data name="Action_DolphinCrazyLow" xml:space="preserve">
+  <data name="Action_DolphinCrazyLow" xml:space="preserve">
     <value>{0} the dolphin makes one last splash and floats tiredly in the water. (Current Satiety: {1})</value>
     <comment>Dolphin</comment>
   </data>
-
-	<data name="Action_DolphinSwim" xml:space="preserve">
+  <data name="Action_DolphinSwim" xml:space="preserve">
     <value>{0} the dolphin swims {1} meters at impressive speed! (Current Satiety: {2})</value>
     <comment>Dolphin</comment>
   </data>
-
-	<data name="Action_DolphinMakeSound" xml:space="preserve">
+  <data name="Action_DolphinMakeSound" xml:space="preserve">
     <value>{0} the dolphin whistles and clicks loudly. (Current Satiety: {1})</value>
     <comment>Dolphin</comment>
   </data>
-
-	<!-- Frog -->
-	<data name="UI_FrogTypeName" xml:space="preserve">
+  <data name="UI_FrogTypeName" xml:space="preserve">
     <value>Frog</value>
     <comment>UI name</comment>
   </data>
-
-	<data name="UI_FrogEnclosure" xml:space="preserve">
+  <data name="UI_FrogEnclosure" xml:space="preserve">
     <value>Frogs</value>
     <comment>UI enclosure</comment>
   </data>
-
-	<data name="Desc_FrogDescription" xml:space="preserve">
+  <data name="Desc_FrogDescription" xml:space="preserve">
     <value>A tiny frog with huge ambitions and absolutely no respect for personal space.</value>
     <comment>Frog</comment>
   </data>
-
-	<data name="Action_FrogCrazyNormal" xml:space="preserve">
+  <data name="Action_FrogCrazyNormal" xml:space="preserve">
     <value>{0} the frog launches itself around the enclosure like a tiny green rocket! (Current Satiety: {1})</value>
     <comment>Frog</comment>
   </data>
-
-	<data name="Action_FrogCrazyLow" xml:space="preserve">
+  <data name="Action_FrogCrazyLow" xml:space="preserve">
     <value>{0} the frog manages one final dramatic hop and collapses dramatically. (Current Satiety: {1})</value>
     <comment>Frog</comment>
   </data>
-
-	<data name="Action_FrogJump" xml:space="preserve">
+  <data name="Action_FrogJump" xml:space="preserve">
     <value>{0} the frog makes an enormous jump for such a tiny animal! (Current Satiety: {1})</value>
     <comment>Frog</comment>
   </data>
-
-	<data name="Action_FrogSwim" xml:space="preserve">
+  <data name="Action_FrogSwim" xml:space="preserve">
     <value>{0} the frog swims {1} meters through the water. (Current Satiety: {2})</value>
     <comment>Frog</comment>
   </data>
@@ -499,5 +476,13 @@
   <data name="UI_Enclosure_NotFound" xml:space="preserve">
     <value>No such animal found here.</value>
     <comment>UI</comment>
+  </data>
+  <data name="Error_NegativeHeight" xml:space="preserve">
+    <value>{0} cannot climb a negative height ({1}). Satiety remains unchanged.</value>
+    <comment>Error validation</comment>
+  </data>
+  <data name="Error_NegativeDistance" xml:space="preserve">
+    <value>{0} cannot swim a negative distance ({1}). Satiety remains unchanged.</value>
+    <comment>Error validation</comment>
   </data>
 </root>
