@@ -31,23 +31,17 @@ namespace CrazyUniverse.WpfApp.Factories
         // Creates a specific animal based on type key from dialog
         public static Animal CreateAnimal(string animalType, string name, string description)
         {
-            Animal animal = animalType switch
+            return animalType switch
             {
-                "Lion" => new Lion(name),
-                "Penguin" => new Penguin(name),
-                "HoneyBadger" => new HoneyBadger(name),
-                "Kangaroo" => new Kangaroo(name),
-                "Dolphin" => new Dolphin(name),
-                "Frog" => new Frog(name),
-                _ => new Monkey(name) // "Monkey" is default
+                // after the description set became protected, description must be passed to the constructor
+                "Lion" => new Lion(name, description),
+                "Penguin" => new Penguin(name, description),
+                "HoneyBadger" => new HoneyBadger(name, description),
+                "Kangaroo" => new Kangaroo(name, description),
+                "Dolphin" => new Dolphin(name, description),
+                "Frog" => new Frog(name, description),
+                _ => new Monkey(name, description) // "Monkey" is default
             };
-
-            if (!string.IsNullOrWhiteSpace(description))
-            {
-                animal.Description = description;
-            }
-
-            return animal;
         }
     }
 }
