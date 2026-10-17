@@ -1,56 +1,53 @@
-﻿using System.Collections.Generic;
+﻿using CrazyUniverse.Core.Resources;
+using CrazyUniverse.WpfApp.ViewModels;
 using System.Windows;
-using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.WpfApp
 {
+    // logic for AddAnimal.xaml
     public partial class AddAnimal : Window
     {
-        // Возвращаем выбранный технический ключ (например, "Monkey", "Lion"), который привязан как Key в словаре
-        public string AnimalType => CmbAnimalType.SelectedValue as string ?? "Monkey";
-        public string AnimalName => TxtBoxName.Text.Trim();
-        public string AnimalDescription => TxtBoxDescription.Text.Trim();
+        // Readonly field to store ViewModel instance
+        private readonly AddAnimalViewModel _viewModel;
 
+        // Public property to expose selected animal type from ViewModel
+        public string AnimalType => _viewModel.SelectedAnimalType;
+
+        // Public property to expose trimmed animal name from ViewModel
+        public string AnimalName => _viewModel.AnimalName.Trim();
+
+        // Public property to expose trimmed animal description from ViewModel
+        public string AnimalDescription => _viewModel.AnimalDescription.Trim();
+
+        // Constructor of AddAnimal window class
         public AddAnimal()
         {
+            // Initialize all WPF UI components defined in XAML file
             InitializeComponent();
 
-            // Dictionary to map technical class names to localized display names for the ComboBox
-            // Key : Technical class name (used in code), Value: Localized display name (shown to user)
-            var animalOptions = new Dictionary<string, string>
+            // Create new instance of AddAnimalViewModel
+            _viewModel = new AddAnimalViewModel();
+
+            // Set window DataContext to created ViewModel instance
+            DataContext = _viewModel;
+
+            // Subscribe to close request event from ViewModel to handle dialog closure
+            _viewModel.CloseRequested += (result) =>
             {
-                { "Monkey", Messages.UI_MonkeyTypeName },
-                { "Lion", Messages.UI_LionTypeName },
-                { "Penguin", Messages.UI_PenguinTypeName },
-                { "HoneyBadger", Messages.UI_HoneyBadgerTypeName }
+                // Check if result is true and animal name is empty or whitespace
+                if (result && string.IsNullOrWhiteSpace(AnimalName))
+                {
+                    // Show warning message box when animal name is required
+                    MessageBox.Show(Messages.Err_AnimalNameRequired, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Set window DialogResult property
+                DialogResult = result;
+
+                // Close dialog window
+                Close();
             };
-
-            CmbAnimalType.ItemsSource = animalOptions;
-            CmbAnimalType.DisplayMemberPath = "Value";   // what user sees in the dropdown (localized name)
-            CmbAnimalType.SelectedValuePath = "Key";     // System key for the selected item, which will be used in AnimalType property
-
-            if (CmbAnimalType.Items.Count > 0)
-            {
-                CmbAnimalType.SelectedIndex = 0;
-            }
-        }
-
-        private void Add_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(AnimalName))
-            {
-                MessageBox.Show(Messages.Err_AnimalNameRequired, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            DialogResult = true;
-            Close();
-        }
-
-        private void Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
         }
     }
 }

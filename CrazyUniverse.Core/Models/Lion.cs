@@ -14,7 +14,7 @@ namespace CrazyUniverse.Core.Models
         public override string Description
         {
             get => _customDescription ?? Messages.Desc_LionDescription;
-            set => _customDescription = value;
+            protected set => _customDescription = value;
         }
 
         // Implementing the SoundCost property required by the IVocalizable interface (specifies satiety cost for making sound)
@@ -29,6 +29,11 @@ namespace CrazyUniverse.Core.Models
         // the Lion class implements it with its own unique logic.
         public override string CrazyAction()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             // State-changing game rules implemented
             Satiety -= 20;
 
@@ -43,6 +48,11 @@ namespace CrazyUniverse.Core.Models
         // Implementing the IVocalizable interface contract
         public string MakeSound()
         {
+            if (Satiety <= 0)
+            {
+                return string.Format(Messages.Action_NoEnergy, Name);
+            }
+
             // Satiety penalty for roaring implemented (uses SoundCost)
             Satiety -= SoundCost;
 
