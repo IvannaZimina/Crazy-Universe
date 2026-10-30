@@ -1,15 +1,15 @@
-# Crazy Universe (Crazy Zoo + WPF Design)
+# Crazy Universe (Vol.1 & Vol.2)
 
 Welcome to the **Crazy Universe** repository!  
-This is a humorous WPF application where different types of objects live in the same world but behave differently.
+This is a humorous WPF application where different types of objects live in the same world but behave, interact, and react to each other dynamically.
 
 ---
 
 ## Application Description
+**Crazy Zoo** is a humorous simulator where every animal has a unique behavior, a satiety state, and specific traits.  
+Users can interact with the animals (such as feeding them, making them perform actions, or adding new characters via a modal dialog) and observe their unique crazy actions and neighborhood reactions in real-time.  
 
-**Crazy Zoo** is a humorous simulator where every animal has a unique behavior, a satiety state, and characteristics.  
-Users can interact with the animals (such as feeding them, making them perform actions via a modal dialog for adding new items) and observe their unique crazy actions in real-time.  
-The solution consists of separate Core and WPF projects and uses inheritance, interfaces, polymorphism, and collections, following the course assignment requirements.
+The solution consists of separate Core and WPF projects and uses inheritance, generics, interfaces, polymorphism, events, and collections, fully adhering to advanced course assignment requirements.
 
 ---
 
@@ -17,101 +17,111 @@ The solution consists of separate Core and WPF projects and uses inheritance, in
 
 - **Programming Language**: C#
 - **Platform**: .NET / WPF
-- **Architectural Principles**: Object-Oriented Programming (encapsulation, abstraction, polymorphism, inheritance), MVVM-like separation (Core & UI split)
 - **Version Control**: Git
+- **Development Environment**: Visual Studio 2022+
 
 ---
 
 ## Running Guide
 
-1. Clone the repository to your local machine: 
+1. Clone the repository to your local machine:  
    `https://github.com/IvannaZimina/Crazy-Universe`
-2. Open the solution file (`.sln`) in **Visual Studio** (version 2022 or newer is recommended).
+2. Open the solution file (`.slnx`) in **Visual Studio** (version 2022 or newer is recommended).
 3. Ensure that the `CrazyUniverse.WpfApp` project is set as the **Startup Project**.
 4. Press **F5** (or click the **Start** button) to run the application.
 
 ---
 
-## Project Architecture (CrazyUniverse.Core)
+## Core Assignment Requirements & Implementation Status
 
-The core of the project contains the domain logic, completely separated from the user interface:
+### 1. Type-Based Generic Repositories (`IRepository<T>` & `Repository<T>`)
+- **Generic Architecture**: Built using a general `IRepository<T>` interface and concrete `Repository<T>` implementation supporting methods: `Add(T item)`, `Remove(T item)`, `IEnumerable<T> GetAll()`, and `T? Find(Func<T, bool> predicate)`.
+- **Type Segregation**: Uses dedicated repositories for each concrete animal type (e.g., `Repository<Monkey>`, `Repository<Lion>`, `Repository<Penguin>`, `Repository<HoneyBadger>`).
+- **Compile-Time Safety**: Implements strict type constraints (`where T : Animal`), preventing improper types at compile time without relying on UI name-matching.
+- - **Encapsulation Protection**: `GetAll()` returns an `IReadOnlyCollection<T>` (via `_items.AsReadOnly()`), protecting the internal list from unauthorized external clearing or modification.
 
-### 1. Models
-- **Animal.cs** (Abstract base class):
-  - Manages the shared state of all animals (encapsulated `Satiety` ranging from 0 to 100 with `protected set`).
-  - Automatically generates a unique identifier `Id` using `Guid`.
-  - Contains the base feeding logic (`Feed`) and defines the contract through the abstract `CrazyAction()` method.
-  - Implements `INotifyPropertyChanged` to support reactive UI updates.
-- **Monkey.cs, Penguin.cs, Lion.cs, HoneyBadger.cs** (Concrete subclass models):
-  - Inherit from `Animal` and use the base constructor (`: base(name)`).
-  - Implement unique versions of the `CrazyAction()` method, which dynamically impact and depend on the current `Satiety` state.
-  - Include defensive input validation ensuring that invalid inputs do not alter the object's state.
+### 2. Domain Events & Neighbor Reactions (`Core/Model`)
+Events and reactions are fully managed within the domain layer (`Core/Model`), entirely decoupled from WPF button click handlers:
+- **Addition (Welcome)**: When a new character is added to a repository, existing objects in the same enclosure greet the newcomer. The new object does not greet itself.
+- **Removal (Farewell)**: When a character is removed, remaining objects bid farewell. The removed object unsubscribes from events and ceases to respond to subsequent triggers.
+- **CrazyAction**: The selected character performs its unique special action. Other objects in the same enclosure react according to world logic. The initiator does not react to itself.
+- **Isolation**: Objects in different repositories (enclosures) do not answer or react. Every response creates an event log entry, and specific reactions affect the responding object's state (e.g., energy/satiety changes).
+- **Typed Event Arguments (`LogEventArgs`)**: Domain events transmit structured `LogEventArgs` containing an event kind (`Kind`) and the triggering animal (`Cause`), ensuring clean logging and separation of concerns.
 
-### 2. Interfaces
-- **IJumpable.cs**: Interface for animals that can jump.
-- **ISwimmable.cs**: Interface for animals that can swim (with distance parameter).
-- **IRunnable.cs**: Interface for animals that can run.
-- **IClimbable.cs**: Interface for animals that can climb (with height parameter).
-- **IVocalizable.cs**: Interface for animals that can make sounds.
-- **IFlyable.cs**: Interface for animals that can fly or glide.
-
-### 3. Helpers & Resources
-- **AnimalActionsHelper.cs**:
-  - Centralized component for checking animal capabilities dynamically.
-  - Explicitly demonstrates the use of both pattern matching (`is`) and traditional type casting (`as`) operators to invoke specific interface methods safely.
-- **Localization / Resource Files**:
-  - Centralized string resources (`Messages.resx`) used for multi-language support and maintaining clean separation of hardcoded UI strings.
+### 3. LINQ: Search, Sorting & Grouping
+The application implements three primary LINQ queries integrated into the UI:
+- **Search / Filtering (`Where`)**: Filters characters by name across enclosures in real-time using case-insensitive comparison (`StringComparison.OrdinalIgnoreCase`).
+- **Sorting (`OrderBy` / `OrderByDescending`)**: Toggles enclosure sorting direction by animal name (`A-Z` / `Z-A`) via interface command bindings.
+- **Grouping (`GroupBy`)**: Aggregates statistics (`SatietyGroupsSummary`) grouping all zoo animals by satiety ranges (`Low` $\le$ 30, `Medium` $\le$ 70, `High` > 70) utilizing centralized resource keys for stable category display.
 
 ---
 
-## Collection & WPF User Interface
+## Architectural & Design Principles
 
-- **Dynamic Collection**: Objects are stored in an `ObservableCollection<Animal>`, allowing automatic synchronization of list modifications with the visual UI.
-- **Data Display**: The main application window displays the full list of animals alongside detailed information regarding the currently selected object.
-- **Object Management & Modal Dialog**: Users can interactively add new instances via a dedicated modal dialog window (`AddAnimal`), select them from the list to inspect details, and remove unwanted items. The dialog dynamically binds available animal types supporting localization.
-- **Dynamic Actions**: Action buttons (Feed, Swim, Jump, Make Sound, Crazy Action) dynamically adapt to the selected animal and invoke the corresponding methods of the object or its implemented interfaces.
-- **Event Log**: Core and action methods return meaningful timestamped messages that are recorded in a dedicated user interface event log with automatic scrolling.
-- **Fault Tolerance & Validation**: Text and numerical inputs are strictly validated; invalid parameters do not cause application crashes.
-- **Clean Architecture**: Domain business rules are isolated within the `CrazyUniverse.Core` project, while the WPF application project is strictly responsible for presentation management and user input.
-
-### Justification of Self-Studied WPF UI Elements (`DataTemplate` & `ProgressBar`)
-To implement the user interface, the following WPF features were self-studied and integrated:
-- **`DataTemplate` (within `ListBox` / content areas)**: Chosen to build custom visual layouts for each animal item in the collection. This allows clean, declarative data binding connecting model properties (`Name`, `TypeName`, `Satiety`) directly to UI elements without writing bloated procedural code-behind.
-- **`ProgressBar`**: Utilized to visually represent the animal's current satiety level in real-time (both inside the list view on the left and the detailed center card), making the application state intuitive and lively.
+- **Architectural Pattern**: MVVM (Model-View-ViewModel) with strict separation of concerns (Core & UI split).
+- **Design Patterns**: Factory Pattern (`AnimalFactory`) for decoupled object creation.
+- **Object-Oriented Programming**: Encapsulation, abstraction, polymorphism, generics, and inheritance.
 
 ---
 
-## Crazy Actions & State Rules
+## Project Architecture & MVVM Implementation
 
-- **Encapsulated State (`Satiety`)**: Every animal maintains a satiety level ranging from 0 to 100, protected from external modification via `protected set`.
-- **Defensive Input Validation**: Numerical parameters (such as swimming distance) are strictly validated. Negative or zero values do not alter the object's state.
-- **Polymorphic `CrazyAction()`**: Defined as an abstract method in the `Animal` base class and overridden in each subclass (`Penguin`, `Monkey`, `Lion`, etc.). It dynamically decreases satiety and changes the animal's reaction text depending on its exhaustion level (e.g., when satiety drops below 20).
+The solution is split into independent projects, fully satisfying the MVVM pattern and clean architecture:
+
+### 1. Model / Core (`CrazyUniverse.Core`)
+- **Independent Business Logic**: Contains characters (animals), generic repositories, interfaces, domain events, and reaction rules completely separated from UI buttons, windows, or WPF dependencies.
+- **Animal.cs** (Abstract base class): Manages shared state (`Satiety` from 0 to 100 with `protected set` for strict encapsulation), generates unique identifiers via `Guid`, handles base feeding logic (`Feed`), and defines the abstract `CrazyAction()` contract. Implements `INotifyPropertyChanged`.
+- **Concrete Models**: `Monkey`, `Penguin`, `Lion`, `HoneyBadger`, etc., implement unique polymorphic behaviors, reaction handlers, and **defensive input validation** (negative inputs like `Climb(-200)` are safely caught and rejected without altering the valid `Satiety` state).
+- **Interfaces**: Contracts for capabilities (`IJumpable`, `ISwimmable`, `IRunnable`, `IClimbable`, `IVocalizable`) and generic repositories (`IRepository<T>`).
+- **Helpers & Resources**:
+  - **AnimalActionsHelper.cs**: Helper utilities for checking animal capabilities dynamically using pattern matching (`is`) and type casting (`as`).
+  - **Messages.resx (Resource File)**: Centralized string resource file storing all localized messages, action descriptions, error strings, and event log formats.
+
+### 2. ViewModel (`CrazyUniverse.WpfApp/ViewModels`)
+- **State & Binding Management**: `MainViewModel` manages selected animals, enclosure collections, global zoo population tracking (`ZooPopulation`), LINQ-derived state, and user commands.
+- **Commands (`ICommand`)**: User actions (Feed, Swim, Jump, Make Sound, Crazy Action, Add, Remove) are encapsulated via `RelayCommand`. 
+- **Command Guards (`CanExecute`)**: Dynamically disables commands and UI elements if no suitable animal is selected, if energy is depleted, or in the modal dialog (`AddAnimalViewModel`) when required name/description fields are empty.
+- **Reactive Updates**: Utilizes `ObservableCollection<Animal>` and `INotifyPropertyChanged` to automatically synchronize lists, progress bars, counters, and event logs.
+
+### 3. View (`CrazyUniverse.WpfApp`)
+- **WPF Presentation Layer**: XAML windows (`MainWindow`, `AddAnimal`) bound directly to ViewModels via data bindings, converters, and styles. Features accordion-style enclosures with empty-state placeholders.
+
+---
+
+## Design Patterns
+
+### Factory Pattern (`AnimalFactory`)
+To adhere to the Single Responsibility Principle and decouple object creation from UI and business logic:
+- Located in `CrazyUniverse.WpfApp/Factories/AnimalFactory.cs`.
+- Encapsulates instantiation logic for all concrete animal types (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`, etc.).
+- Dynamically creates objects based on parameters passed from the modal dialog (`AddAnimal`), ensuring clean architecture.
 
 ---
 
 ## Verified Use Cases
 
-1. **Animal Initialization**: Creating an instance of a penguin named "Skipper" with an automatically generated `Guid` identifier and a starting satiety of 100.
-2. **Feeding an Animal**: Calling the `Feed()` method, which increases the animal's satiety level (capped at a maximum of 100).
-3. **Adding via Dialog**: Opening the `AddAnimal` modal window, selecting an animal type from the localized dropdown, entering a custom name/description, and inserting it into the main zoo collection.
-4. **Performing a Crazy Action**: Triggering `CrazyAction()` for a lion named "Simba", which reduces its satiety and outputs a majestic roar text reflecting its current energy state.
-5. **Capability Checking via Helper (`is`/`as`)**: Using `AnimalActionsHelper` to dynamically and safely verify whether a specific object implements `ISwimmable` or `IJumpable`.
-6. **Invalid Input Protection**: Passing a negative distance into the penguin's swim method — the system correctly handles the error, leaving the satiety state completely untouched.
+1. **Animal Initialization & Generics**: Creating typed repositories and populating default zoo animals with unique identifiers and starting satiety levels, and suppressed startup logs..
+2. **Repository Addition & Welcome Events**: Adding a new character triggers greeting logs from existing enclosure neighbors without self-greeting.
+3. **Repository Removal & Farewell Events**: Removing a character triggers farewell logs from remaining neighbors; the deleted instance safely unsubscribes and stops responding.
+4. **Crazy Action Execution**: Triggering `CrazyAction()` causes neighbor reactions and state updates within the isolated enclosure while keeping other enclosures unaffected.
+5. **Capability Checking (`is`/`as`)**: Using `AnimalActionsHelper` to verify interface implementations safely.
+6. **Global Population Tracking**: Real-time synchronization of the `ZooPopulation` counter across all enclosure repositories.
+7. **LINQ Data Operations**: Live filtering by name, alphabetical sorting toggles, and grouped satiety range statistics.
+8. **Robust Input Validation**: Passing negative arguments (e.g., `Climb(-200)` or `Swim(-200)`) successfully triggers localized error messages while preserving the object's valid `Satiety` state, and dialog forms enforce filled inputs before enabling submission commands.
 
 ---
 
-## TO DO: Peer Review & Collaboration
+## Peer Review & Collaboration
 
-- **Peer Name**: Maksym Kotkov
-- **Repository Link**: [https://github.com/IvannaZimina/Crazy-Universe](https://github.com/IvannaZimina/Crazy-Universe)
-- **Task for Reviewer / Classmate**: 
-  - Create a new concrete animal subclass inheriting from `Animal` (e.g., `Elephant`, `Giraffe`, or `Kangaroo`).
-  - Implement the abstract `CrazyAction()` method with unique behavior based on `Satiety`.
-  - Implement at least two relevant interfaces available in the project (such as `IJumpable`, `ISwimmable`, or `IVocalizable`) to utilize the existing action architecture and capability-checking helpers.
-- **Guidelines & Recommendations for Maksym**:
-  - **Clean Code**: Follow consistent naming conventions, keep methods short and focused, and avoid code duplication.
-  - **Comments**: Add XML documentation comments (`///`) to public classes and methods.
-  - **Git Commits**: Write clear, descriptive commit messages with prefixes (e.g., `feat: add Elephant model`, `fix: validate satiety range`).
+Tasks, guidelines, and review status for project contributors and peer reviewers are tracked directly via GitHub Issues and Pull Requests:
+
+- **[Issue #5: Add new animal subclass and integrate capabilities](https://github.com/IvannaZimina/Crazy-Universe/issues/5)** (Maksym Kotkov)
+  - *Pull Request*: **[PR #1](https://github.com/IvannaZimina/Crazy-Universe/pull/1)** (HoneyBadger integration)
+  - *Code Review & Verification*: Checked by project owner for inheritance (`Animal` base class, `protected set` encapsulation), interface implementation (`IClimbable`, `ISwimmable`), clean compilation, and robust input validation (negative arguments like `-200` are safely rejected without altering `Satiety`).
+- **[Issue #6: Add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** (Arina Shishkova)
+  - *Pull Request*: **[PR #4](https://github.com/IvannaZimina/Crazy-Universe/pull/4)** (Adding three new animal types, integrating them into repositories, events, and UI)
+  - *Code Review & Verification*: Successfully merged and verified. Added three new animal types, integrated them into generic repositories, domain events (`LogEventArgs`), and MVVM data bindings with proper owner review.
+- **[Issue #7: Guidelines & Recommendations for collaborators](https://github.com/IvannaZimina/Crazy-Universe/issues/7)** — General collaboration rules, clean code practices, and PR workflows managed via GitHub.
 
 ---
 
@@ -122,20 +132,14 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 - OOP principles & code refinement: Assisting in structuring abstract classes and applying polymorphism correctly.
 - Validation & state management: Discussing logic for defensive input validation to protect object states from corruption.
 - Documentation: Structuring and refining the README.md file and drafting professional code comments.
-
 ---
 
 ## View
-<img width="1069" height="700" alt="image" src="https://github.com/user-attachments/assets/b6fecf06-71ee-485b-b70e-c53997757f4b" />
-<img width="1076" height="701" alt="image" src="https://github.com/user-attachments/assets/727371fc-c095-4eb8-96d9-650266e8750f" />
-<img width="1074" height="701" alt="image" src="https://github.com/user-attachments/assets/ba06f3a8-8f39-4f20-94da-6e24679981c4" />
-<img width="1073" height="707" alt="image" src="https://github.com/user-attachments/assets/34d61f97-35bf-49a9-9d8f-1ada7eddac95" />
-<img width="1072" height="706" alt="image" src="https://github.com/user-attachments/assets/fa931c13-3119-428c-af0e-6273fae7ef7f" />
-<img width="1074" height="698" alt="image" src="https://github.com/user-attachments/assets/414842c4-af28-4aec-bf4d-68d46a20a882" />
-<img width="1075" height="704" alt="image" src="https://github.com/user-attachments/assets/6a4b66af-5072-4503-813b-59b305a32ffb" />
-
-
-
-
-
+<img width="1081" height="712" alt="image" src="https://github.com/user-attachments/assets/c2b67cb6-f867-40d3-a54d-bb88bb36f86b" />
+<img width="1079" height="702" alt="image" src="https://github.com/user-attachments/assets/a450660a-3cb1-45c8-92fa-00985ce1932f" />
+<img width="1078" height="700" alt="image" src="https://github.com/user-attachments/assets/ae74e0a5-787a-4735-b426-a6f90b37a95d" />
+<img width="1078" height="700" alt="image" src="https://github.com/user-attachments/assets/b7db0ce7-18ba-44c3-8cd7-2cf486220252" />
+<img width="1079" height="712" alt="image" src="https://github.com/user-attachments/assets/f8b656ad-0601-41f8-ba0d-27e8d3d8d896" />
+<img width="1078" height="702" alt="image" src="https://github.com/user-attachments/assets/7d04d6af-bb24-40ef-a41b-3e3200ca2bcc" />
+<img width="1076" height="703" alt="image" src="https://github.com/user-attachments/assets/a82ae57f-a21e-4e2e-be68-9632f437ae28" />
 

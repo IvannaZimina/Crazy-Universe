@@ -1,7 +1,7 @@
 ﻿<Window x:Class="CrazyUniverse.WpfApp.AddAnimal"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add New Animal to Zoo" Height="450" Width="480"
+        Title="Add New Animal to Zoo" Height="480" Width="480"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="#F4F6F9">
     <Window.Resources>
@@ -67,6 +67,7 @@
             </Setter>
         </Style>
 
+        <!-- Основной стиль кнопки с поддержкой неактивного (серого) состояния -->
         <Style x:Key="RoundedButton" TargetType="Button">
             <Setter Property="Background" Value="#2563EB"/>
             <Setter Property="Foreground" Value="White"/>
@@ -76,11 +77,16 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6" SnapsToDevicePixels="True">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#1D4ED8" TargetName="border"/>
+                            </Trigger>
+                            <!-- Триггер для неактивного состояния (когда поля пустые) -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#E2E8F0" TargetName="border"/>
+                                <Setter Property="Foreground" Value="#94A3B8"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -88,12 +94,12 @@
             </Setter>
         </Style>
 
-        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
-            <Setter Property="Background" Value="#E2E8F0"/>
-            <Setter Property="Foreground" Value="#334155"/>
+        <Style x:Key="RedButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+            <Setter Property="Background" Value="#EF4444"/>
+            <Setter Property="Foreground" Value="White"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#CBD5E1"/>
+                    <Setter Property="Background" Value="#DC2626"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -106,28 +112,50 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Add New Animal to Zoo" FontSize="20" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,20"/>
+        <TextBlock Text="Add New Animal to Zoo" FontSize="20" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,16"/>
 
         <StackPanel Grid.Row="1">
-            <StackPanel Margin="0,0,0,14">
+            <!-- Error Message Display -->
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="#EF4444" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+            <StackPanel Margin="0,0,0,12">
                 <TextBlock Text="Animal Type" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,6"/>
-                <ComboBox x:Name="CmbAnimalType" Height="36" VerticalContentAlignment="Center"/>
+                <!-- Bound ComboBox to AnimalOptions and SelectedAnimalType -->
+                <ComboBox x:Name="CmbAnimalType" Height="36" VerticalContentAlignment="Center"
+                          ItemsSource="{Binding AnimalOptions}"
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value"
+                          SelectedValue="{Binding SelectedAnimalType, Mode=TwoWay}"/>
             </StackPanel>
 
-            <StackPanel Margin="0,0,0,14">
-                <TextBlock Text="Name" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,6"/>
-                <TextBox x:Name="TxtBoxName" Height="36" Padding="8,0" VerticalContentAlignment="Center"/>
+            <StackPanel Margin="0,0,0,12">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <TextBlock Text="Name" FontWeight="SemiBold" Foreground="#475569"/>
+                    <TextBlock Text=" *" FontWeight="Bold" Foreground="#EF4444"/>
+                </StackPanel>
+                <!-- Bound TextBox to AnimalName -->
+                <TextBox x:Name="TxtBoxName" Height="36" Padding="8,0" VerticalContentAlignment="Center"
+                         Text="{Binding AnimalName, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
 
             <StackPanel>
-                <TextBlock Text="Description (Funny pet)" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,6"/>
-                <TextBox x:Name="TxtBoxDescription" Height="70" Padding="8" TextWrapping="Wrap" AcceptsReturn="True"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <TextBlock Text="Description (Funny pet)" FontWeight="SemiBold" Foreground="#475569"/>
+                    <TextBlock Text=" *" FontWeight="Bold" Foreground="#EF4444"/>
+                </StackPanel>
+                <!-- Bound TextBox to AnimalDescription -->
+                <TextBox x:Name="TxtBoxDescription" Height="70" Padding="8" TextWrapping="Wrap" AcceptsReturn="True"
+                         Text="{Binding AnimalDescription, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Cancel" Width="90" Height="36" Style="{StaticResource SecondaryButton}" Click="Cancel_Click" Margin="0,0,10,0"/>
-            <Button Content="Add Animal" Width="110" Height="36" FontWeight="SemiBold" Style="{StaticResource RoundedButton}" Click="Add_Click"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <!-- Bound Cancel button to CancelCommand (Red Style) -->
+            <Button Content="Cancel" Width="90" Height="36" Style="{StaticResource RedButton}" 
+                    Command="{Binding CancelCommand}" Margin="0,0,10,0"/>
+            <!-- Bound Add Animal button to AddCommand (Rounded Button Style with disabled/enabled states) -->
+            <Button Content="Add Animal" Width="110" Height="36" FontWeight="SemiBold" Style="{StaticResource RoundedButton}" 
+                    Command="{Binding AddCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

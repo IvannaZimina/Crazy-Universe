@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CrazyUniverse.Core.Events;
 using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.Core.Models
@@ -20,7 +21,7 @@ namespace CrazyUniverse.Core.Models
         public abstract string TypeName { get; }
 
         // Abstract property for a funny description of the animal
-        public abstract string Description { get; set; }
+        public abstract string Description { get; protected set; }
 
         // Virtual property for feeding cost/gain, can be overridden by specific animals if needed
         public virtual int FeedCost => 5;
@@ -80,6 +81,60 @@ namespace CrazyUniverse.Core.Models
         // Abstract method: forces every child class (like Monkey or Lion) to create its own unique crazy action
         public abstract string CrazyAction();
 
+        // ==========================================
+        // DOMAIN EVENT REACTION LOGIC
+        // ==========================================
+
+        // Virtual method to react to events triggered by neighboring animals in the same repository/enclosure
+        public virtual string ReactToNeighbor(Animal initiator, string eventType)
+        {
+            // Ignore events if the initiator is this exact same animal instance (self-reaction prevention)
+            if (initiator == this || initiator.Id == this.Id)
+            {
+                return string.Empty;
+            }
+
+            // Handle reaction based on the domain event type
+            switch (eventType)
+            {
+                case "Add":
+                    // Format addition greeting message depending on animal type or fallback default
+                    return this switch
+                    {
+                        Monkey => string.Format(Messages.Event_Add_Monkey, Name, initiator.Name),
+                        Lion => string.Format(Messages.Event_Add_Lion, Name, initiator.Name),
+                        Penguin => string.Format(Messages.Event_Add_Penguin, Name, initiator.Name),
+                        HoneyBadger => string.Format(Messages.Event_Add_HoneyBadger, Name, initiator.Name),
+                        _ => string.Format(Messages.Event_Add_Default, initiator.Name)
+                    };
+
+                case "Remove":
+                    // Format removal farewell message depending on animal type or fallback default
+                    return this switch
+                    {
+                        Monkey => string.Format(Messages.Event_Remove_Monkey, initiator.Name),
+                        Lion => string.Format(Messages.Event_Remove_Lion, initiator.Name),
+                        Penguin => string.Format(Messages.Event_Remove_Penguin, initiator.Name),
+                        HoneyBadger => string.Format(Messages.Event_Remove_HoneyBadger, initiator.Name),
+                        _ => string.Format(Messages.Event_Remove_Default, initiator.Name)
+                    };
+
+                case "CrazyAction":
+                    // Соседи теперь только реагируют в логе, не теряя сытость при чужом безумии
+                    return this switch
+                    {
+                        Monkey => string.Format(Messages.Event_Crazy_Monkey, initiator.Name),
+                        Lion => string.Format(Messages.Event_Crazy_Lion, initiator.Name),
+                        Penguin => string.Format(Messages.Event_Crazy_Penguin, initiator.Name),
+                        HoneyBadger => string.Format(Messages.Event_Crazy_HoneyBadger, initiator.Name),
+                        _ => string.Format(Messages.Event_Crazy_Default, initiator.Name)
+                    };
+
+                default:
+                    return string.Empty;
+            }
+        }
+
         // INotifyPropertyChanged event implementation for WPF data binding updates
 
         // [event PropertyChangedEventHandler:] is a special system event from the System.ComponentModel namespace.
@@ -102,6 +157,5 @@ namespace CrazyUniverse.Core.Models
             // object instance (this) and the name of the updated property (via PropertyChangedEventArgs)
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
 }
