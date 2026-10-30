@@ -307,31 +307,31 @@ namespace CrazyUniverse.WpfApp.ViewModels
             {
                 if (animal is Monkey m)
                 {
-                    _monkeyRepository.Add(m);
+                    _monkeyRepository.Add(m, suppressLog: true);
                 }
                 else if (animal is Lion l)
                 {
-                    _lionRepository.Add(l);
+                    _lionRepository.Add(l, suppressLog: true);
                 }
                 else if (animal is Penguin p)
                 {
-                    _penguinRepository.Add(p);
+                    _penguinRepository.Add(p, suppressLog: true);
                 }
                 else if (animal is HoneyBadger hb)
                 {
-                    _honeyBadgerRepository.Add(hb);
+                    _honeyBadgerRepository.Add(hb, suppressLog: true);
                 }
                 else if (animal is Kangaroo k)
                 {
-                    _kangarooRepository.Add(k);
+                    _kangarooRepository.Add(k, suppressLog: true);
                 }
                 else if (animal is Dolphin d)
                 {
-                    _dolphinRepository.Add(d);
+                    _dolphinRepository.Add(d, suppressLog: true);
                 }
                 else if (animal is Frog f)
                 {
-                    _frogRepository.Add(f);
+                    _frogRepository.Add(f, suppressLog: true);
                 }
             }
 

@@ -46,7 +46,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         private string _animalName = string.Empty;
 
-        // Public property for animal name with change notification
+        // Public property for animal name with change notification and Command re-evaluation
         public string AnimalName
         {
             get => _animalName;
@@ -55,12 +55,14 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 if (_animalName == value) return;
                 _animalName = value;
                 OnPropertyChanged();
+                // Invalidate query suggested to update CanExecute state of AddCommand dynamically
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
         private string _animalDescription = string.Empty;
 
-        // Public property for animal description with change notification
+        // Public property for animal description with change notification and Command re-evaluation
         public string AnimalDescription
         {
             get => _animalDescription;
@@ -69,6 +71,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 if (_animalDescription == value) return;
                 _animalDescription = value;
                 OnPropertyChanged();
+                // Invalidate query suggested to update CanExecute state of AddCommand dynamically
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -135,10 +139,11 @@ namespace CrazyUniverse.WpfApp.ViewModels
             CloseRequested?.Invoke(true);
         }
 
-        // Condition logic to check if add command can be executed
+        // Condition logic to check if add command can be executed based on input filling
         private bool CanExecuteAdd(object? parameter)
         {
-            return true;
+            // Enable command only when both name and description are not empty or whitespace
+            return !string.IsNullOrWhiteSpace(AnimalName) && !string.IsNullOrWhiteSpace(AnimalDescription);
         }
 
         // Execution logic for cancel command

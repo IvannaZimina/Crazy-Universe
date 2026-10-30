@@ -67,6 +67,7 @@
             </Setter>
         </Style>
 
+        <!-- Основной стиль кнопки с поддержкой неактивного (серого) состояния -->
         <Style x:Key="RoundedButton" TargetType="Button">
             <Setter Property="Background" Value="#2563EB"/>
             <Setter Property="Foreground" Value="White"/>
@@ -76,11 +77,16 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6" SnapsToDevicePixels="True">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#1D4ED8" TargetName="border"/>
+                            </Trigger>
+                            <!-- Триггер для неактивного состояния (когда поля пустые) -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#E2E8F0" TargetName="border"/>
+                                <Setter Property="Foreground" Value="#94A3B8"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -88,12 +94,12 @@
             </Setter>
         </Style>
 
-        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
-            <Setter Property="Background" Value="#E2E8F0"/>
-            <Setter Property="Foreground" Value="#334155"/>
+        <Style x:Key="RedButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+            <Setter Property="Background" Value="#EF4444"/>
+            <Setter Property="Foreground" Value="White"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#CBD5E1"/>
+                    <Setter Property="Background" Value="#DC2626"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -144,10 +150,10 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <!-- Bound Cancel button to CancelCommand -->
-            <Button Content="Cancel" Width="90" Height="36" Style="{StaticResource SecondaryButton}" 
+            <!-- Bound Cancel button to CancelCommand (Red Style) -->
+            <Button Content="Cancel" Width="90" Height="36" Style="{StaticResource RedButton}" 
                     Command="{Binding CancelCommand}" Margin="0,0,10,0"/>
-            <!-- Bound Add Animal button to AddCommand -->
+            <!-- Bound Add Animal button to AddCommand (Rounded Button Style with disabled/enabled states) -->
             <Button Content="Add Animal" Width="110" Height="36" FontWeight="SemiBold" Style="{StaticResource RoundedButton}" 
                     Command="{Binding AddCommand}"/>
         </StackPanel>

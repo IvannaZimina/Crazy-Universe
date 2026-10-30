@@ -18,8 +18,8 @@ namespace CrazyUniverse.Core.Repositories
         // Event triggered when a domain event occurs using typed LogEventArgs (Kind & Cause)
         public event EventHandler<LogEventArgs>? LogMessageGenerated;
 
-        // Adds item to internal list, triggers welcome reactions from existing neighbors, and logs them.
-        public void Add(T item)
+        // Adds item to internal list, triggers welcome reactions from existing neighbors, and logs them if not suppressed.
+        public void Add(T item, bool suppressLog = false)
         {
             if (item == null)
                 ArgumentNullException.ThrowIfNull(item);
@@ -36,8 +36,11 @@ namespace CrazyUniverse.Core.Repositories
 
             _items.Add(item);
 
-            // Log the addition event with Kind and Cause
-            LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Add, item, $"{item.Name} has been added to the zoo."));
+            // Log the addition event with Kind and Cause only if log is not suppressed
+            if (!suppressLog)
+            {
+                LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Add, item, $"{item.Name} has been added to the zoo."));
+            }
         }
 
         // Removes the item from the internal list, triggers farewell reactions from remaining neighbors, and returns true if successful.

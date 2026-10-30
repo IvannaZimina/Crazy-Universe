@@ -14,7 +14,7 @@ namespace CrazyUniverse.Core.Interfaces
         event EventHandler<LogEventArgs>? LogMessageGenerated;
 
         // Method contract for adding new item to repository collection and triggering welcome reactions.
-        void Add(T item);
+        void Add(T item, bool suppressLog = false);
 
         // Method contract for removing item, triggering farewell reactions, and cleaning up subscriptions.
         bool Remove(T item);
