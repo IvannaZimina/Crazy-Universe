@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using CrazyUniverse.Core.Events;
+using CrazyUniverse.WpfApp.Views; // Added views namespace for simulation window
 
 namespace CrazyUniverse.WpfApp.ViewModels
 {
@@ -223,6 +224,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public ICommand CrazyActionCommand { get; }
         public ICommand SelectAnimalCommand { get; } // Command to handle robust animal selection across multi-list accordions
         public ICommand ToggleSortCommand { get; } // Command to toggle sorting direction inside specific enclosure via LINQ OrderBy
+        public ICommand OpenSimulationCommand { get; } // Command to open the heavy CPU simulation dialog window
 
         // ==========================================
         // PROPERTIES FOR SELECTED ANIMAL ABILITIES
@@ -348,6 +350,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
             CrazyActionCommand = new RelayCommand(ExecuteCrazyAction, CanExecuteCrazyAction);
             SelectAnimalCommand = new RelayCommand(ExecuteSelectAnimal);
             ToggleSortCommand = new RelayCommand(ExecuteToggleSort);
+
+            // Initialize simulation window opening command
+            OpenSimulationCommand = new RelayCommand(ExecuteOpenSimulation);
 
             // Log initial application startup message
             Log(Messages.Log_ZooInit);
@@ -476,6 +481,16 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         // COMMAND LOGIC METHODS
         // ==========================================
+
+        // Handler to open the simulation window as a modal dialog
+        private void ExecuteOpenSimulation(object? parameter)
+        {
+            var simulationWindow = new SimulationWindow
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            simulationWindow.ShowDialog();
+        }
 
         // Command handler to toggle sorting direction inside an enclosure
         private void ExecuteToggleSort(object? parameter)

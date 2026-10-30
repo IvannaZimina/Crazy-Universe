@@ -1,7 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="Images\Lions_migration.jpg" />
+    <None Remove="Images\Monkyes_jump.JPG" />
+    <None Remove="Images\penguin_jump.JPG" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CrazyUniverse.Core\CrazyUniverse.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\Lions_migration.jpg" />
+    <Resource Include="Images\Monkyes_jump.JPG" />
+    <Resource Include="Images\penguin_jump.JPG" />
   </ItemGroup>
 
   <PropertyGroup>
