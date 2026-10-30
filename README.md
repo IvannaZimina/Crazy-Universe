@@ -194,3 +194,6 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 <img width="1079" height="712" alt="image" src="https://github.com/user-attachments/assets/f8b656ad-0601-41f8-ba0d-27e8d3d8d896" />
 <img width="1078" height="702" alt="image" src="https://github.com/user-attachments/assets/7d04d6af-bb24-40ef-a41b-3e3200ca2bcc" />
 <img width="1076" height="703" alt="image" src="https://github.com/user-attachments/assets/a82ae57f-a21e-4e2e-be68-9632f437ae28" />
+<img width="1157" height="753" alt="image" src="https://github.com/user-attachments/assets/8626e0fc-f18b-4bb8-a149-5d8fac1a376c" />
+<img width="1913" height="1025" alt="image" src="https://github.com/user-attachments/assets/4aa8e4d3-debb-42e2-8817-a5eb106b8264" />
+
