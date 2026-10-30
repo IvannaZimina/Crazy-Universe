@@ -19,8 +19,8 @@ namespace CrazyUniverse.Core.Interfaces
         // Method contract for removing item, triggering farewell reactions, and cleaning up subscriptions.
         bool Remove(T item);
 
-        // Method contract for retrieving all stored items as collection.
-        IEnumerable<T> GetAll();
+        // Method contract for retrieving all stored items as a protected read-only collection.
+        IReadOnlyCollection<T> GetAll();
 
         // Method contract for searching specific item using condition predicate.
         T? Find(Func<T, bool> predicate);

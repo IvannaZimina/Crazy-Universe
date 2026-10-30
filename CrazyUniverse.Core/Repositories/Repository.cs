@@ -82,10 +82,10 @@ namespace CrazyUniverse.Core.Repositories
             }
         }
 
-        // Returns all items from the list as a new collection.
-        public IEnumerable<T> GetAll()
+        // Returns all items from the list as a protected read-only collection copy.
+        public IReadOnlyCollection<T> GetAll()
         {
-            return _items;
+            return _items.AsReadOnly();
         }
 
         // Searches the list using a condition and returns the found item or null.
