@@ -1,4 +1,4 @@
-# Crazy Universe (Vol.1 & Vol.2) 🚀
+# Crazy Universe (Vol.1 & Vol.2)
 
 Welcome to the **Crazy Universe** repository!  
 This is a humorous WPF application where different types of objects live in the same world but behave, interact, and react to each other dynamically.
@@ -38,6 +38,7 @@ The solution consists of separate Core and WPF projects and uses inheritance, ge
 - **Generic Architecture**: Built using a general `IRepository<T>` interface and concrete `Repository<T>` implementation supporting methods: `Add(T item)`, `Remove(T item)`, `IEnumerable<T> GetAll()`, and `T? Find(Func<T, bool> predicate)`.
 - **Type Segregation**: Uses dedicated repositories for each concrete animal type (e.g., `Repository<Monkey>`, `Repository<Lion>`, `Repository<Penguin>`, `Repository<HoneyBadger>`).
 - **Compile-Time Safety**: Implements strict type constraints (`where T : Animal`), preventing improper types at compile time without relying on UI name-matching.
+- - **Encapsulation Protection**: `GetAll()` returns an `IReadOnlyCollection<T>` (via `_items.AsReadOnly()`), protecting the internal list from unauthorized external clearing or modification.
 
 ### 2. Domain Events & Neighbor Reactions (`Core/Model`)
 Events and reactions are fully managed within the domain layer (`Core/Model`), entirely decoupled from WPF button click handlers:
@@ -45,6 +46,7 @@ Events and reactions are fully managed within the domain layer (`Core/Model`), e
 - **Removal (Farewell)**: When a character is removed, remaining objects bid farewell. The removed object unsubscribes from events and ceases to respond to subsequent triggers.
 - **CrazyAction**: The selected character performs its unique special action. Other objects in the same enclosure react according to world logic. The initiator does not react to itself.
 - **Isolation**: Objects in different repositories (enclosures) do not answer or react. Every response creates an event log entry, and specific reactions affect the responding object's state (e.g., energy/satiety changes).
+- **Typed Event Arguments (`LogEventArgs`)**: Domain events transmit structured `LogEventArgs` containing an event kind (`Kind`) and the triggering animal (`Cause`), ensuring clean logging and separation of concerns.
 
 ### 3. LINQ: Search, Sorting & Grouping
 The application implements three primary LINQ queries integrated into the UI:
@@ -78,7 +80,7 @@ The solution is split into independent projects, fully satisfying the MVVM patte
 ### 2. ViewModel (`CrazyUniverse.WpfApp/ViewModels`)
 - **State & Binding Management**: `MainViewModel` manages selected animals, enclosure collections, global zoo population tracking (`ZooPopulation`), LINQ-derived state, and user commands.
 - **Commands (`ICommand`)**: User actions (Feed, Swim, Jump, Make Sound, Crazy Action, Add, Remove) are encapsulated via `RelayCommand`. 
-- **Command Guards (`CanExecute`)**: Dynamically disables commands and UI elements if no suitable animal is selected or if energy is depleted.
+- **Command Guards (`CanExecute`)**: Dynamically disables commands and UI elements if no suitable animal is selected, if energy is depleted, or in the modal dialog (`AddAnimalViewModel`) when required name/description fields are empty.
 - **Reactive Updates**: Utilizes `ObservableCollection<Animal>` and `INotifyPropertyChanged` to automatically synchronize lists, progress bars, counters, and event logs.
 
 ### 3. View (`CrazyUniverse.WpfApp`)
@@ -98,14 +100,14 @@ To adhere to the Single Responsibility Principle and decouple object creation fr
 
 ## Verified Use Cases
 
-1. **Animal Initialization & Generics**: Creating typed repositories and populating default zoo animals with unique identifiers and starting satiety levels.
+1. **Animal Initialization & Generics**: Creating typed repositories and populating default zoo animals with unique identifiers and starting satiety levels, and suppressed startup logs..
 2. **Repository Addition & Welcome Events**: Adding a new character triggers greeting logs from existing enclosure neighbors without self-greeting.
 3. **Repository Removal & Farewell Events**: Removing a character triggers farewell logs from remaining neighbors; the deleted instance safely unsubscribes and stops responding.
 4. **Crazy Action Execution**: Triggering `CrazyAction()` causes neighbor reactions and state updates within the isolated enclosure while keeping other enclosures unaffected.
 5. **Capability Checking (`is`/`as`)**: Using `AnimalActionsHelper` to verify interface implementations safely.
 6. **Global Population Tracking**: Real-time synchronization of the `ZooPopulation` counter across all enclosure repositories.
 7. **LINQ Data Operations**: Live filtering by name, alphabetical sorting toggles, and grouped satiety range statistics.
-8. **Robust Input Validation**: Passing negative arguments (e.g., `Climb(-200)` or `Swim(-200)`) successfully triggers localized error messages while preserving the object's valid `Satiety` state.
+8. **Robust Input Validation**: Passing negative arguments (e.g., `Climb(-200)` or `Swim(-200)`) successfully triggers localized error messages while preserving the object's valid `Satiety` state, and dialog forms enforce filled inputs before enabling submission commands.
 
 ---
 
@@ -118,7 +120,7 @@ Tasks, guidelines, and review status for project contributors and peer reviewers
   - *Code Review & Verification*: Checked by project owner for inheritance (`Animal` base class, `protected set` encapsulation), interface implementation (`IClimbable`, `ISwimmable`), clean compilation, and robust input validation (negative arguments like `-200` are safely rejected without altering `Satiety`).
 - **[Issue #6: Add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** (Arina Shishkova)
   - *Pull Request*: **[PR #4](https://github.com/IvannaZimina/Crazy-Universe/pull/4)** (Adding three new animal types, integrating them into repositories, events, and UI)
-  - *Code Review & Verification*: Reviewed and approved by project owner. Verified proper implementation of generic repositories, domain events, MVVM data bindings, and clean compilation.
+  - *Code Review & Verification*: Successfully merged and verified. Added three new animal types, integrated them into generic repositories, domain events (`LogEventArgs`), and MVVM data bindings with proper owner review.
 - **[Issue #7: Guidelines & Recommendations for collaborators](https://github.com/IvannaZimina/Crazy-Universe/issues/7)** — General collaboration rules, clean code practices, and PR workflows managed via GitHub.
 
 ---
@@ -140,25 +142,4 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 <img width="1079" height="712" alt="image" src="https://github.com/user-attachments/assets/f8b656ad-0601-41f8-ba0d-27e8d3d8d896" />
 <img width="1078" height="702" alt="image" src="https://github.com/user-attachments/assets/7d04d6af-bb24-40ef-a41b-3e3200ca2bcc" />
 <img width="1076" height="703" alt="image" src="https://github.com/user-attachments/assets/a82ae57f-a21e-4e2e-be68-9632f437ae28" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
