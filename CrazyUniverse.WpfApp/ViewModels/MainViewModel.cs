@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using CrazyUniverse.Core.Events;
 
 namespace CrazyUniverse.WpfApp.ViewModels
 {
@@ -287,14 +288,14 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         public MainViewModel()
         {
-            // Subscribe repositories to automatically route domain log messages to UI log collector
-            _monkeyRepository.LogMessageGenerated += (s, msg) => Log(msg);
-            _lionRepository.LogMessageGenerated += (s, msg) => Log(msg);
-            _penguinRepository.LogMessageGenerated += (s, msg) => Log(msg);
-            _honeyBadgerRepository.LogMessageGenerated += (s, msg) => Log(msg);
-            _kangarooRepository.LogMessageGenerated += (s, msg) => Log(msg);
-            _dolphinRepository.LogMessageGenerated += (s, msg) => Log(msg);
-            _frogRepository.LogMessageGenerated += (s, msg) => Log(msg);
+            // Subscribe repositories to automatically route typed domain log messages (with Kind & Cause) to UI log collector
+            _monkeyRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
+            _lionRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
+            _penguinRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
+            _honeyBadgerRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
+            _kangarooRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
+            _dolphinRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
+            _frogRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
 
             // Initialize enclosures collection based on available types from factory
             InitializeEnclosures();
@@ -789,8 +790,17 @@ namespace CrazyUniverse.WpfApp.ViewModels
         }
 
         // ==========================================
-        // HELPER LOG METHOD
+        // HELPER LOG METHODS
         // ==========================================
+
+        // Handles typed repository log events containing Kind and Cause details
+        private void HandleRepositoryLog(LogEventArgs e)
+        {
+            // You can use e.Kind and e.Cause here if needed for extended logging or filtering,
+            // for now we extract e.Message to display in the UI log list.
+            Log(e.Message);
+        }
+
         private void Log(string message)
         {
             string timestampedMessage = $"[{DateTime.Now:HH:mm:ss}] {message}";

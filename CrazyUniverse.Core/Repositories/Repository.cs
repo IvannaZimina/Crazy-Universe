@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CrazyUniverse.Core.Events;
 using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
 
@@ -14,8 +15,8 @@ namespace CrazyUniverse.Core.Repositories
         // Private list for items of type T.
         private readonly List<T> _items = new();
 
-        // Event triggered when a domain event occurs (addition, removal, crazy action) needing to be logged
-        public event EventHandler<string>? LogMessageGenerated;
+        // Event triggered when a domain event occurs using typed LogEventArgs (Kind & Cause)
+        public event EventHandler<LogEventArgs>? LogMessageGenerated;
 
         // Adds item to internal list, triggers welcome reactions from existing neighbors, and logs them.
         public void Add(T item)
@@ -29,11 +30,14 @@ namespace CrazyUniverse.Core.Repositories
                 string reaction = existingAnimal.ReactToNeighbor(item, "Add");
                 if (!string.IsNullOrWhiteSpace(reaction))
                 {
-                    LogMessageGenerated?.Invoke(this, reaction);
+                    LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Reaction, item, reaction));
                 }
             }
 
             _items.Add(item);
+
+            // Log the addition event with Kind and Cause
+            LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Add, item, $"{item.Name} has been added to the zoo."));
         }
 
         // Removes the item from the internal list, triggers farewell reactions from remaining neighbors, and returns true if successful.
@@ -50,12 +54,19 @@ namespace CrazyUniverse.Core.Repositories
                     string reaction = remainingAnimal.ReactToNeighbor(item, "Remove");
                     if (!string.IsNullOrWhiteSpace(reaction))
                     {
-                        LogMessageGenerated?.Invoke(this, reaction);
+                        LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Reaction, item, reaction));
                     }
                 }
             }
 
-            return _items.Remove(item);
+            bool removed = _items.Remove(item);
+            if (removed)
+            {
+                // Log the removal event with Kind and Cause
+                LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Remove, item, $"{item.Name} has been removed from the zoo."));
+            }
+
+            return removed;
         }
 
         // Triggers a crazy action on a specific animal and collects neighbor reactions within the same repository.
@@ -66,7 +77,7 @@ namespace CrazyUniverse.Core.Repositories
 
             // Perform the animal's own crazy action
             string actionResult = item.CrazyAction();
-            LogMessageGenerated?.Invoke(this, actionResult);
+            LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.CrazyAction, item, actionResult));
 
             // Trigger neighbor reactions to this crazy action
             foreach (var neighbor in _items)
@@ -76,7 +87,7 @@ namespace CrazyUniverse.Core.Repositories
                     string reaction = neighbor.ReactToNeighbor(item, "CrazyAction");
                     if (!string.IsNullOrWhiteSpace(reaction))
                     {
-                        LogMessageGenerated?.Invoke(this, reaction);
+                        LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Reaction, item, reaction));
                     }
                 }
             }

@@ -11,7 +11,7 @@ namespace CrazyUniverse.Core.Interfaces
     public interface IRepository<T> where T : Animal
     {
         // LogMessageGenerated — an event through which the repository transmits generated text reaction logs to the outside
-        event EventHandler<string>? LogMessageGenerated;
+        event EventHandler<LogEventArgs>? LogMessageGenerated;
 
         // Method contract for adding new item to repository collection and triggering welcome reactions.
         void Add(T item);
