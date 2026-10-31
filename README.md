@@ -169,7 +169,8 @@ Tasks, guidelines, and review status for project contributors and peer reviewers
 - **[Issue #6: Add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** (Arina Shishkova)
   - *Pull Request*: **[PR #4](https://github.com/IvannaZimina/Crazy-Universe/pull/4)** (Adding three new animal types, integrating them into repositories, events, and UI)
   - *Code Review & Verification*: Successfully merged and verified. Added three new animal types, integrated them into generic repositories, domain events (`LogEventArgs`), and MVVM data bindings with proper owner review.
-- **[Issue #7: Guidelines & Recommendations for collaborators](https://github.com/IvannaZimina/Crazy-Universe/issues/7)** — General collaboration rules, clean code practices, and PR workflows managed via GitHub.
+- **[Issue #9: Guidelines & Recommendations for collaborators](https://github.com/IvannaZimina/Crazy-Universe/issues/9)** — General collaboration rules, clean code practices, and PR workflows managed via GitHub.
+  - *Pull Request*: **[PR #8](https://github.com/IvannaZimina/Crazy-Universe/pull/8)** (Feature/crazy zoo vol3 - Implement asynchronous and parallel simulation functionality).
 
 ---
 
