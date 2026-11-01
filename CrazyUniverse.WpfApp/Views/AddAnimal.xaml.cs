@@ -2,7 +2,7 @@
 using CrazyUniverse.WpfApp.ViewModels;
 using System.Windows;
 
-namespace CrazyUniverse.WpfApp
+namespace CrazyUniverse.WpfApp.Views
 {
     // logic for AddAnimal.xaml
     public partial class AddAnimal : Window

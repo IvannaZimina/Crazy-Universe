@@ -163,7 +163,6 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // creates a collection of logs that is displayed in the user interface
         public ObservableCollection<string> LogMessages { get; } = new ObservableCollection<string>();
 
-        // Общий подсчет животных во всех вольерах сразу
         public int ZooPopulation => _monkeyRepository.GetAll().Count()
                                     + _lionRepository.GetAll().Count()
                                     + _penguinRepository.GetAll().Count()
@@ -382,7 +381,6 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     }
                 };
 
-                // Безопасное получение списка животных для вольера при инициализации
                 IEnumerable<Animal> repoItems = type switch
                 {
                     "Lion" => _lionRepository.GetAll().Cast<Animal>(),
