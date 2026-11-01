@@ -691,6 +691,312 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Forecasting pride migration and prey population..
+        /// </summary>
+        public static string Simulation_Card_Lion_Description {
+            get {
+                return ResourceManager.GetString("Simulation_Card_Lion_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Population simulation....
+        /// </summary>
+        public static string Simulation_Card_Lion_Title {
+            get {
+                return ResourceManager.GetString("Simulation_Card_Lion_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calculating optimal routes for banana collection..
+        /// </summary>
+        public static string Simulation_Card_Monkey_Description {
+            get {
+                return ResourceManager.GetString("Simulation_Card_Monkey_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pathfinding simulation....
+        /// </summary>
+        public static string Simulation_Card_Monkey_Title {
+            get {
+                return ResourceManager.GetString("Simulation_Card_Monkey_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calculating underwater movement, temperature and energy costs..
+        /// </summary>
+        public static string Simulation_Card_Penguin_Description {
+            get {
+                return ResourceManager.GetString("Simulation_Card_Penguin_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fluid dynamics simulation....
+        /// </summary>
+        public static string Simulation_Card_Penguin_Title {
+            get {
+                return ResourceManager.GetString("Simulation_Card_Penguin_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test error: Lion population simulation failed..
+        /// </summary>
+        public static string Simulation_Error_Lion {
+            get {
+                return ResourceManager.GetString("Simulation_Error_Lion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancellation requested by user..
+        /// </summary>
+        public static string Simulation_Log_CancellationRequested {
+            get {
+                return ResourceManager.GetString("Simulation_Log_CancellationRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [CANCELLED] {0}: simulation was cancelled after {1:F3} sec..
+        /// </summary>
+        public static string Simulation_Log_Cancelled {
+            get {
+                return ResourceManager.GetString("Simulation_Log_Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: Cancelled before simulation started..
+        /// </summary>
+        public static string Simulation_Log_CancelledBeforeStart {
+            get {
+                return ResourceManager.GetString("Simulation_Log_CancelledBeforeStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [ERROR] {0}: {1}.
+        /// </summary>
+        public static string Simulation_Log_Error {
+            get {
+                return ResourceManager.GetString("Simulation_Log_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Simulation finished in {0:0.00} seconds..
+        /// </summary>
+        public static string Simulation_Log_Finished {
+            get {
+                return ResourceManager.GetString("Simulation_Log_Finished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select at least one animal..
+        /// </summary>
+        public static string Simulation_Log_NoAnimalsSelected {
+            get {
+                return ResourceManager.GetString("Simulation_Log_NoAnimalsSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: Cancelled by user..
+        /// </summary>
+        public static string Simulation_Log_ResultCancelled {
+            get {
+                return ResourceManager.GetString("Simulation_Log_ResultCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: Error - {1}.
+        /// </summary>
+        public static string Simulation_Log_ResultError {
+            get {
+                return ResourceManager.GetString("Simulation_Log_ResultError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: Success. Duration: {1:0.00} s..
+        /// </summary>
+        public static string Simulation_Log_ResultSuccess {
+            get {
+                return ResourceManager.GetString("Simulation_Log_ResultSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scheduled task for {0}..
+        /// </summary>
+        public static string Simulation_Log_ScheduledTask {
+            get {
+                return ResourceManager.GetString("Simulation_Log_ScheduledTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting simulation for {0}....
+        /// </summary>
+        public static string Simulation_Log_StartingAnimal {
+            get {
+                return ResourceManager.GetString("Simulation_Log_StartingAnimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting parallel simulation mode (Task.Run + Task.WhenAll)....
+        /// </summary>
+        public static string Simulation_Log_StartingParallel {
+            get {
+                return ResourceManager.GetString("Simulation_Log_StartingParallel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting sequential simulation mode....
+        /// </summary>
+        public static string Simulation_Log_StartingSequential {
+            get {
+                return ResourceManager.GetString("Simulation_Log_StartingSequential", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [SUCCESS] {0}: calculation completed in {1:F3} sec..
+        /// </summary>
+        public static string Simulation_Log_Success {
+            get {
+                return ResourceManager.GetString("Simulation_Log_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Simulation was cancelled by user..
+        /// </summary>
+        public static string Simulation_Message_Cancelled {
+            get {
+                return ResourceManager.GetString("Simulation_Message_Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Simulation cancelled before it started..
+        /// </summary>
+        public static string Simulation_Message_CancelledBeforeStart {
+            get {
+                return ResourceManager.GetString("Simulation_Message_CancelledBeforeStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calculation completed successfully..
+        /// </summary>
+        public static string Simulation_Message_Success {
+            get {
+                return ResourceManager.GetString("Simulation_Message_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled before start.
+        /// </summary>
+        public static string Simulation_Progress_CancelledBeforeStart {
+            get {
+                return ResourceManager.GetString("Simulation_Progress_CancelledBeforeStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Step {0:N0} / {1:N0}.
+        /// </summary>
+        public static string Simulation_Progress_Steps {
+            get {
+                return ResourceManager.GetString("Simulation_Progress_Steps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} animals selected.
+        /// </summary>
+        public static string Simulation_SelectedAnimals {
+            get {
+                return ResourceManager.GetString("Simulation_SelectedAnimals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        public static string Simulation_Status_Cancelled {
+            get {
+                return ResourceManager.GetString("Simulation_Status_Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string Simulation_Status_Error {
+            get {
+                return ResourceManager.GetString("Simulation_Status_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Idle.
+        /// </summary>
+        public static string Simulation_Status_Idle {
+            get {
+                return ResourceManager.GetString("Simulation_Status_Idle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not selected.
+        /// </summary>
+        public static string Simulation_Status_NotSelected {
+            get {
+                return ResourceManager.GetString("Simulation_Status_NotSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Running.
+        /// </summary>
+        public static string Simulation_Status_Running {
+            get {
+                return ResourceManager.GetString("Simulation_Status_Running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success.
+        /// </summary>
+        public static string Simulation_Status_Success {
+            get {
+                return ResourceManager.GetString("Simulation_Status_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting.
+        /// </summary>
+        public static string Simulation_Status_Waiting {
+            get {
+                return ResourceManager.GetString("Simulation_Status_Waiting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Crazy Action.
         /// </summary>
         public static string UI_BtnCrazyAction {
