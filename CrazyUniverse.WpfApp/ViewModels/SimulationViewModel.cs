@@ -1,4 +1,4 @@
-
+using CrazyUniverse.Core.Resources;
 using CrazyUniverse.Core.Simulation;
 using CrazyUniverse.WpfApp.Commands;
 using CrazyUniverse.WpfApp.Services;
@@ -40,7 +40,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         // Shows how many animals are currently selected.
         public string SelectedAnimalsText =>
-            $"{AnimalCards.Count(card => card.IsSelected)} animals selected";
+            string.Format(
+                Messages.Simulation_SelectedAnimals,
+                AnimalCards.Count(card => card.IsSelected));
 
         // Enables or disables the test error for the Lion simulation.
         public bool SimulateError
@@ -199,7 +201,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             if (selectedItems.Count == 0)
             {
-                LogEvent("Please select at least one animal.");
+                LogEvent(Messages.Simulation_Log_NoAnimalsSelected);
                 return;
             }
 
@@ -213,7 +215,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             try
             {
-                LogEvent("Starting sequential simulation mode...");
+                LogEvent(Messages.Simulation_Log_StartingSequential);
 
                 for (int i = 0; i < selectedItems.Count; i++)
                 {
@@ -232,9 +234,12 @@ namespace CrazyUniverse.WpfApp.ViewModels
                         break;
                     }
 
-                    card.Status = "Running";
+                    card.Status = Messages.Simulation_Status_Running;
 
-                    LogEvent($"Starting simulation for {snapshot.Name}...");
+                    LogEvent(
+                        string.Format(
+                            Messages.Simulation_Log_StartingAnimal,
+                            snapshot.Name));
 
                     // Sends progress updates to the animal card.
                     var progress = new Progress<SimulationProgress>(p =>
@@ -243,7 +248,10 @@ namespace CrazyUniverse.WpfApp.ViewModels
                             ? 0
                             : (int)((double)p.Done / p.Total * 100);
 
-                        card.ProgressText = $"Step {p.Done:N0} / {p.Total:N0}";
+                        card.ProgressText = string.Format(
+                            Messages.Simulation_Progress_Steps,
+                            p.Done,
+                            p.Total);
                     });
 
                     // Waits for the current animal before starting the next one.
@@ -266,7 +274,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
                 // Adds the final run time to the event log.
                 LogEvent(
-                    $"Simulation finished in {stopwatch.Elapsed.TotalSeconds:0.00} seconds.");
+                    string.Format(
+                        Messages.Simulation_Log_Finished,
+                        stopwatch.Elapsed.TotalSeconds));
 
                 // Always resets the run state and releases the cancellation source.
                 FinalizeRun();
@@ -282,7 +292,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             if (selectedItems.Count == 0)
             {
-                LogEvent("Please select at least one animal.");
+                LogEvent(Messages.Simulation_Log_NoAnimalsSelected);
                 return;
             }
 
@@ -296,7 +306,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             try
             {
-                LogEvent("Starting parallel simulation mode (Task.Run + Task.WhenAll)...");
+                LogEvent(Messages.Simulation_Log_StartingParallel);
 
                 // Creates one task for each selected animal.
                 var tasks = selectedItems.Select(item =>
@@ -304,9 +314,12 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     var card = item.Card;
                     var snapshot = item.Snapshot;
 
-                    card.Status = "Running";
+                    card.Status = Messages.Simulation_Status_Running;
 
-                    LogEvent($"Scheduled task for {snapshot.Name}.");
+                    LogEvent(
+                        string.Format(
+                            Messages.Simulation_Log_ScheduledTask,
+                            snapshot.Name));
 
                     // Sends progress updates to the animal card.
                     var progress = new Progress<SimulationProgress>(p =>
@@ -315,7 +328,10 @@ namespace CrazyUniverse.WpfApp.ViewModels
                             ? 0
                             : (int)((double)p.Done / p.Total * 100);
 
-                        card.ProgressText = $"Step {p.Done:N0} / {p.Total:N0}";
+                        card.ProgressText = string.Format(
+                            Messages.Simulation_Progress_Steps,
+                            p.Done,
+                            p.Total);
                     });
 
                     return RunSingleAnimalTaskAsync(
@@ -338,7 +354,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
                 // Adds the final run time to the event log.
                 LogEvent(
-                    $"Simulation finished in {stopwatch.Elapsed.TotalSeconds:0.00} seconds.");
+                    string.Format(
+                        Messages.Simulation_Log_Finished,
+                        stopwatch.Elapsed.TotalSeconds));
 
                 // Runs even if an unexpected exception occurs.
                 FinalizeRun();
@@ -387,21 +405,31 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     SuccessfulCount++;
 
                     LogEvent(
-                        $"{result.AnimalName}: Success. Duration: {result.ElapsedSeconds:0.00} s.");
+                        string.Format(
+                            Messages.Simulation_Log_ResultSuccess,
+                            result.AnimalName,
+                            result.ElapsedSeconds));
 
                     break;
 
                 case "Cancelled":
                     CancelledCount++;
 
-                    LogEvent($"{result.AnimalName}: Cancelled by user.");
+                    LogEvent(
+                        string.Format(
+                            Messages.Simulation_Log_ResultCancelled,
+                            result.AnimalName));
 
                     break;
 
                 default:
                     ErrorCount++;
 
-                    LogEvent($"{result.AnimalName}: Error - {result.Details}");
+                    LogEvent(
+                        string.Format(
+                            Messages.Simulation_Log_ResultError,
+                            result.AnimalName,
+                            result.Details));
 
                     break;
             }
@@ -410,13 +438,13 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Adds a report row for an animal that was not started.
         private void MarkAsCancelled(SimulationCardViewModel card)
         {
-            card.Status = "Cancelled";
-            card.ProgressText = "Cancelled before start";
+            card.Status = Messages.Simulation_Status_Cancelled;
+            card.ProgressText = Messages.Simulation_Progress_CancelledBeforeStart;
 
             var result = new SimulationResultRowViewModel(
                 card.Name,
-                "Cancelled",
-                "Simulation cancelled before it started.",
+                Messages.Simulation_Status_Cancelled,
+                Messages.Simulation_Message_CancelledBeforeStart,
                 0,
                 DateTime.Now,
                 card.ImagePath);
@@ -425,7 +453,10 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             CancelledCount++;
 
-            LogEvent($"{card.Name}: Cancelled before simulation started.");
+            LogEvent(
+                string.Format(
+                    Messages.Simulation_Log_CancelledBeforeStart,
+                    card.Name));
         }
 
         // Sends a cancellation request to the running calculations.
@@ -434,7 +465,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             if (_currentCts == null || _currentCts.IsCancellationRequested)
                 return;
 
-            LogEvent("Cancellation requested by user.");
+            LogEvent(Messages.Simulation_Log_CancellationRequested);
 
             _currentCts.Cancel();
         }
@@ -460,11 +491,11 @@ namespace CrazyUniverse.WpfApp.ViewModels
             foreach (var card in AnimalCards)
             {
                 card.ProgressPercent = 0;
-                card.ProgressText = "Idle";
+                card.ProgressText = Messages.Simulation_Status_Idle;
 
                 card.Status = card.IsSelected
-                    ? "Waiting"
-                    : "Not selected";
+                    ? Messages.Simulation_Status_Waiting
+                    : Messages.Simulation_Status_NotSelected;
             }
         }
 
@@ -499,8 +530,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
     {
         private bool _isSelected = true;
         private int _progressPercent;
-        private string _progressText = "Idle";
-        private string _status = "Waiting";
+        private string _progressText = Messages.Simulation_Status_Idle;
+        private string _status = Messages.Simulation_Status_Waiting;
 
         public string Name { get; }
         public string Id { get; }
@@ -546,7 +577,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             set
             {
                 _progressText = string.IsNullOrWhiteSpace(value)
-                    ? "Idle"
+                    ? Messages.Simulation_Status_Idle
                     : value;
 
                 OnPropertyChanged();
@@ -560,7 +591,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             set
             {
                 _status = string.IsNullOrWhiteSpace(value)
-                    ? "Waiting"
+                    ? Messages.Simulation_Status_Waiting
                     : value;
 
                 OnPropertyChanged();
