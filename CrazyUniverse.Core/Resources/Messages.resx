@@ -485,4 +485,106 @@
     <value>{0} cannot swim a negative distance ({1}). Satiety remains unchanged.</value>
     <comment>Error validation</comment>
   </data>
+  <data name="Simulation_Error_Lion" xml:space="preserve">
+    <value>Test error: Lion population simulation failed.</value>
+  </data>
+  <data name="Simulation_Log_Success" xml:space="preserve">
+    <value>[SUCCESS] {0}: calculation completed in {1:F3} sec.</value>
+  </data>
+  <data name="Simulation_Log_Cancelled" xml:space="preserve">
+    <value>[CANCELLED] {0}: simulation was cancelled after {1:F3} sec.</value>
+  </data>
+  <data name="Simulation_Log_Error" xml:space="preserve">
+    <value>[ERROR] {0}: {1}</value>
+  </data>
+  <data name="Simulation_Status_Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Simulation_Status_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Simulation_Status_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Simulation_Message_Success" xml:space="preserve">
+    <value>Calculation completed successfully.</value>
+  </data>
+  <data name="Simulation_Message_Cancelled" xml:space="preserve">
+    <value>Simulation was cancelled by user.</value>
+  </data>
+  <data name="Simulation_Card_Monkey_Title" xml:space="preserve">
+    <value>Pathfinding simulation...</value>
+  </data>
+  <data name="Simulation_Card_Monkey_Description" xml:space="preserve">
+    <value>Calculating optimal routes for banana collection.</value>
+  </data>
+  <data name="Simulation_Card_Lion_Title" xml:space="preserve">
+    <value>Population simulation...</value>
+  </data>
+  <data name="Simulation_Card_Lion_Description" xml:space="preserve">
+    <value>Forecasting pride migration and prey population.</value>
+  </data>
+  <data name="Simulation_Card_Penguin_Title" xml:space="preserve">
+    <value>Fluid dynamics simulation...</value>
+  </data>
+  <data name="Simulation_Card_Penguin_Description" xml:space="preserve">
+    <value>Calculating underwater movement, temperature and energy costs.</value>
+  </data>
+  <data name="Simulation_Status_Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="Simulation_Status_Running" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="Simulation_Status_Idle" xml:space="preserve">
+    <value>Idle</value>
+  </data>
+  <data name="Simulation_Status_NotSelected" xml:space="preserve">
+    <value>Not selected</value>
+  </data>
+  <data name="Simulation_Progress_CancelledBeforeStart" xml:space="preserve">
+    <value>Cancelled before start</value>
+  </data>
+  <data name="Simulation_SelectedAnimals" xml:space="preserve">
+    <value>{0} animals selected</value>
+  </data>
+  <data name="Simulation_Progress_Steps" xml:space="preserve">
+    <value>Step {0:N0} / {1:N0}</value>
+  </data>
+  <data name="Simulation_Log_NoAnimalsSelected" xml:space="preserve">
+    <value>Please select at least one animal.</value>
+  </data>
+  <data name="Simulation_Log_StartingSequential" xml:space="preserve">
+    <value>Starting sequential simulation mode...</value>
+  </data>
+  <data name="Simulation_Log_StartingParallel" xml:space="preserve">
+    <value>Starting parallel simulation mode (Task.Run + Task.WhenAll)...</value>
+  </data>
+  <data name="Simulation_Log_StartingAnimal" xml:space="preserve">
+    <value>Starting simulation for {0}...</value>
+  </data>
+  <data name="Simulation_Log_ScheduledTask" xml:space="preserve">
+    <value>Scheduled task for {0}.</value>
+  </data>
+  <data name="Simulation_Log_Finished" xml:space="preserve">
+    <value>Simulation finished in {0:0.00} seconds.</value>
+  </data>
+  <data name="Simulation_Log_CancellationRequested" xml:space="preserve">
+    <value>Cancellation requested by user.</value>
+  </data>
+  <data name="Simulation_Log_ResultSuccess" xml:space="preserve">
+    <value>{0}: Success. Duration: {1:0.00} s.</value>
+  </data>
+  <data name="Simulation_Log_ResultCancelled" xml:space="preserve">
+    <value>{0}: Cancelled by user.</value>
+  </data>
+  <data name="Simulation_Log_ResultError" xml:space="preserve">
+    <value>{0}: Error - {1}</value>
+  </data>
+  <data name="Simulation_Log_CancelledBeforeStart" xml:space="preserve">
+    <value>{0}: Cancelled before simulation started.</value>
+  </data>
+  <data name="Simulation_Message_CancelledBeforeStart" xml:space="preserve">
+    <value>Simulation cancelled before it started.</value>
+  </data>
 </root>
