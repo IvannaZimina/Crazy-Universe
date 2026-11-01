@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.Core.Simulation
 {
@@ -23,8 +24,8 @@ namespace CrazyUniverse.Core.Simulation
             ArgumentNullException.ThrowIfNull(animal);      // Check if the animal object is null; throw if it is
 
             var stopwatch = Stopwatch.StartNew();           // Start measuring simulation duration
-            string animalName = animal.Name;                 // Extract and store the animal's name locally
-            string animalType = animal.AnimalType;           // Extract and store the animal's type locally
+            string animalName = animal.Name;                // Extract and store the animal's name locally
+            string animalType = animal.AnimalType;          // Extract and store the animal's type locally
 
             try
             {
@@ -70,35 +71,39 @@ namespace CrazyUniverse.Core.Simulation
                         animalType.Contains("Lion", StringComparison.OrdinalIgnoreCase))
                     {
                         throw new InvalidOperationException(
-                            "Test error: Lion population simulation failed.");
+                            Messages.Simulation_Error_Lion);
                     }
 
                 }, token);
 
                 stopwatch.Stop();
 
-                Debug.WriteLine(
-                    $"[SUCCESS] {animalName}: calculation completed in {stopwatch.Elapsed.TotalSeconds:F3} sec.");
+                Debug.WriteLine(string.Format(
+                    Messages.Simulation_Log_Success,
+                    animalName,
+                    stopwatch.Elapsed.TotalSeconds));
 
                 // Return success result.
                 return new SimulationResult(
                     animalName,
-                    "Success",
-                    "Calculation completed successfully.",
+                    Messages.Simulation_Status_Success,
+                    Messages.Simulation_Message_Success,
                     stopwatch.Elapsed.TotalSeconds);
             }
             catch (OperationCanceledException)
             {
                 stopwatch.Stop();
 
-                Debug.WriteLine(
-                    $"[CANCELLED] {animalName}: simulation was cancelled after {stopwatch.Elapsed.TotalSeconds:F3} sec.");
+                Debug.WriteLine(string.Format(
+                    Messages.Simulation_Log_Cancelled,
+                    animalName,
+                    stopwatch.Elapsed.TotalSeconds));
 
                 // Return cancelled result.
                 return new SimulationResult(
                     animalName,
-                    "Cancelled",
-                    "Simulation was cancelled by user.",
+                    Messages.Simulation_Status_Cancelled,
+                    Messages.Simulation_Message_Cancelled,
                     stopwatch.Elapsed.TotalSeconds);
             }
             catch (Exception ex)
@@ -106,12 +111,15 @@ namespace CrazyUniverse.Core.Simulation
                 stopwatch.Stop();
 
                 // Write full exception information to Visual Studio Output window.
-                Debug.WriteLine($"[ERROR] {animalName}: {ex}");
+                Debug.WriteLine(string.Format(
+                    Messages.Simulation_Log_Error,
+                    animalName,
+                    ex));
 
                 // Return error result.
                 return new SimulationResult(
                     animalName,
-                    "Error",
+                    Messages.Simulation_Status_Error,
                     ex.Message,
                     stopwatch.Elapsed.TotalSeconds);
             }
