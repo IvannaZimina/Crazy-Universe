@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿
+using System.Collections.ObjectModel;
 using CrazyUniverse.WpfApp.ViewModels;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.WpfApp.Services
 {
@@ -15,8 +17,8 @@ namespace CrazyUniverse.WpfApp.Services
                     "Monkey",
                     68.0,
                     "/Images/Monkyes_jump.JPG",
-                    "Pathfinding simulation...",
-                    "Calculating optimal routes for banana collection."),
+                    Messages.Simulation_Card_Monkey_Title,
+                    Messages.Simulation_Card_Monkey_Description),
 
                 new SimulationCardViewModel(
                     "Lion",
@@ -24,8 +26,8 @@ namespace CrazyUniverse.WpfApp.Services
                     "Lion",
                     72.0,
                     "/Images/Lions_migration.jpg",
-                    "Population simulation...",
-                    "Forecasting pride migration and prey population."),
+                    Messages.Simulation_Card_Lion_Title,
+                    Messages.Simulation_Card_Lion_Description),
 
                 new SimulationCardViewModel(
                     "Penguin",
@@ -33,8 +35,8 @@ namespace CrazyUniverse.WpfApp.Services
                     "Penguin",
                     45.0,
                     "/Images/penguin_jump.JPG",
-                    "Fluid dynamics simulation...",
-                    "Calculating underwater movement, temperature and energy costs.")
+                    Messages.Simulation_Card_Penguin_Title,
+                    Messages.Simulation_Card_Penguin_Description)
             };
         }
     }
