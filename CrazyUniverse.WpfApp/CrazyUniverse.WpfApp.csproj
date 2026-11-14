@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="Images\dolphin.jpg" />
+    <None Remove="Images\frog.jpg" />
+    <None Remove="Images\honeybadger.jpg" />
+    <None Remove="Images\kangaroo.jpg" />
     <None Remove="Images\Lions_migration.jpg" />
     <None Remove="Images\Monkyes_jump.JPG" />
     <None Remove="Images\penguin_jump.JPG" />
@@ -11,6 +15,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\dolphin.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\frog.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\honeybadger.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\kangaroo.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\Lions_migration.jpg" />
     <Resource Include="Images\Monkyes_jump.JPG" />
     <Resource Include="Images\penguin_jump.JPG" />
