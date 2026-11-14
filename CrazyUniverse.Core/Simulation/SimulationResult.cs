@@ -13,13 +13,15 @@ namespace CrazyUniverse.Core.Simulation
         public string Status { get; set; } // "Success", "Error", "Cancelled"
         public string Details { get; }
         public double ElapsedSeconds { get; }
+        public double CalculationValue { get; } // new value to store the result of the calculation
 
-        public SimulationResult(string animalName, string status, string details, double elapsedSeconds)
+        public SimulationResult(string animalName, string status, string details, double elapsedSeconds, double calculationValue = 0)
         {
             AnimalName = animalName;
             Status = status;
             Details = details;
             ElapsedSeconds = elapsedSeconds;
+            CalculationValue = calculationValue;
         }
     }
 }

@@ -28,8 +28,8 @@ namespace CrazyUniverse.Core.Simulation
 
             try // Starts a block where calculation errors and cancellation can be handled.
             {
-                // Run heavy CPU calculations on a background worker thread so UI doesn't freeze.
-                await Task.Run(() =>                // Starts the calculation on a background thread and waits for it to finish.
+                // Run heavy CPU calculations on a background worker thread so UI doesn't freeze, and return the calculation value.
+                double finalCalculationValue = await Task.Run(() => // Starts the calculation on a background thread and waits for it to finish, capturing the returned value.
                 {
                     long totalSteps = workLoad;     // Stores the total number of calculation steps.
                     double calculationValue = 0;    // Stores the result of repeated mathematical calculations.
@@ -73,6 +73,8 @@ namespace CrazyUniverse.Core.Simulation
                             Messages.Simulation_Error_Lion); // Gets the error message from the resource file.
                     }
 
+                    return calculationValue;                // Returns the final accumulated calculation value from the background task.
+
                 }, token);                              // Passes the cancellation token to Task.Run.
 
                 stopwatch.Stop();                       // Stops measuring the calculation time.
@@ -82,12 +84,13 @@ namespace CrazyUniverse.Core.Simulation
                     animalName,                         // Inserts the animal's name into the message.
                     stopwatch.Elapsed.TotalSeconds));   // Inserts the time spent on the calculation.
 
-                // Return success result.
+                // Return success result containing the computed calculation value.
                 return new SimulationResult(            // Creates the result object for a successful simulation.
                     animalName,                         // Stores the animal's name in the result.
                     Messages.Simulation_Status_Success, // Sets the result status to Success.
-                    Messages.Simulation_Message_Success,// Sets the success message from the resource file.
-                    stopwatch.Elapsed.TotalSeconds);    // Stores the total calculation time in seconds.
+                    string.Format(Messages.Simulation_Message_Success + " (Val: {0:F2})", finalCalculationValue), // Formats success details including the calculation value.
+                    stopwatch.Elapsed.TotalSeconds,     // Stores the total calculation time in seconds.
+                    finalCalculationValue);             // Stores the numerical calculation result for report and comparison.
             }
             catch (OperationCanceledException)          // Handles a cancellation request during the simulation.
             {
