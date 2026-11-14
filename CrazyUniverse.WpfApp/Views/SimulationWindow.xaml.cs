@@ -1,5 +1,6 @@
-﻿using System.Windows;
+﻿using CrazyUniverse.Core.Models;
 using CrazyUniverse.WpfApp.ViewModels;
+using System.Windows;
 
 namespace CrazyUniverse.WpfApp.Views
 {
@@ -14,6 +15,12 @@ namespace CrazyUniverse.WpfApp.Views
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+        
+        public SimulationWindow(IEnumerable<Animal> animals)
+        {
+            InitializeComponent();
+            DataContext = new SimulationViewModel(animals);
         }
     }
 }

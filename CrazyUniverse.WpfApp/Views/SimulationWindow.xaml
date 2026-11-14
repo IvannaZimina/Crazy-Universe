@@ -38,7 +38,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Height" Value="44"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="Padding" Value="12,0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -85,13 +85,13 @@
             <Setter Property="Background" Value="#EEF5FC"/>
             <Setter Property="Foreground" Value="{StaticResource DarkBlue}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="9,7"/>
+            <Setter Property="Padding" Value="9,5"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         </Style>
 
         <Style TargetType="DataGridCell">
-            <Setter Property="Padding" Value="7,4"/>
+            <Setter Property="Padding" Value="7,2"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="{StaticResource DarkText}"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -111,7 +111,7 @@
         </Style>
 
         <Style TargetType="DataGridRow">
-            <Setter Property="MinHeight" Value="42"/>
+            <Setter Property="MinHeight" Value="34"/>
             <Setter Property="Background" Value="White"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -122,7 +122,7 @@
 
     </Window.Resources>
 
-    <Grid Margin="18">
+    <Grid Margin="16">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -131,8 +131,8 @@
 
         <Border Grid.Row="0"
                 Style="{StaticResource CardBorderStyle}"
-                Padding="18"
-                Margin="0,0,0,14">
+                Padding="16"
+                Margin="0,0,0,12">
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -141,7 +141,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="🐾"
-                           FontSize="32"
+                           FontSize="30"
                            VerticalAlignment="Center"
                            Margin="0,0,14,0"/>
 
@@ -149,7 +149,7 @@
                             VerticalAlignment="Center">
 
                     <TextBlock Text="Animal Simulation"
-                               FontSize="23"
+                               FontSize="22"
                                FontWeight="Bold"
                                Foreground="{StaticResource DarkBlue}"/>
 
@@ -157,7 +157,7 @@
                         Text="Heavy CPU calculations for selected animals. Each animal runs in a background task."
                         FontSize="12"
                         Foreground="{StaticResource GrayText}"
-                        Margin="0,3,0,0"/>
+                        Margin="0,2,0,0"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -165,21 +165,21 @@
         <Grid Grid.Row="1">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="255"/>
+                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="216"/>
+                <ColumnDefinition Width="210"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="370"/>
+                <RowDefinition Height="350"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Border Grid.Column="0"
                     Grid.RowSpan="2"
                     Style="{StaticResource CardBorderStyle}"
-                    Padding="13"
-                    Margin="0,0,12,0">
+                    Padding="12"
+                    Margin="0,0,10,0">
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -198,455 +198,347 @@
                         <TextBlock Text="{Binding SelectedAnimalsText}"
                                    FontSize="11"
                                    Foreground="{StaticResource GrayText}"
-                                   Margin="0,3,0,0"/>
+                                   Margin="0,2,0,0"/>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1"
                                   VerticalScrollBarVisibility="Auto">
 
-                        <ItemsControl ItemsSource="{Binding AnimalCards}">
-
+                        <ItemsControl ItemsSource="{Binding EnclosureGroups}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
+                                    <StackPanel Margin="0,0,0,8">
+                                        <TextBlock Text="{Binding EnclosureName}"
+                                                   FontWeight="Bold"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource DarkBlue}"
+                                                   Margin="0,0,0,4"/>
 
-                                    <Border Background="{StaticResource SoftBlue}"
-                                            BorderBrush="{StaticResource BorderColor}"
-                                            BorderThickness="1"
-                                            CornerRadius="9"
-                                            Padding="10"
-                                            Margin="0,0,0,8">
+                                        <ItemsControl ItemsSource="{Binding Cards}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="{StaticResource SoftBlue}"
+                                                            BorderBrush="{StaticResource BorderColor}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="8"
+                                                            Padding="8"
+                                                            Margin="0,0,0,5">
 
-                                        <Grid VerticalAlignment="Center">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
+                                                        <Grid VerticalAlignment="Center">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
 
-                                            <CheckBox
-                                                Grid.Column="0"
-                                                IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                VerticalAlignment="Center"
-                                                Margin="0,0,10,0"/>
+                                                            <CheckBox
+                                                                Grid.Column="0"
+                                                                IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                                VerticalAlignment="Center"
+                                                                Margin="0,0,8,0"/>
 
-                                            <Ellipse Grid.Column="1"
-                                                     Width="42"
-                                                     Height="42"
-                                                     VerticalAlignment="Center"
-                                                     Margin="0,0,10,0">
-                                                <Ellipse.Fill>
-                                                    <ImageBrush
-                                                        ImageSource="{Binding ImagePath}"
-                                                        Stretch="UniformToFill"/>
-                                                </Ellipse.Fill>
-                                            </Ellipse>
+                                                            <Ellipse Grid.Column="1"
+                                                                     Width="34"
+                                                                     Height="34"
+                                                                     VerticalAlignment="Center"
+                                                                     Margin="0,0,8,0">
+                                                                <Ellipse.Fill>
+                                                                    <ImageBrush
+                                                                        ImageSource="{Binding ImagePath}"
+                                                                        Stretch="UniformToFill"/>
+                                                                </Ellipse.Fill>
+                                                            </Ellipse>
 
-                                            <StackPanel Grid.Column="2"
-                                                        Orientation="Horizontal"
-                                                        VerticalAlignment="Center">
-                                                <Ellipse Width="7" Height="7"
-                                                         Fill="#19B889"
-                                                         VerticalAlignment="Center"
-                                                         Margin="0,0,6,0"/>
-                                                <TextBlock Text="{Binding Name}"
-                                                           FontSize="14"
-                                                           FontWeight="Bold"
-                                                           Foreground="{StaticResource DarkBlue}"
-                                                           VerticalAlignment="Center"/>
-                                            </StackPanel>
-
-                                        </Grid>
-                                    </Border>
-
+                                                            <StackPanel Grid.Column="2"
+                                                                        Orientation="Horizontal"
+                                                                        VerticalAlignment="Center">
+                                                                <TextBlock Text="{Binding Name}"
+                                                                           FontSize="12"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="{StaticResource DarkBlue}"
+                                                                           VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
-
                         </ItemsControl>
                     </ScrollViewer>
 
-                    <!-- Workload input -->
+                    <!-- Workload -->
                     <StackPanel Grid.Row="2"
-                                Margin="0,10,0,0">
+                                Margin="0,8,0,0">
 
                         <TextBlock Text="⚙  Workload"
                                    Style="{StaticResource SectionTitleStyle}"
-                                   Margin="0,0,0,5"/>
+                                   Margin="0,0,0,4"/>
 
                         <TextBlock Text="Number of iterations"
                                    FontSize="11"
                                    Foreground="{StaticResource GrayText}"
-                                   Margin="0,0,0,5"/>
+                                   Margin="0,0,0,4"/>
 
                         <TextBox Text="{Binding Workload, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 FontSize="14"
+                                 FontSize="13"
                                  FontWeight="SemiBold"
                                  Foreground="{StaticResource DarkBlue}"
                                  Background="#F3F8FE"
                                  BorderBrush="{StaticResource BorderColor}"
                                  BorderThickness="1"
-                                 Padding="8,6"
-                                 Margin="0,0,0,4"/>
+                                 Padding="7,5"
+                                 Margin="0,0,0,3"/>
 
                         <TextBlock Text="100,000 - 100,000,000"
                                    FontSize="10"
                                    Foreground="{StaticResource GrayText}"/>
 
-                        <!-- Test error switch -->
                         <CheckBox
-                            Content="Simulate test error (Lion) - press F5"
+                            Content="Simulate test error (Lion) - F5"
                             IsChecked="{Binding SimulateError, Mode=TwoWay}"
-                            Margin="0,8,0,0"
+                            Margin="0,6,0,0"
                             FontSize="11"
-                            Foreground="{StaticResource DarkBlue}"
-                            ToolTip="When enabled, Lion will return an Error result after calculation."/>
-
+                            Foreground="{StaticResource DarkBlue}"/>
                     </StackPanel>
 
+                    <!-- Simulation Mode Buttons -->
                     <StackPanel Grid.Row="3"
-                                Margin="0,12,0,0">
+                                Margin="0,10,0,0">
 
                         <TextBlock Text="⚙  Simulation Mode"
                                    Style="{StaticResource SectionTitleStyle}"
-                                   Margin="0,0,0,10"/>
+                                   Margin="0,0,0,8"/>
 
                         <Button Command="{Binding RunSequentialCommand}"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                Margin="0,0,0,7">
-
+                                Margin="0,0,0,5">
                             <StackPanel>
-                                <TextBlock Text="▶  Run Sequential"
-                                           FontWeight="SemiBold"/>
-
-                                <TextBlock Text="One animal after another"
-                                           FontSize="10"
-                                           Opacity="0.9"/>
+                                <TextBlock Text="▶  Run Sequential" FontWeight="SemiBold"/>
+                                <TextBlock Text="One animal after another" FontSize="10" Opacity="0.9"/>
                             </StackPanel>
                         </Button>
 
                         <Button Command="{Binding RunParallelCommand}"
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 Background="#438DF0"
-                                Margin="0,0,0,7">
-
+                                Margin="0,0,0,5">
                             <StackPanel>
-                                <TextBlock Text="●  Run Parallel"
-                                           FontWeight="SemiBold"/>
-
-                                <TextBlock
-                                    Text="Run selected animals together"
-                                    FontSize="10"
-                                    Opacity="0.9"/>
+                                <TextBlock Text="●  Run Parallel" FontWeight="SemiBold"/>
+                                <TextBlock Text="Run selected animals together" FontSize="10" Opacity="0.9"/>
                             </StackPanel>
                         </Button>
 
                         <Button Content="■  Cancel"
                                 Command="{Binding CancelCommand}"
                                 Style="{StaticResource DangerButtonStyle}"
-                                Margin="0,7,0,0"/>
-
+                                Margin="0,3,0,0"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <ItemsControl Grid.Column="1"
+            <ScrollViewer Grid.Column="1"
                           Grid.Row="0"
-                          ItemsSource="{Binding AnimalCards}"
-                          Margin="0,0,12,12">
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Margin="0,0,10,10">
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="3"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+                <ItemsControl ItemsSource="{Binding SelectedAnimalCards}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="3"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardBorderStyle}"
+                                    Padding="10"
+                                    Margin="0,0,8,8">
 
-                        <Border Style="{StaticResource CardBorderStyle}"
-                                Padding="9"
-                                Margin="0,0,8,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="150"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="145"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                                    <Border Grid.Row="0"
+                                            CornerRadius="8"
+                                            ClipToBounds="True"
+                                            Background="#EAF4FD">
+                                        <Image Source="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                    </Border>
 
-                                <Border Grid.Row="0"
-                                        CornerRadius="9"
-                                        ClipToBounds="True"
-                                        Background="#EAF4FD">
+                                    <Grid Grid.Row="1" Margin="2,7,2,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <Image Source="{Binding ImagePath}"
-                                           Stretch="UniformToFill"/>
-                                </Border>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="13"
+                                                       FontWeight="Bold"
+                                                       Foreground="{StaticResource DarkBlue}"/>
+                                            <TextBlock Text="{Binding Id}"
+                                                       FontSize="10"
+                                                       Foreground="{StaticResource GrayText}"/>
+                                        </StackPanel>
 
-                                <Grid Grid.Row="1"
-                                      Margin="2,9,2,7">
+                                        <Border Grid.Column="1"
+                                                Background="#E3F2FF"
+                                                CornerRadius="10"
+                                                Padding="7,2"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Status}"
+                                                       FontSize="9"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#1873C9"/>
+                                        </Border>
+                                    </Grid>
 
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Row="2" Margin="2,0,2,3">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Progress" FontSize="10" Foreground="{StaticResource GrayText}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding ProgressText}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DarkBlue}"/>
+                                    </Grid>
 
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Name}"
-                                                   FontSize="14"
-                                                   FontWeight="Bold"
-                                                   Foreground="{StaticResource DarkBlue}"/>
+                                    <ProgressBar Grid.Row="3"
+                                                 Value="{Binding ProgressPercent}"
+                                                 Maximum="100"
+                                                 Height="8"
+                                                 Background="#E4EDF7"
+                                                 Foreground="{StaticResource Green}"
+                                                 BorderThickness="0"
+                                                 Margin="2,0,2,6"/>
 
-                                        <TextBlock Text="{Binding Id}"
-                                                   FontSize="10"
-                                                   Foreground="{StaticResource GrayText}"/>
-                                    </StackPanel>
-
-                                    <Border Grid.Column="1"
-                                            Background="#E3F2FF"
-                                            CornerRadius="12"
-                                            Padding="8,4"
-                                            VerticalAlignment="Center">
-
-                                        <TextBlock Text="{Binding Status}"
-                                                   FontSize="9"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="#1873C9"/>
+                                    <Border Grid.Row="4"
+                                            Background="#F3F8FE"
+                                            BorderBrush="#E1ECF8"
+                                            BorderThickness="1"
+                                            CornerRadius="7"
+                                            Padding="7"
+                                            VerticalAlignment="Stretch">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding SimulationTitle}"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource DarkBlue}"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding SimulationDescription}"
+                                                       FontSize="10"
+                                                       TextWrapping="Wrap"
+                                                       Foreground="{StaticResource GrayText}"
+                                                       Margin="0,3,0,0"/>
+                                        </StackPanel>
                                     </Border>
                                 </Grid>
-
-                                <Grid Grid.Row="2"
-                                      Margin="2,0,2,5">
-
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock Text="Progress"
-                                               FontSize="10"
-                                               Foreground="{StaticResource GrayText}"/>
-
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding ProgressText}"
-                                               FontSize="10"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource DarkBlue}"/>
-                                </Grid>
-
-                                <ProgressBar Grid.Row="3"
-                                           Value="{Binding ProgressPercent}"
-                                           Maximum="100"
-                                           Height="9"
-                                           Background="#E4EDF7"
-                                           Foreground="{StaticResource Green}"
-                                           BorderThickness="0"
-                                           Margin="2,0,2,9"/>
-
-                                <Border Grid.Row="4"
-                                        Background="#F3F8FE"
-                                        BorderBrush="#E1ECF8"
-                                        BorderThickness="1"
-                                        CornerRadius="8"
-                                        Padding="9"
-                                        VerticalAlignment="Stretch">
-
-                                    <StackPanel VerticalAlignment="Center">
-
-                                        <TextBlock
-                                            Text="{Binding SimulationTitle}"
-                                            FontSize="11"
-                                            FontWeight="SemiBold"
-                                            Foreground="{StaticResource DarkBlue}"
-                                            TextWrapping="Wrap"/>
-
-                                        <TextBlock
-                                            Text="{Binding SimulationDescription}"
-                                            FontSize="10"
-                                            TextWrapping="Wrap"
-                                            Foreground="{StaticResource GrayText}"
-                                            Margin="0,5,0,0"/>
-                                    </StackPanel>
-                                </Border>
-
-                            </Grid>
-                        </Border>
-
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-
-            </ItemsControl>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
 
             <StackPanel Grid.Column="2"
                         Grid.Row="0">
 
                 <Border Style="{StaticResource CardBorderStyle}"
-                        Padding="14"
-                        Margin="0,0,0,9"
-                        MinHeight="105">
-
+                        Padding="12"
+                        Margin="0,0,0,8"
+                        MinHeight="95">
                     <StackPanel>
-
-                        <StackPanel Orientation="Horizontal"
-                                    VerticalAlignment="Center">
-
-                            <TextBlock Text="◷"
-                                       FontSize="23"
-                                       Foreground="{StaticResource PrimaryBlue}"
-                                       Margin="0,0,9,0"/>
-
-                            <TextBlock Text="Total time"
-                                       FontSize="13"
-                                       Foreground="{StaticResource DarkBlue}"
-                                       VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="◷" FontSize="21" Foreground="{StaticResource PrimaryBlue}" Margin="0,0,8,0"/>
+                            <TextBlock Text="Total time" FontSize="12" Foreground="{StaticResource DarkBlue}" VerticalAlignment="Center"/>
                         </StackPanel>
-
-                        <TextBlock
-                            Text="{Binding TotalTimeText, TargetNullValue=00:00:00, FallbackValue=00:00:00}"
-                            FontSize="27"
-                            FontWeight="Bold"
-                            Foreground="{StaticResource DarkBlue}"
-                            HorizontalAlignment="Center"
-                            Margin="0,7,0,0"/>
+                        <TextBlock Text="{Binding TotalTimeText, TargetNullValue=00:00:00, FallbackValue=00:00:00}"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource DarkBlue}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,6,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <Border Style="{StaticResource CardBorderStyle}"
-                        Padding="12"
-                        Margin="0,0,0,9">
-
+                        Padding="10"
+                        Margin="0,0,0,8">
                     <StackPanel>
-
-                        <Grid Margin="0,1,0,8">
+                        <Grid Margin="0,1,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="●"
-                                           Foreground="#19B889"
-                                           FontSize="15"
-                                           Margin="0,0,9,0"/>
-
-                                <TextBlock Text="Successful"
-                                           Foreground="#159B70"
-                                           FontSize="12"
-                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="●" Foreground="#19B889" FontSize="13" Margin="0,0,8,0"/>
+                                <TextBlock Text="Successful" Foreground="#159B70" FontSize="11" VerticalAlignment="Center"/>
                             </StackPanel>
-
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding SuccessfulCount}"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource DarkBlue}"
-                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SuccessfulCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
                         </Grid>
 
-                        <Border Height="1"
-                                Background="#E5EEF7"
-                                Margin="0,0,0,8"/>
+                        <Border Height="1" Background="#E5EEF7" Margin="0,0,0,5"/>
 
-                        <Grid Margin="0,0,0,8">
+                        <Grid Margin="0,0,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="✖"
-                                           Foreground="#F45B68"
-                                           FontSize="15"
-                                           Margin="0,0,9,0"/>
-
-                                <TextBlock Text="Error"
-                                           Foreground="#E34E5D"
-                                           FontSize="12"
-                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="✖" Foreground="#F45B68" FontSize="13" Margin="0,0,8,0"/>
+                                <TextBlock Text="Error" Foreground="#E34E5D" FontSize="11" VerticalAlignment="Center"/>
                             </StackPanel>
-
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding ErrorCount}"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource DarkBlue}"
-                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ErrorCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
                         </Grid>
 
-                        <Border Height="1"
-                                Background="#E5EEF7"
-                                Margin="0,0,0,8"/>
+                        <Border Height="1" Background="#E5EEF7" Margin="0,0,0,5"/>
 
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="━"
-                                           Foreground="#8AA7C2"
-                                           FontSize="15"
-                                           Margin="0,0,9,0"/>
-
-                                <TextBlock Text="Cancelled"
-                                           Foreground="{StaticResource GrayText}"
-                                           FontSize="12"
-                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="━" Foreground="#8AA7C2" FontSize="13" Margin="0,0,8,0"/>
+                                <TextBlock Text="Cancelled" Foreground="{StaticResource GrayText}" FontSize="11" VerticalAlignment="Center"/>
                             </StackPanel>
-
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding CancelledCount}"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource DarkBlue}"
-                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CancelledCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
                         </Grid>
-
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource CardBorderStyle}"
-                        Padding="13"
-                        MinHeight="100">
-
+                <Border Style="{StaticResource CardBorderStyle}" Padding="10">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition Width="28"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="▦"
-                                   FontSize="23"
-                                   Foreground="{StaticResource PrimaryBlue}"
-                                   VerticalAlignment="Top"/>
-
+                        <TextBlock Text="▦" FontSize="20" Foreground="{StaticResource PrimaryBlue}" VerticalAlignment="Top"/>
                         <StackPanel Grid.Column="1">
-
-                            <TextBlock Text="CPU intensive"
-                                       FontWeight="Bold"
-                                       FontSize="12"
-                                       Foreground="{StaticResource DarkBlue}"/>
-
-                            <TextBlock
-                                Text="Running in background tasks. UI remains responsive."
-                                FontSize="10"
-                                TextWrapping="Wrap"
-                                Foreground="{StaticResource GrayText}"
-                                Margin="0,5,0,0"/>
+                            <TextBlock Text="CPU intensive" FontWeight="Bold" FontSize="11" Foreground="{StaticResource DarkBlue}"/>
+                            <TextBlock Text="Running in background tasks." FontSize="10" TextWrapping="Wrap" Foreground="{StaticResource GrayText}" Margin="0,3,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
-
             </StackPanel>
 
             <Border Grid.Column="1"
                     Grid.ColumnSpan="2"
                     Grid.Row="1"
                     Style="{StaticResource CardBorderStyle}"
-                    Padding="13">
+                    Padding="12">
 
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
@@ -654,7 +546,7 @@
                     <TextBlock Grid.Row="0"
                                Text="▤  Simulation Log &amp; Results"
                                Style="{StaticResource SectionTitleStyle}"
-                               Margin="0,0,0,9"/>
+                               Margin="0,0,0,5"/>
 
                     <DataGrid Grid.Row="1"
                               ItemsSource="{Binding ResultsTable}"
@@ -668,148 +560,83 @@
                               GridLinesVisibility="Horizontal"
                               HorizontalGridLinesBrush="#E6EEF7"
                               HeadersVisibility="Column"
-                              RowHeight="42"
-                              MaxHeight="190"
-                              Margin="0,0,0,9">
+                              RowHeight="32"
+                              Margin="0,0,0,4">
 
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="Time" Binding="{Binding TimeString}" Width="100"/>
 
-                            <DataGridTextColumn
-                                Header="Time"
-                                Binding="{Binding TimeString, TargetNullValue=--:--:--, FallbackValue=--:--:--}"
-                                Width="115"/>
-
-                            <DataGridTemplateColumn Header="Animal"
-                                                    Width="125">
-
+                            <DataGridTemplateColumn Header="Animal" Width="115">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-
-                                        <StackPanel Orientation="Horizontal"
-                                                    VerticalAlignment="Center">
-
-                                            <Ellipse Width="28"
-                                                     Height="28"
-                                                     Margin="0,0,8,0">
-
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Ellipse Width="22" Height="22" Margin="0,0,6,0">
                                                 <Ellipse.Fill>
-                                                    <ImageBrush
-                                                        ImageSource="{Binding ImagePath}"
-                                                        Stretch="UniformToFill"/>
+                                                    <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill"/>
                                                 </Ellipse.Fill>
                                             </Ellipse>
-
-                                            <TextBlock Text="{Binding AnimalName}"
-                                                       VerticalAlignment="Center"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{StaticResource DarkBlue}"/>
+                                            <TextBlock Text="{Binding AnimalName}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource DarkBlue}"/>
                                         </StackPanel>
-
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Status"
-                                                    Width="105">
-
+                            <DataGridTemplateColumn Header="Status" Width="95">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-
-                                        <Border x:Name="StatusBadge"
-                                                CornerRadius="10"
-                                                Padding="8,3"
-                                                HorizontalAlignment="Left"
-                                                VerticalAlignment="Center"
-                                                Background="#DDF7EC">
-
-                                            <TextBlock x:Name="StatusText"
-                                                       Text="{Binding Status}"
-                                                       FontSize="10"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="#13865F"/>
+                                        <Border x:Name="StatusBadge" CornerRadius="8" Padding="7,2" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#DDF7EC">
+                                            <TextBlock x:Name="StatusText" Text="{Binding Status}" FontSize="10" FontWeight="SemiBold" Foreground="#13865F"/>
                                         </Border>
-
                                         <DataTemplate.Triggers>
-
-                                            <DataTrigger Binding="{Binding Status}"
-                                                         Value="Error">
-
-                                                <Setter TargetName="StatusBadge"
-                                                        Property="Background"
-                                                        Value="#FDE5E7"/>
-
-                                                <Setter TargetName="StatusText"
-                                                        Property="Foreground"
-                                                        Value="#C93645"/>
+                                            <DataTrigger Binding="{Binding Status}" Value="Error">
+                                                <Setter TargetName="StatusBadge" Property="Background" Value="#FDE5E7"/>
+                                                <Setter TargetName="StatusText" Property="Foreground" Value="#C93645"/>
                                             </DataTrigger>
-
-                                            <DataTrigger Binding="{Binding Status}"
-                                                         Value="Cancelled">
-
-                                                <Setter TargetName="StatusBadge"
-                                                        Property="Background"
-                                                        Value="#E8EEF5"/>
-
-                                                <Setter TargetName="StatusText"
-                                                        Property="Foreground"
-                                                        Value="#667E96"/>
+                                            <DataTrigger Binding="{Binding Status}" Value="Cancelled">
+                                                <Setter TargetName="StatusBadge" Property="Background" Value="#E8EEF5"/>
+                                                <Setter TargetName="StatusText" Property="Foreground" Value="#667E96"/>
                                             </DataTrigger>
-
-                                            <DataTrigger Binding="{Binding Status}"
-                                                         Value="Running">
-
-                                                <Setter TargetName="StatusBadge"
-                                                        Property="Background"
-                                                        Value="#DCEEFF"/>
-
-                                                <Setter TargetName="StatusText"
-                                                        Property="Foreground"
-                                                        Value="#1873C9"/>
+                                            <DataTrigger Binding="{Binding Status}" Value="Running">
+                                                <Setter TargetName="StatusBadge" Property="Background" Value="#DCEEFF"/>
+                                                <Setter TargetName="StatusText" Property="Foreground" Value="#1873C9"/>
                                             </DataTrigger>
-
                                         </DataTemplate.Triggers>
-
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn
-                                Header="Details"
-                                Binding="{Binding Details}"
-                                Width="*"/>
-
-                            <DataGridTextColumn
-                                Header="Duration"
-                                Binding="{Binding ElapsedSeconds, StringFormat='{}{0:0.00} s'}"
-                                Width="90"/>
-
+                            <DataGridTextColumn Header="Details" Binding="{Binding Details}" Width="*"/>
+                            <DataGridTextColumn Header="Duration" Binding="{Binding ElapsedSeconds, StringFormat='{}{0:0.00} s'}" Width="85"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <Border Grid.Row="2"
+                    <TextBlock Grid.Row="2"
+                               Text="Console Log &amp; Events"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource DarkBlue}"
+                               Margin="0,4,0,3"/>
+
+                    <Border Grid.Row="3"
                             Background="#F5F9FE"
                             BorderBrush="{StaticResource BorderColor}"
                             BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="9">
+                            CornerRadius="6"
+                            Padding="8">
 
                         <ScrollViewer VerticalScrollBarVisibility="Auto"
                                       HorizontalScrollBarVisibility="Disabled">
-
                             <ItemsControl ItemsSource="{Binding EventLog}">
-
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-
                                         <TextBlock Text="{Binding}"
                                                    FontFamily="Consolas"
                                                    FontSize="10"
                                                    Foreground="#28669F"
                                                    TextWrapping="Wrap"
-                                                   Margin="0,2"/>
+                                                   Margin="0,1"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
-
                             </ItemsControl>
                         </ScrollViewer>
                     </Border>
