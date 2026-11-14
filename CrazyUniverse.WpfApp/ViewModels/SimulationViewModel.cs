@@ -1,3 +1,4 @@
+using CrazyUniverse.Core.Models;
 using CrazyUniverse.Core.Resources;
 using CrazyUniverse.Core.Simulation;
 using CrazyUniverse.WpfApp.Commands;
@@ -12,9 +13,17 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Data;
 
 namespace CrazyUniverse.WpfApp.ViewModels
 {
+    // Helper class to group cards by enclosure/type in the left selection panel
+    public class EnclosureSimulationGroup
+    {
+        public string EnclosureName { get; set; } = string.Empty;
+        public ObservableCollection<SimulationCardViewModel> Cards { get; } = new();
+    }
+
     // Stores the data and commands used by the simulation window.
     public sealed class SimulationViewModel : INotifyPropertyChanged
     {
@@ -33,7 +42,14 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;                          // Notifies the UI when a property value changes.
 
-        public ObservableCollection<SimulationCardViewModel> AnimalCards { get; } = new();  // Holds the animal cards displayed in the window.
+        // Master collection of all available animal cards
+        public ObservableCollection<SimulationCardViewModel> AnimalCards { get; } = new();
+
+        // Grouped view for the left selection panel (maintains enclosures)
+        public ObservableCollection<EnclosureSimulationGroup> EnclosureGroups { get; } = new();
+
+        // Filtered collection for the central grid: contains ONLY animals with IsSelected == true
+        public ObservableCollection<SimulationCardViewModel> SelectedAnimalCards { get; } = new();
 
         public ObservableCollection<SimulationResultRowViewModel> ResultsTable { get; } = new(); // Holds the results displayed in the results table.
 
@@ -134,48 +150,87 @@ namespace CrazyUniverse.WpfApp.ViewModels
             }
         }
 
-        public ICommand RunSequentialCommand { get; }                   // Command that starts simulations one after another.
-        public ICommand RunParallelCommand { get; }                     // Command that starts simulations at the same time.
-        public ICommand CancelCommand { get; }                          // Command that requests cancellation of the current run.
+        public ICommand RunSequentialCommand { get; private set; } = null!;   // Command that starts simulations one after another.
+        public ICommand RunParallelCommand { get; private set; } = null!;     // Command that starts simulations at the same time.
+        public ICommand CancelCommand { get; private set; } = null!;          // Command that requests cancellation of the current run.
 
-        public SimulationViewModel()                                    // Creates the ViewModel and prepares its commands and animal cards.
+        // Default constructor using default cards (fallback).
+        public SimulationViewModel()
         {
             _simulationService = new AnimalSimulationService();         // Creates the service that performs the calculations.
+            InitializeCommands();                                       // Sets up user commands.
 
-            // Starts sequential simulation when the command is executed.
-            RunSequentialCommand = new RelayCommand(
-                async _ => await RunSequentialAsync(),                  // Calls the sequential method and waits for it to finish.
-                _ => !IsBusy);                                          // Allows the command only when no simulation is running.
+            PopulateCards(AnimalCardFactory.CreateDefaultCards());      // Loads default cards into master collection and groups.
+        }
 
-            // Starts parallel simulation when the command is executed.
-            RunParallelCommand = new RelayCommand(
-                async _ => await RunParallelAsync(),                    // Calls the parallel method and waits for it to finish.
-                _ => !IsBusy);                                          // Allows the command only when no simulation is running.
+        // Constructor accepting real zoo animals to build dynamic cards from actual app instances.
+        public SimulationViewModel(IEnumerable<Animal> animals)         // Initializes ViewModel with real active animals from repositories.
+        {
+            _simulationService = new AnimalSimulationService();         // Creates the service that performs the calculations.
+            InitializeCommands();                                       // Sets up user commands.
 
-            // Requests cancellation of the current simulation.
-            CancelCommand = new RelayCommand(
-                _ => CancelExecution(),                                 // Calls the method that sends the cancellation request.
-                _ => IsBusy);                                           // Allows cancellation only while a simulation is running.
+            PopulateCards(AnimalCardFactory.CreateCardsFromAnimals(animals)); // Loads real cards into master collection and groups.
+        }
 
-            // Creates the default animal cards and listens for selection changes.
-            foreach (var card in AnimalCardFactory.CreateDefaultCards()) // Gets the default animal cards one by one.
+        // Helper to populate master collection, set up property listeners, group by enclosures, and refresh central view
+        private void PopulateCards(IEnumerable<SimulationCardViewModel> cards)
+        {
+            AnimalCards.Clear();
+            EnclosureGroups.Clear();
+
+            var groups = cards.GroupBy(c => c.AnimalType);
+
+            foreach (var g in groups)
             {
-                card.PropertyChanged += AnimalCard_PropertyChanged;      // Subscribes to changes in each animal card.
-                AnimalCards.Add(card);                                   // Adds the card to the collection shown in the UI.
+                var groupObj = new EnclosureSimulationGroup { EnclosureName = g.Key + "s" };
+                foreach (var card in g)
+                {
+                    card.PropertyChanged += AnimalCard_PropertyChanged;
+                    AnimalCards.Add(card);
+                    groupObj.Cards.Add(card);
+                }
+                EnclosureGroups.Add(groupObj);
+            }
+
+            RefreshSelectedCards();
+        }
+
+        // Updates the central panel to contain ONLY cards where IsSelected is true
+        private void RefreshSelectedCards()
+        {
+            SelectedAnimalCards.Clear();
+            foreach (var card in AnimalCards.Where(c => c.IsSelected))
+            {
+                SelectedAnimalCards.Add(card);
             }
         }
 
-        // Handles changes in an animal card.
-        private void AnimalCard_PropertyChanged(
-            object? sender,                                                     // Identifies the object that sent the change notification.
-            PropertyChangedEventArgs e)                                         // Contains the name of the property that changed.
+        // Initializes all UI commands.
+        private void InitializeCommands()
         {
-            if (e.PropertyName == nameof(SimulationCardViewModel.IsSelected))   // Checks whether the selection state has changed.
-            {
-                // A new selection requires new snapshots.
-                _cachedSnapshots = null;                                        // Clears old snapshots so they can be created again.
+            RunSequentialCommand = new RelayCommand(
+                async _ => await RunSequentialAsync(),
+                _ => !IsBusy);
 
-                OnPropertyChanged(nameof(SelectedAnimalsText));                 // Updates the selected animal count in the UI.
+            RunParallelCommand = new RelayCommand(
+                async _ => await RunParallelAsync(),
+                _ => !IsBusy);
+
+            CancelCommand = new RelayCommand(
+                _ => CancelExecution(),
+                _ => IsBusy);
+        }
+
+        // Handles changes in an animal card (such as toggling the checkbox)
+        private void AnimalCard_PropertyChanged(
+            object? sender,
+            PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(SimulationCardViewModel.IsSelected))
+            {
+                _cachedSnapshots = null;
+                RefreshSelectedCards();                                         // Обновляем центральную сетку при изменении галочки
+                OnPropertyChanged(nameof(SelectedAnimalsText));
             }
         }
 
@@ -183,502 +238,466 @@ namespace CrazyUniverse.WpfApp.ViewModels
         private List<(SimulationCardViewModel Card, AnimalSnapshot Snapshot)>
             GetSnapshotsForSelectedAnimals()
         {
-            if (_cachedSnapshots == null)                                       // Checks whether snapshots have already been created.
+            if (_cachedSnapshots == null)
             {
-                _cachedSnapshots = AnimalCards                                  // Starts with all available animal cards.
-                    .Where(card => card.IsSelected)                             // Keeps only cards selected by the user.
-                    .Select(card => (card, card.CreateSnapshot()))              // Pairs each selected card with a snapshot of its data.
-                    .ToList();                                                  // Saves the pairs in a list.
+                _cachedSnapshots = AnimalCards
+                    .Where(card => card.IsSelected)
+                    .Select(card => (card, card.CreateSnapshot()))
+                    .ToList();
             }
 
-            return _cachedSnapshots;                                            // Returns the existing snapshots or the newly created ones.
+            return _cachedSnapshots;
         }
 
         // Runs animal calculations one by one.
         private async Task RunSequentialAsync()
         {
-            if (IsBusy) return;                                         // Prevents another run from starting while a simulation is active.
+            if (IsBusy) return;
 
-            var selectedItems = GetSnapshotsForSelectedAnimals();       // Gets the selected cards and their snapshots.
+            var selectedItems = GetSnapshotsForSelectedAnimals();
 
-            if (selectedItems.Count == 0)                               // Checks whether the user selected any animals.
+            if (selectedItems.Count == 0)
             {
-                LogEvent(Messages.Simulation_Log_NoAnimalsSelected);    // Adds a message explaining that selection is required.
-                return;                                                 // Stops because there is nothing to simulate.
+                LogEvent(Messages.Simulation_Log_NoAnimalsSelected);
+                return;
             }
 
-            PrepareForRun();                                            // Resets the UI and creates a new cancellation source.
+            PrepareForRun();
+            bool simulateError = SimulateError;
+            var stopwatch = Stopwatch.StartNew();
 
-            // Keeps the test error setting unchanged during this run.
-            bool simulateError = SimulateError;                         // Copies the current test error setting for this run.
-
-            // Measures the total time of the sequential run.
-            var stopwatch = Stopwatch.StartNew();                       // Starts measuring the total run duration.
-
-            try // Ensures that the run is finalized even if an unexpected error occurs.
+            try
             {
-                LogEvent(Messages.Simulation_Log_StartingSequential);   // Records that sequential mode has started.
+                LogEvent(Messages.Simulation_Log_StartingSequential);
 
-                for (int i = 0; i < selectedItems.Count; i++)           // Goes through the selected animals in order.
+                for (int i = 0; i < selectedItems.Count; i++)
                 {
-                    var item = selectedItems[i];                        // Gets the current card and its snapshot.
-                    var card = item.Card;                               // Stores the current animal card.
-                    var snapshot = item.Snapshot;                       // Stores the animal data used for this calculation.
+                    var item = selectedItems[i];
+                    var card = item.Card;
+                    var snapshot = item.Snapshot;
 
-                    // Marks all remaining animals as cancelled if needed.
-                    if (_currentCts!.IsCancellationRequested)           // Checks whether the user requested cancellation.
+                    if (_currentCts!.IsCancellationRequested)
                     {
-                        for (int j = i; j < selectedItems.Count; j++)   // Goes through the current and all remaining animals.
+                        for (int j = i; j < selectedItems.Count; j++)
                         {
-                            MarkAsCancelled(selectedItems[j].Card);     // Adds a cancelled result for an animal that was not started.
+                            MarkAsCancelled(selectedItems[j].Card);
                         }
 
-                        break;                                          // Stops starting new animal calculations.
+                        break;
                     }
 
-                    card.Status = Messages.Simulation_Status_Running;   // Shows that the current animal is being processed.
+                    card.Status = Messages.Simulation_Status_Running;
 
                     LogEvent(
                         string.Format(
-                            Messages.Simulation_Log_StartingAnimal,     // Gets the message format from the resource file.
-                            snapshot.Name));                            // Supplies the current animal name.
+                            Messages.Simulation_Log_StartingAnimal,
+                            snapshot.Name));
 
-                    // Sends progress updates to the animal card.
-                    var progress = new Progress<SimulationProgress>(p => // Creates a handler for calculation progress updates.
+                    // Sends live progress updates to the individual animal card progress bar.
+                    var progress = new Progress<SimulationProgress>(p =>
                     {
-                        card.ProgressPercent = p.Total <= 0             // Checks whether the total number of steps is valid.
-                            ? 0                                         // Uses zero progress if there are no steps.
-                            : (int)((double)p.Done / p.Total * 100);    // Calculates the completed percentage.
+                        card.ProgressPercent = p.Total <= 0
+                            ? 0
+                            : (int)((double)p.Done / p.Total * 100);
 
-                        card.ProgressText = string.Format(              // Updates the text showing the current calculation step.
-                            Messages.Simulation_Progress_Steps,         // Gets the progress message format from the resource file.
-                            p.Done,                                     // Supplies the number of completed steps.
-                            p.Total);                                   // Supplies the total number of steps.
+                        card.ProgressText = string.Format(
+                            Messages.Simulation_Progress_Steps,
+                            p.Done,
+                            p.Total);
                     });
 
-                    // Waits for the current animal before starting the next one.
-                    var result = await _simulationService.SimulateAsync( // Starts the current animal calculation and waits for its result.
-                        snapshot,                                       // Passes the animal data snapshot to the service.
-                        Workload,                                       // Passes the selected number of calculation steps.
-                        progress,                                       // Passes the progress reporter.
-                        _currentCts.Token,                              // Passes the token used to cancel the calculation.
-                        simulateError);                                 // Passes the test error setting.
+                    var result = await _simulationService.SimulateAsync(
+                        snapshot,
+                        Workload,
+                        progress,
+                        _currentCts.Token,
+                        simulateError);
 
-                    // Updates the card and the results table.
-                    ProcessTaskResult(card, result);                    // Saves the result and updates the UI for this animal.
+                    ProcessTaskResult(card, result);
                 }
             }
-            finally // Runs this block whether the simulation finishes normally or an exception occurs.
+            finally
             {
-                // Stops the timer and saves the total run time.
-                stopwatch.Stop();                                           // Stops measuring the total run duration.
-                TotalTimeText = stopwatch.Elapsed.ToString(@"hh\:mm\:ss");  // Converts the elapsed time into hours, minutes and seconds.
+                stopwatch.Stop();
+                TotalTimeText = stopwatch.Elapsed.ToString(@"hh\:mm\:ss");
 
-                // Adds the final run time to the event log.
                 LogEvent(
                     string.Format(
-                        Messages.Simulation_Log_Finished,                   // Gets the final log message format from the resource file.
-                        stopwatch.Elapsed.TotalSeconds));                   // Supplies the total duration in seconds.
+                        Messages.Simulation_Log_Finished,
+                        stopwatch.Elapsed.TotalSeconds));
 
-                // Always resets the run state and releases the cancellation source.
-                FinalizeRun();                                              // Marks the simulation as finished and releases its cancellation source.
+                FinalizeRun();
             }
         }
 
         // Runs all selected animal calculations at the same time.
         private async Task RunParallelAsync()
         {
-            if (IsBusy) return;                                             // Prevents another run from starting while a simulation is active.
+            if (IsBusy) return;
 
-            var selectedItems = GetSnapshotsForSelectedAnimals();           // Gets the selected cards and their snapshots.
+            var selectedItems = GetSnapshotsForSelectedAnimals();
 
-            if (selectedItems.Count == 0)                                   // Checks whether the user selected any animals.
+            if (selectedItems.Count == 0)
             {
-                LogEvent(Messages.Simulation_Log_NoAnimalsSelected);        // Adds a message explaining that selection is required.
-                return;                                                     // Stops because there is nothing to simulate.
+                LogEvent(Messages.Simulation_Log_NoAnimalsSelected);
+                return;
             }
 
-            PrepareForRun();                                                // Resets the UI and creates a new cancellation source.
+            PrepareForRun();
+            bool simulateError = SimulateError;
+            var stopwatch = Stopwatch.StartNew();
 
-            // Keeps the test error setting unchanged during this run.
-            bool simulateError = SimulateError;                             // Copies the current test error setting for this run.
-
-            // Measures the total time of the parallel run.
-            var stopwatch = Stopwatch.StartNew();                           // Starts measuring the total run duration.
-
-            try                                                             // Ensures that the run is finalized even if an unexpected error occurs.
+            try
             {
-                LogEvent(Messages.Simulation_Log_StartingParallel);         // Records that parallel mode has started.
+                LogEvent(Messages.Simulation_Log_StartingParallel);
 
-                // Creates one task for each selected animal.
-                var tasks = selectedItems.Select(item =>                    // Creates a task for every selected animal.
+                var tasks = selectedItems.Select(item =>
                 {
-                    var card = item.Card;                                   // Gets the card that will display this animal's progress.
-                    var snapshot = item.Snapshot;                           // Gets the fixed animal data for the calculation.
+                    var card = item.Card;
+                    var snapshot = item.Snapshot;
 
-                    card.Status = Messages.Simulation_Status_Running;       // Shows that this animal's calculation has been scheduled.
+                    card.Status = Messages.Simulation_Status_Running;
 
                     LogEvent(
                         string.Format(
-                            Messages.Simulation_Log_ScheduledTask,          // Gets the scheduled task message from the resource file.
-                            snapshot.Name));                                // Supplies the current animal name.
+                            Messages.Simulation_Log_ScheduledTask,
+                            snapshot.Name));
 
-                    // Sends progress updates to the animal card.
-                    var progress = new Progress<SimulationProgress>(p =>    // Creates a handler for calculation progress updates.
+                    // Sends live progress updates to the individual animal card progress bar in parallel mode.
+                    var progress = new Progress<SimulationProgress>(p =>
                     {
-                        card.ProgressPercent = p.Total <= 0                 // Checks whether the total number of steps is valid.
-                            ? 0                                             // Uses zero progress if there are no steps.
-                            : (int)((double)p.Done / p.Total * 100);        // Calculates the completed percentage.
+                        card.ProgressPercent = p.Total <= 0
+                            ? 0
+                            : (int)((double)p.Done / p.Total * 100);
 
-                        card.ProgressText = string.Format(                  // Updates the text showing the current calculation step.
-                            Messages.Simulation_Progress_Steps,             // Gets the progress message format from the resource file.
-                            p.Done,                                         // Supplies the number of completed steps.
-                            p.Total);                                       // Supplies the total number of steps.
+                        card.ProgressText = string.Format(
+                            Messages.Simulation_Progress_Steps,
+                            p.Done,
+                            p.Total);
                     });
 
-                    return RunSingleAnimalTaskAsync(    // Starts the calculation task for this animal.
-                        card,                           // Passes the card that will display the result.
-                        snapshot,                       // Passes the animal data snapshot.
-                        progress,                       // Passes the progress reporter.
-                        _currentCts!.Token,             // Passes the shared cancellation token.
-                        simulateError);                 // Passes the test error setting.
+                    return RunSingleAnimalTaskAsync(
+                        card,
+                        snapshot,
+                        progress,
+                        _currentCts!.Token,
+                        simulateError);
 
-                }).ToArray();                           // Converts all created tasks into an array.
+                }).ToArray();
 
-                // Waits until all animal tasks have finished.
-                await Task.WhenAll(tasks);              // Waits for every task in the array to complete.
+                await Task.WhenAll(tasks);
             }
-            finally                                     // Runs this block whether all tasks finish normally or an exception occurs.
+            finally
             {
-                // Stops the timer and saves the total run time.
-                stopwatch.Stop();                       // Stops measuring the total run duration.
-                TotalTimeText = stopwatch.Elapsed.ToString(@"hh\:mm\:ss"); // Converts the elapsed time into hours, minutes and seconds.
+                stopwatch.Stop();
+                TotalTimeText = stopwatch.Elapsed.ToString(@"hh\:mm\:ss");
 
-                // Adds the final run time to the event log.
-                LogEvent(                                   // Adds the total duration to the event log.
-                    string.Format(                          // Inserts the measured duration into the log message.
-                        Messages.Simulation_Log_Finished,   // Gets the final log message format from the resource file.
-                        stopwatch.Elapsed.TotalSeconds));   // Supplies the total duration in seconds.
+                LogEvent(
+                    string.Format(
+                        Messages.Simulation_Log_Finished,
+                        stopwatch.Elapsed.TotalSeconds));
 
-                // Runs even if an unexpected exception occurs.
-                FinalizeRun();                              // Marks the simulation as finished and releases its cancellation source.
+                FinalizeRun();
             }
         }
 
         // Runs one animal calculation as a separate task.
         private async Task RunSingleAnimalTaskAsync(
-            SimulationCardViewModel card,                   // Card that displays this animal's progress and result.
-            AnimalSnapshot snapshot,                        // Fixed copy of the animal data used for this calculation.
-            IProgress<SimulationProgress> progress,         // Reports progress while the calculation is running.
-            CancellationToken token,                        // Allows this calculation to be cancelled.
-            bool simulateError)                             // Controls whether the test error should be triggered.
+            SimulationCardViewModel card,
+            AnimalSnapshot snapshot,
+            IProgress<SimulationProgress> progress,
+            CancellationToken token,
+            bool simulateError)
         {
-            var result = await _simulationService.SimulateAsync( // Starts the calculation and waits for its result.
-                snapshot,                                        // Passes the animal data snapshot.
-                Workload,                                        // Passes the selected number of calculation steps.
-                progress,                                        // Passes the progress reporter.
-                token,                                           // Passes the cancellation token.
-                simulateError);                                  // Passes the test error setting.
+            var result = await _simulationService.SimulateAsync(
+                snapshot,
+                Workload,
+                progress,
+                token,
+                simulateError);
 
-            // Saves the result for this animal.
-            ProcessTaskResult(card, result);                     // Updates the card, counters, results table and event log.
+            ProcessTaskResult(card, result);
         }
 
         // Updates the animal card, counters and results table.
         private void ProcessTaskResult(
-            SimulationCardViewModel card,                       // Card connected to the completed calculation.
-            SimulationResult result)                            // Contains the status, details and duration of the calculation.
+            SimulationCardViewModel card,
+            SimulationResult result)
         {
-            card.Status = result.Status;                        // Displays the status returned by the simulation service.
+            card.Status = result.Status;
 
-            card.ProgressPercent = result.Status == "Success"   // Checks whether the calculation finished successfully.
-                ? 100                                           // Sets progress to 100 percent after success.
-                : card.ProgressPercent;                         // Keeps the current progress for errors or cancellation.
+            card.ProgressPercent = result.Status == "Success"
+                ? 100
+                : card.ProgressPercent;
 
-            ResultsTable.Add(new SimulationResultRowViewModel(  // Creates and adds a new row to the results table.
-                result,                                         // Passes the calculation result.
-                DateTime.Now,                                   // Records the time when the result was processed.
-                card.ImagePath));                               // Uses the animal image in the result row.
+            ResultsTable.Add(new SimulationResultRowViewModel(
+                result,
+                DateTime.Now,
+                card.ImagePath));
 
-            // Updates the correct counter and adds a message to the log.
-            switch (result.Status)                              // Checks the final status to decide which counter and log message to update.
+            switch (result.Status)
             {
-                case "Success":                                 // Handles a calculation that finished successfully.
-                    SuccessfulCount++;                          // Increases the successful simulation counter.
+                case "Success":
+                    SuccessfulCount++;
 
                     LogEvent(
                         string.Format(
                             Messages.Simulation_Log_ResultSuccess,
-                            result.AnimalName,                      // Supplies the animal name.
-                            result.ElapsedSeconds));                // Supplies the calculation duration.
+                            result.AnimalName,
+                            result.ElapsedSeconds));
 
-                    break;                                          // Ends the Success case.
+                    break;
 
-                case "Cancelled":                                   // Handles a calculation that was cancelled.
-                    CancelledCount++;                               // Increases the cancelled simulation counter.
+                case "Cancelled":
+                    CancelledCount++;
 
                     LogEvent(
                         string.Format(
                             Messages.Simulation_Log_ResultCancelled,
-                            result.AnimalName));                     // Supplies the animal name.
+                            result.AnimalName));
 
-                    break;                                           // Ends the Cancelled case.
+                    break;
 
-                default:                                             // Handles any result status that is not Success or Cancelled.
-                    ErrorCount++;                                    // Increases the error counter.
+                default:
+                    ErrorCount++;
 
                     LogEvent(
                         string.Format(
                             Messages.Simulation_Log_ResultError,
-                            result.AnimalName,                       // Supplies the animal name.
-                            result.Details));                        // Supplies the error details.
+                            result.AnimalName,
+                            result.Details));
 
-                    break;                                           // Ends the default case.
+                    break;
             }
         }
 
         // Adds a report row for an animal that was not started.
-        private void MarkAsCancelled(SimulationCardViewModel card)  // Marks an animal as cancelled before its calculation starts.
+        private void MarkAsCancelled(SimulationCardViewModel card)
         {
-            card.Status = Messages.Simulation_Status_Cancelled;     // Updates the status shown on the animal card.
-            card.ProgressText = Messages.Simulation_Progress_CancelledBeforeStart; // Shows that the calculation did not start.
+            card.Status = Messages.Simulation_Status_Cancelled;
+            card.ProgressText = Messages.Simulation_Progress_CancelledBeforeStart;
 
-            var result = new SimulationResultRowViewModel(          // Creates a result row for this animal.
-                card.Name,                                          // Supplies the animal name.
-                Messages.Simulation_Status_Cancelled,               // Sets the result status to Cancelled.
-                Messages.Simulation_Message_CancelledBeforeStart,   // Supplies the message explaining why it was cancelled.
-                0,                                                  // Sets the calculation duration to zero because it never started.
-                DateTime.Now,                                       // Records the time when the cancellation was added.
-                card.ImagePath);                                    // Uses the animal image in the result row.
+            var result = new SimulationResultRowViewModel(
+                card.Name,
+                Messages.Simulation_Status_Cancelled,
+                Messages.Simulation_Message_CancelledBeforeStart,
+                0,
+                DateTime.Now,
+                card.ImagePath);
 
-            ResultsTable.Add(result);                               // Adds the cancelled result to the results table.
-
-            CancelledCount++;                                       // Increases the cancelled simulation counter.
+            ResultsTable.Add(result);
+            CancelledCount++;
 
             LogEvent(
                 string.Format(
                     Messages.Simulation_Log_CancelledBeforeStart,
-                    card.Name));                                    // Supplies the animal name.
+                    card.Name));
         }
 
         // Sends a cancellation request to the running calculations.
         private void CancelExecution()
         {
-            if (_currentCts == null || _currentCts.IsCancellationRequested) // Checks whether there is a cancellation source and whether it was already cancelled.
-                return;                                                     // Stops if there is nothing to cancel or cancellation was already requested.
+            if (_currentCts == null || _currentCts.IsCancellationRequested)
+                return;
 
-            LogEvent(Messages.Simulation_Log_CancellationRequested);        // Records that the user requested cancellation.
-
-            _currentCts.Cancel();                                           // Sends the cancellation request to all calculations using this token.
+            LogEvent(Messages.Simulation_Log_CancellationRequested);
+            _currentCts.Cancel();
         }
 
         // Prepares the interface and cancellation source for a new run.
         private void PrepareForRun()
         {
-            IsBusy = true;                                          // Marks the application as busy while calculations are running.
+            IsBusy = true;
+            TotalTimeText = "00:00:00";
 
-            TotalTimeText = "00:00:00";                             // Resets the displayed total time.
+            SuccessfulCount = 0;
+            ErrorCount = 0;
+            CancelledCount = 0;
 
-            SuccessfulCount = 0;                                    // Resets the successful simulation counter.
-            ErrorCount = 0;                                         // Resets the error counter.
-            CancelledCount = 0;                                     // Resets the cancelled simulation counter.
+            ResultsTable.Clear();
+            EventLog.Clear();
 
-            ResultsTable.Clear();                                   // Removes results from the previous run.
-            EventLog.Clear();                                       // Removes log messages from the previous run.
+            _currentCts?.Dispose();
+            _currentCts = new CancellationTokenSource();
 
-            _currentCts?.Dispose();                                 // Releases the previous cancellation source if one exists.
-            _currentCts = new CancellationTokenSource();            // Creates a new source for cancellation requests.
-
-            // Resets the progress and status of every animal card.
-            foreach (var card in AnimalCards)                       // Goes through all animal cards in the window.
+            foreach (var card in AnimalCards)
             {
-                card.ProgressPercent = 0;                           // Resets the progress bar to zero.
-                card.ProgressText = Messages.Simulation_Status_Idle; // Shows that no calculation is currently running.
+                card.ProgressPercent = 0;
+                card.ProgressText = Messages.Simulation_Status_Idle;
 
-                card.Status = card.IsSelected                       // Checks whether this animal is selected.
-                    ? Messages.Simulation_Status_Waiting            // Sets the status to Waiting for selected animals.
-                    : Messages.Simulation_Status_NotSelected;       // Sets the status to Not selected for other animals.
+                card.Status = card.IsSelected
+                    ? Messages.Simulation_Status_Waiting
+                    : Messages.Simulation_Status_NotSelected;
             }
         }
 
         // Finishes the run and releases resources.
         private void FinalizeRun()
         {
-            IsBusy = false;                                         // Marks the application as ready for another simulation.
-
-            // Releases the cancellation source after the run.
-            _currentCts?.Dispose();                                 // Releases the cancellation source if it exists.
-            _currentCts = null;                                     // Removes the reference to the finished cancellation source.
+            IsBusy = false;
+            _currentCts?.Dispose();
+            _currentCts = null;
         }
 
         // Adds a message with the current time to the event log.
-        private void LogEvent(string message)                       // Receives the message that should be added to the log.
+        private void LogEvent(string message)
         {
-            EventLog.Insert(                                        // Adds the new message to the collection.
-                0,                                                  // Inserts it at the first position so the newest message appears at the top.
-                $"[{DateTime.Now:HH:mm:ss}] {message}");            // Adds the current time before the message.
+            EventLog.Insert(
+                0,
+                $"[{DateTime.Now:HH:mm:ss}] {message}");
         }
 
         private void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)         // Uses the caller's property name when no name is passed.
+            [CallerMemberName] string? propertyName = null)
         {
-            PropertyChanged?.Invoke(                                // Sends a change notification if there are listeners.
-                this,                                               // Identifies this ViewModel as the object that changed.
-                new PropertyChangedEventArgs(propertyName));        // Provides the name of the changed property.
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(propertyName));
         }
     }
 
     // Holds the data and state displayed on one animal card.
     public sealed class SimulationCardViewModel : INotifyPropertyChanged
     {
-        private bool _isSelected = true;                                // Selects the animal by default.
-        private int _progressPercent;                                   // Stores the current progress percentage.
-        private string _progressText = Messages.Simulation_Status_Idle; // Stores the text shown near the progress bar.
-        private string _status = Messages.Simulation_Status_Waiting;    // Stores the current animal status.
+        private bool _isSelected = true;
+        private int _progressPercent;
+        private string _progressText = Messages.Simulation_Status_Idle;
+        private string _status = Messages.Simulation_Status_Waiting;
 
-        public string Name { get; }                                     // Gets the animal's display name.
-        public string Id { get; }                                       // Gets the animal's unique card identifier.
-        public string AnimalType { get; }                               // Gets the animal type used by the simulation service.
-        public double Satiety { get; }                                  // Gets the animal's satiety value.
-        public string ImagePath { get; }                                // Gets the path to the animal image.
+        public string Name { get; }
+        public string Id { get; }
+        public string AnimalType { get; }
+        public double Satiety { get; }
+        public string ImagePath { get; }
 
-        public string SimulationTitle { get; }                          // Gets the title of the simulation shown on the card.
-        public string SimulationDescription { get; }                    // Gets the description shown on the card.
+        public string SimulationTitle { get; }
+        public string SimulationDescription { get; }
 
-        // Gets or sets whether this animal is selected for simulation.
         public bool IsSelected
         {
-            get => _isSelected;                                         // Returns whether the animal is selected.
-            set                                                         // Updates the selection state.
+            get => _isSelected;
+            set
             {
-                if (_isSelected == value) return;                       // Stops if the selection state has not changed.
-
-                _isSelected = value;                                    // Saves the new selection state.
-                OnPropertyChanged();                                    // Notifies the UI and the parent ViewModel about the change.
+                if (_isSelected == value) return;
+                _isSelected = value;
+                OnPropertyChanged();
             }
         }
 
-        // Shows the calculation progress as a percentage.
         public int ProgressPercent
         {
-            get => _progressPercent;                                    // Returns the current progress percentage.
-            set                                                         // Updates the progress percentage.
+            get => _progressPercent;
+            set
             {
-                int newValue = Math.Clamp(value, 0, 100);               // Keeps the progress value between zero and one hundred.
-
-                if (_progressPercent == newValue) return;               // Stops if the progress value has not changed.
-
-                _progressPercent = newValue;                            // Saves the new progress percentage.
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                int newValue = Math.Clamp(value, 0, 100);
+                if (_progressPercent == newValue) return;
+                _progressPercent = newValue;
+                OnPropertyChanged();
             }
         }
 
-        // Shows the current calculation step.
         public string ProgressText
         {
-            get => _progressText;                                       // Returns the text shown near the progress bar.
-            set                                                         // Updates the progress text.
+            get => _progressText;
+            set
             {
-                _progressText = string.IsNullOrWhiteSpace(value)        // Checks whether the new text is empty or contains only spaces.
-                    ? Messages.Simulation_Status_Idle                   // Uses the default Idle text when no value was provided.
-                    : value;                                            // Otherwise, saves the provided text.
-
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                _progressText = string.IsNullOrWhiteSpace(value)
+                    ? Messages.Simulation_Status_Idle
+                    : value;
+                OnPropertyChanged();
             }
         }
 
-        // Shows the current status of this animal.
         public string Status
         {
-            get => _status;                                             // Returns the current animal status.
-            set                                                         // Updates the animal status.
+            get => _status;
+            set
             {
-                _status = string.IsNullOrWhiteSpace(value)              // Checks whether the new status is empty or contains only spaces.
-                    ? Messages.Simulation_Status_Waiting                // Uses Waiting as the default status.
-                    : value;                                            // Otherwise, saves the provided status.
-
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                _status = string.IsNullOrWhiteSpace(value)
+                    ? Messages.Simulation_Status_Waiting
+                    : value;
+                OnPropertyChanged();
             }
         }
 
         public SimulationCardViewModel(
-            string name,                                // Animal name displayed on the card.
-            string id,                                  // Identifier used to distinguish this card.
-            string animalType,                          // Animal type used to choose the calculation.
-            double satiety,                             // Animal satiety value used by the simulation.
-            string imagePath,                           // Path to the image displayed on the card.
-            string simulationTitle,                     // Title describing the animal's simulation.
-            string simulationDescription)               // Short explanation of the simulation.
+            string name,
+            string id,
+            string animalType,
+            double satiety,
+            string imagePath,
+            string simulationTitle,
+            string simulationDescription)
         {
-            Name = name;                                // Saves the animal name.
-            Id = id;                                    // Saves the card identifier.
-            AnimalType = animalType;                    // Saves the animal type.
-            Satiety = satiety;                          // Saves the satiety value.
-            ImagePath = imagePath;                      // Saves the image path.
-            SimulationTitle = simulationTitle;          // Saves the simulation title.
-            SimulationDescription = simulationDescription; // Saves the simulation description.
+            Name = name;
+            Id = id;
+            AnimalType = animalType;
+            Satiety = satiety;
+            ImagePath = imagePath;
+            SimulationTitle = simulationTitle;
+            SimulationDescription = simulationDescription;
         }
 
-        // Creates a fixed copy of the animal data for a simulation run.
         public AnimalSnapshot CreateSnapshot()
         {
-            return new AnimalSnapshot(                  // Creates a new snapshot with the current animal data.
-                Guid.NewGuid(),                         // Gives this snapshot a new unique identifier.
-                Name,                                   // Copies the animal name.
-                AnimalType,                             // Copies the animal type.
-                Satiety);                               // Copies the satiety value.
+            return new AnimalSnapshot(
+                Guid.NewGuid(),
+                Name,
+                AnimalType,
+                Satiety);
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;  // Notifies the UI when a card property changes.
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)         // Uses the caller's property name when no name is passed.
+            [CallerMemberName] string? propertyName = null)
         {
-            PropertyChanged?.Invoke(                                // Sends a notification if there are listeners.
-                this,                                               // Identifies this card as the object that changed.
-                new PropertyChangedEventArgs(propertyName));        // Provides the name of the changed property.
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(propertyName));
         }
     }
 
     // Holds one row of information about a completed or cancelled simulation.
     public sealed class SimulationResultRowViewModel
     {
-        public string TimeString { get; }       // Gets the time when the result was recorded.
-        public string AnimalName { get; }       // Gets the name of the animal in this result.
-        public string ImagePath { get; }        // Gets the path to the animal image.
-        public string Status { get; }           // Gets the final status of the simulation.
-        public string Details { get; }          // Gets the result message or error details.
-        public double ElapsedSeconds { get; }   // Gets the time spent on the calculation in seconds.
+        public string TimeString { get; }
+        public string AnimalName { get; }
+        public string ImagePath { get; }
+        public string Status { get; }
+        public string Details { get; }
+        public double ElapsedSeconds { get; }
+        public double CalculationValue { get; }
 
-        // Creates a result row from a completed simulation.
         public SimulationResultRowViewModel(
-            SimulationResult result,            // Contains the result returned by the simulation service.
-            DateTime completedAt,               // Time when the simulation result was recorded.
-            string imagePath)                   // Path to the animal image shown in the table.
+            SimulationResult result,
+            DateTime completedAt,
+            string imagePath)
         {
-            TimeString = completedAt.ToString("HH:mm:ss");  // Converts the completion time into hours, minutes and seconds.
-            AnimalName = result.AnimalName;                 // Copies the animal name from the result.
-            ImagePath = imagePath;                          // Saves the image path.
-            Status = result.Status;                         // Copies the final simulation status.
-            Details = result.Details;                       // Copies the result message or error details.
-            ElapsedSeconds = result.ElapsedSeconds;         // Copies the calculation duration.
+            TimeString = completedAt.ToString("HH:mm:ss");
+            AnimalName = result.AnimalName;
+            ImagePath = imagePath;
+            Status = result.Status;
+            Details = result.Details;
+            ElapsedSeconds = result.ElapsedSeconds;
+            CalculationValue = result.CalculationValue;
         }
 
-        // Creates a result row for an animal cancelled before it started.
         public SimulationResultRowViewModel(
-            string animalName,                              // Name of the animal that was not started.
-            string status,                                  // Final status assigned to this animal.
-            string details,                                 // Message explaining why the simulation did not start.
-            double elapsedSeconds,                          // Time spent on the calculation, which is zero if it never started.
-            DateTime completedAt,                           // Time when the cancellation result was recorded.
-            string imagePath)                               // Path to the animal image shown in the table.
+            string animalName,
+            string status,
+            string details,
+            double elapsedSeconds,
+            DateTime completedAt,
+            string imagePath)
         {
-            TimeString = completedAt.ToString("HH:mm:ss");  // Converts the completion time into hours, minutes and seconds.
-            AnimalName = animalName;                        // Saves the animal name.
-            ImagePath = imagePath;                          // Saves the image path.
-            Status = status;                                // Saves the final status.
-            Details = details;                              // Saves the explanation message.
-            ElapsedSeconds = elapsedSeconds;                // Saves the calculation duration.
+            TimeString = completedAt.ToString("HH:mm:ss");
+            AnimalName = animalName;
+            ImagePath = imagePath;
+            Status = status;
+            Details = details;
+            ElapsedSeconds = elapsedSeconds;
+            CalculationValue = 0;
         }
     }
 }

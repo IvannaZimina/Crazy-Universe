@@ -483,7 +483,17 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Handler to open the simulation window as a modal dialog
         private void ExecuteOpenSimulation(object? parameter)
         {
-            var simulationWindow = new SimulationWindow
+            // Collect all current animals from all type-based repositories
+            var allAnimals = _monkeyRepository.GetAll().Cast<Animal>()
+                .Concat(_lionRepository.GetAll().Cast<Animal>())
+                .Concat(_penguinRepository.GetAll().Cast<Animal>())
+                .Concat(_honeyBadgerRepository.GetAll().Cast<Animal>())
+                .Concat(_kangarooRepository.GetAll().Cast<Animal>())
+                .Concat(_dolphinRepository.GetAll().Cast<Animal>())
+                .Concat(_frogRepository.GetAll().Cast<Animal>())
+                .ToList();
+
+            var simulationWindow = new SimulationWindow(allAnimals)
             {
                 Owner = System.Windows.Application.Current.MainWindow
             };
