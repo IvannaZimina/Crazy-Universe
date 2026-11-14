@@ -3,7 +3,6 @@ using CrazyUniverse.Core.Models;
 
 namespace CrazyUniverse.Core.Events
 {
-    // Перечисление типов событий для логов
     public enum EventKind
     {
         Add,
@@ -12,7 +11,6 @@ namespace CrazyUniverse.Core.Events
         Reaction
     }
 
-    // Типизированные аргументы для события логирования
     public class LogEventArgs : EventArgs
     {
         public EventKind Kind { get; }
