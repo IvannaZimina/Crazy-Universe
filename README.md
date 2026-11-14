@@ -28,10 +28,7 @@ The application is built using separate **Core** and **WPF** projects and demons
 
 ## Running Guide
 
-1. Clone the repository:
-
-   `https://github.com/IvannaZimina/Crazy-Universe`
-
+1. Clone the repository: `https://github.com/IvannaZimina/Crazy-Universe`
 2. Open the solution file (`.slnx`) in Visual Studio 2022 or newer.
 3. Set `CrazyUniverse.WpfApp` as the Startup Project.
 4. Press **F5** or click **Start** to run the application.
@@ -45,7 +42,6 @@ The solution consists of two main projects:
 ### 1. Core — `CrazyUniverse.Core`
 
 Contains the domain models, business logic, repositories, interfaces, events, and simulation services.
-
 The Core project does not depend on WPF.
 
 **Main components:**
@@ -75,7 +71,6 @@ The ViewModels manage application state, commands, data binding, and communicati
 The WPF presentation layer contains the XAML windows, controls, styles, converters, and data templates.
 
 Main windows:
-
 - `MainWindow` — the main application interface with animal enclosures and interaction controls.
 - `AddAnimal` — a modal dialog for creating new animals.
 - `SimulationWindow` — the interface for running and monitoring animal simulations.
@@ -111,7 +106,6 @@ Each animal has its own characteristics and actions.
 The first version introduced the main application interface.
 
 Users can:
-
 - View animals and their details.
 - Select an animal.
 - Add new animals through a modal dialog.
@@ -141,13 +135,11 @@ The application uses a generic repository architecture.
 Animal interactions are implemented in the Core domain layer rather than in WPF button event handlers.
 
 Three main event scenarios are supported:
-
 - **Addition — Welcome:** When a new animal is added, existing animals in the same repository greet it. The newly added animal does not react to itself.
 - **Removal — Farewell:** When an animal is removed, the remaining animals in the same repository say goodbye. The removed animal unsubscribes from events and no longer reacts to future events.
 - **CrazyAction:** When an animal performs its special action, other animals in the same repository react according to their individual behaviour.
 
 Additional rules:
-
 - Animals in different repositories do not react to each other's events.
 - The animal that caused an event does not react to itself.
 - Reactions create log entries.
@@ -163,7 +155,6 @@ The application implements three LINQ operations and displays their results in t
 - **Grouping — `GroupBy`:** Groups animals by satiety ranges and displays population statistics.
 
 The satiety groups are:
-
 - **Low:** 30 or less.
 - **Medium:** More than 30 and up to 70.
 - **High:** More than 70.
@@ -177,7 +168,6 @@ The application follows the Model-View-ViewModel separation.
 - **View:** Displays data and sends user actions through data bindings and commands.
 
 The implementation uses:
-
 - `ICommand` and `RelayCommand` for user actions.
 - `CanExecute` to control command availability.
 - `INotifyPropertyChanged` for property change notifications.
@@ -198,9 +188,9 @@ The contribution was developed in a separate branch and submitted through a pull
 
 ## Vol.3 — Asynchronous and Parallel Animal Simulation
 
-Vol.3 extends the existing project with CPU-intensive calculations for selected animals.
+Vol.3 extends the existing project with CPU-intensive calculations for selected animals, enhanced UI grouping, filtering, and asynchronous execution monitoring.
 
-The user can select animals, configure the workload, run calculations in two modes, compare execution times, and inspect individual results.
+The user can select animals via enclosure groups, configure the workload, run calculations in two modes, compare execution times, and inspect individual results.
 
 ### 1. Animal Snapshots and Calculations
 
@@ -215,11 +205,12 @@ The application provides two execution modes:
 - **Sequential Mode:** Calculations run one after another. The next animal's calculation starts only after the previous one has finished.
 - **Parallel Mode:** Each animal calculation is started using `Task.Run`, and all tasks are awaited using `Task.WhenAll`.
 
-### 3. Progress Reporting
+### 3. Progress Reporting and UI Filtering
 
 - `IProgress<SimulationProgress>` is used to report calculation progress.
-- The UI displays progress information on individual animal cards.
-- The simulation interface shows the current calculation state and progress.
+- **Enclosure Grouping & Selection:** Animals in the selection panel are grouped by enclosures (`EnclosureSimulationGroup`), allowing users to toggle individual animal selection with checkboxes.
+- **Dynamic Filtering:** The central simulation grid automatically filters and displays **only** the animals where `IsSelected == true`.
+- **Individual Asset Images:** Each animal type features its own custom profile image asset (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`, `Kangaroo`, `Dolphin`, `Frog`).
 
 ### 4. Cancellation
 
@@ -233,7 +224,6 @@ The application provides two execution modes:
 Each animal calculation produces an individual result.
 
 Possible statuses:
-
 - **Success:** The calculation completed successfully.
 - **Error:** The calculation failed and the error message is included in the result.
 - **Cancelled:** The calculation was cancelled.
@@ -241,8 +231,7 @@ Possible statuses:
 An error in one animal's calculation does not prevent other calculations from completing.
 
 The simulation interface displays:
-
-- Animal name.
+- Animal name and custom image.
 - Final calculation status.
 - Result details or error message.
 - Individual execution time.
@@ -250,9 +239,7 @@ The simulation interface displays:
 - Counters for successful, failed, and cancelled calculations.
 
 `Stopwatch` is used to measure the total duration of each simulation run.
-
 A test error option is available to demonstrate error handling with the Lion simulation.
-
 The simulation uses `try/finally` to restore the application state and release the cancellation source after a run.
 
 ---
@@ -271,18 +258,21 @@ Located in `CrazyUniverse.WpfApp/Factories/AnimalFactory.cs`.
 
 Located in `CrazyUniverse.WpfApp/Services/AnimalCardFactory.cs`.
 
-- Creates the default simulation animal cards.
-- Initializes card data such as animal names, IDs, images, titles, and descriptions.
+- Creates simulation animal cards dynamically from active zoo animals or default configurations.
+- Assigns individual image assets, simulation titles, and specific descriptions based on the animal type (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`, `Kangaroo`, `Dolphin`, `Frog`).
 - Keeps simulation card creation separate from the simulation ViewModel.
 
 ---
 
 ## WPF UI Elements
 
-The application uses several WPF elements to display animal information and simulation progress.
+The application uses several WPF elements to display animal information and simulation progress cleanly and efficiently.
 
-- **Expander:** Organizes animals into separate enclosures and allows users to expand or collapse their contents.
-- **ProgressBar:** Displays the progress of individual simulation calculations.
+- **Expander & ItemsControl:** Organizes animals into separate enclosure groups with interactive checkboxes in the simulation panel.
+- **ScrollViewer:** Provides vertical scrolling for both enclosure groups and the central simulation card grid to support large numbers of animals.
+- **ProgressBar:** Displays real-time progress percentages and step counts for individual simulation calculations.
+- **UniformGrid:** Formats the central simulation cards into a structured multi-column layout.
+- **Balanced Results & Logs Panel:** Splits the lower section evenly between the execution results `DataGrid` and the real-time `EventLog` console.
 - **Data Binding and Data Templates:** Connect ViewModel data to the UI and define how animal and simulation card information is displayed.
 
 These elements help organize the interface and provide visual feedback during user interactions and long-running calculations.
@@ -310,14 +300,16 @@ The following scenarios cover the main functionality introduced across all three
 10. **LINQ Operations:** Test filtering, sorting, and grouping in the UI.
 11. **Command Validation:** Verify that commands are enabled or disabled according to the selected animal and required input.
 
-### Vol.3 — Simulation
+### Vol.3 — Simulation & UI Enhancements
 
-12. **Sequential Execution:** Select animals, set a workload, and run the sequential mode. Each calculation must finish before the next one starts.
-13. **Parallel Execution:** Run the same selection and workload in parallel mode and compare the total execution time.
-14. **Progress Updates:** Observe progress information on the selected animal cards.
-15. **Error Handling:** Enable the test error option and run the simulation with Lion selected. The Lion result should show `Error`, while other calculations continue.
-16. **Cancellation:** Start a simulation and press Cancel. Running calculations should stop after checking the cancellation token, and animals that have not started should be marked as cancelled.
-17. **Result Summary:** Check individual statuses, result details, execution times, total time, and the success/error/cancellation counters.
+12. **Enclosure Selection:** Group animals by enclosures in the simulation panel and toggle selections using checkboxes.
+13. **Central Grid Filtering:** Verify that the central simulation view dynamically displays only the selected animals.
+14. **Sequential Execution:** Set a workload and run the sequential mode. Each calculation must finish before the next one starts.
+15. **Parallel Execution:** Run the same selection and workload in parallel mode and compare the total execution time.
+16. **Progress Updates:** Observe progress information and individual card progress bars.
+17. **Error Handling:** Enable the test error option and run the simulation with Lion selected. The Lion result should show `Error`, while other calculations continue.
+18. **Cancellation:** Start a simulation and press Cancel. Running calculations should stop after checking the cancellation token, and unstarted animals should be marked as cancelled.
+19. **Result Summary & Balanced Logs:** Check individual statuses, result details, execution times, total time, success/error/cancellation counters, and review events in the balanced console log.
 
 ---
 
