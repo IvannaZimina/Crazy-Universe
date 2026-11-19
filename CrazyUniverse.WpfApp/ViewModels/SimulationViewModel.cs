@@ -641,7 +641,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public AnimalSnapshot CreateSnapshot()
         {
             return new AnimalSnapshot(
-                Guid.NewGuid(),
+                Id,
                 Name,
                 AnimalType,
                 Satiety);
