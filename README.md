@@ -315,19 +315,16 @@ The following scenarios cover the main functionality introduced across all three
 
 ## Peer Review & Collaboration
 
-Tasks, collaboration guidelines, and review status are tracked through GitHub Issues and Pull Requests.
+Tasks and collaboration are tracked through GitHub Issues and Pull Requests.
 
-- **[Issue #5: Add new animal subclass and integrate capabilities](https://github.com/IvannaZimina/Crazy-Universe/issues/5)** — Maksym Kotkov
-  - **Pull Request:** [PR #1: feat: add HoneyBadger model](https://github.com/IvannaZimina/Crazy-Universe/pull/1)
-  - **Code Review & Verification:** Reviewed and tested by the project owner. The `HoneyBadger` subclass, its `CrazyAction()` behavior, and capability interfaces (`IClimbable`, `ISwimmable`, `IRunnable`, `IVocalizable`) were checked. The PR was successfully merged.
+- **Issue #5: Add new animal subclass and integrate capabilities** — Maksym Kotkov
+  - **Pull Request #1:** [feat: add HoneyBadger model](https://github.com/IvannaZimina/Crazy-Universe/pull/1)
 
-- **[Issue #6: Add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** — Arina Shishkova
-  - **Pull Request:** [PR #4: feat: add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/pull/4)
-  - **Code Review & Verification:** Reviewed, tested, and merged by the project owner. Added Kangaroo, Dolphin, and Frog, integrating them into `AnimalFactory`, repositories, enclosures, the AddAnimal dialog, and UI actions.
+- **Issue #6: Add and integrate three new animal types** — Arina Shishkova
+  - **Pull Request #4:** [feat: add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/pull/4)
 
-- **[Issue #9: Implement asynchronous and parallel animal simulation (Vol.3)](https://github.com/IvannaZimina/Crazy-Universe/issues/9)**
-  - **Pull Request:** [PR #8: Feature/crazy zoo vol3](https://github.com/IvannaZimina/Crazy-Universe/pull/8)
-  - **Status:** Open — submitted for review. Implements CPU-intensive simulations, sequential and parallel execution, cancellation, error handling, and execution-time reporting.
+- **Issue #9: Implement asynchronous and parallel animal simulation (Vol.3)**
+  - **Pull Request #8:** [Feature/crazy zoo vol3](https://github.com/IvannaZimina/Crazy-Universe/pull/8)
 
 ---
 
