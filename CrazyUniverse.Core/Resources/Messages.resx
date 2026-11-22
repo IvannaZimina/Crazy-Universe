@@ -603,7 +603,7 @@
     <value>Feed (+{0})</value>
     <comment>UI action</comment>
   </data>
-<data name="Err_InvalidAnimalId" xml:space="preserve">
+  <data name="Err_InvalidAnimalId" xml:space="preserve">
     <value>Invalid animal identifier format.</value>
     <comment>Error message</comment>
   </data>
@@ -623,7 +623,7 @@
     <value>Unknown animal type: '{0}'.</value>
     <comment>Error message</comment>
   </data>
-<data name="Err_WorldDataNull" xml:space="preserve">
+  <data name="Err_WorldDataNull" xml:space="preserve">
     <value>Saved world data is missing or empty.</value>
     <comment>Error message</comment>
   </data>
@@ -666,5 +666,33 @@
   <data name="Err_InvalidEnclosureForCharacter" xml:space="preserve">
     <value>Character '{0}' has invalid enclosure '{1}' for animal type '{2}'.</value>
     <comment>Error message</comment>
+  </data>
+  <data name="UI_BtnSaveWorld" xml:space="preserve">
+    <value>Save World</value>
+    <comment>UI</comment>
+  </data>
+  <data name="UI_BtnLoadWorld" xml:space="preserve">
+    <value>Load World</value>
+    <comment>UI</comment>
+  </data>
+<data name="Log_WorldSaved" xml:space="preserve">
+    <value>World saved ({0}).</value>
+    <comment>Log message</comment>
+  </data>
+  <data name="Log_WorldLoaded" xml:space="preserve">
+    <value>World loaded ({0}).</value>
+    <comment>Log message</comment>
+  </data>
+  <data name="Log_SaveFailed" xml:space="preserve">
+    <value>Failed to save world: {0}</value>
+    <comment>Error log message</comment>
+  </data>
+  <data name="Log_LoadFailed" xml:space="preserve">
+    <value>Failed to load world: {0}</value>
+    <comment>Error log message</comment>
+  </data>
+  <data name="Log_OperationCancelled" xml:space="preserve">
+    <value>Operation cancelled.</value>
+    <comment>Log message</comment>
   </data>
 </root>
