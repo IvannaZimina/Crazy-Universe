@@ -108,5 +108,21 @@ namespace CrazyUniverse.Core.Repositories
         {
             return _items.FirstOrDefault(predicate);
         }
+
+        // Silently replaces items in the internal list without raising welcome/farewell reactions or log events.
+        public void ReplaceAll(IEnumerable<T> items)
+        {
+            ArgumentNullException.ThrowIfNull(items);
+
+            // Materialize first so an enumerator exception cannot clear existing items before completion
+            var nextItems = items.Select(item =>
+            {
+                ArgumentNullException.ThrowIfNull(item);
+                return item;
+            }).ToList();
+
+            _items.Clear();
+            _items.AddRange(nextItems);
+        }
     }
 }

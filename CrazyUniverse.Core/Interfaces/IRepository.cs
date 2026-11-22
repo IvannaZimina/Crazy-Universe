@@ -27,5 +27,8 @@ namespace CrazyUniverse.Core.Interfaces
 
         // Method contract for triggering a crazy action on a specific animal and collecting neighbor reactions.
         void TriggerCrazyAction(T item);
+
+        // Silently replaces repository items during world restore without neighbor reactions or log events.
+        void ReplaceAll(IEnumerable<T> items);
     }
 }
