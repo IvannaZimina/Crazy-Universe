@@ -62,7 +62,7 @@ namespace CrazyUniverse.WpfApp.Services
                 // Adds a new card configured with the real animal's properties (Name, ID, type, satiety).
                 cards.Add(new SimulationCardViewModel(
                     animal.Name,                                // Uses the actual name given by the user.
-                    animal.Id.ToString()[..8].ToUpper(),        // Uses a shortened prefix of the real animal ID.
+                    animal.Id.ToString(),                       // Uses a shortened prefix of the real animal ID.
                     typeName,                                   // Uses the real concrete animal type.
                     animal.Satiety,                             // Uses the real current satiety value of the animal.
                     imagePath,                                  // Uses the matching individual image path.
