@@ -25,6 +25,8 @@
         <SolidColorBrush x:Key="Red" Color="#F45B68"/>
         <SolidColorBrush x:Key="Purple" Color="#9361E8"/>
 
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
         <Style x:Key="CardBorderStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource CardBackground}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
@@ -122,17 +124,19 @@
 
     </Window.Resources>
 
-    <Grid Margin="16">
+    <!-- Compact outer margin so the right summary cards fit without clipping -->
+    <Grid Margin="12">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Compact header spacing -->
         <Border Grid.Row="0"
                 Style="{StaticResource CardBorderStyle}"
-                Padding="16"
-                Margin="0,0,0,12">
+                Padding="16,8"
+                Margin="0,0,0,8">
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -141,7 +145,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="🐾"
-                           FontSize="30"
+                           FontSize="28"
                            VerticalAlignment="Center"
                            Margin="0,0,14,0"/>
 
@@ -149,7 +153,7 @@
                             VerticalAlignment="Center">
 
                     <TextBlock Text="Animal Simulation"
-                               FontSize="22"
+                               FontSize="21"
                                FontWeight="Bold"
                                Foreground="{StaticResource DarkBlue}"/>
 
@@ -157,7 +161,7 @@
                         Text="Heavy CPU calculations for selected animals. Each animal runs in a background task."
                         FontSize="12"
                         Foreground="{StaticResource GrayText}"
-                        Margin="0,2,0,0"/>
+                        Margin="0,1,0,0"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -167,7 +171,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="210"/>
+                <ColumnDefinition Width="220"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -447,87 +451,143 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <StackPanel Grid.Column="2"
-                        Grid.Row="0">
+            <ScrollViewer Grid.Column="2"
+                          Grid.Row="0"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Margin="0,0,0,10">
+                <StackPanel>
 
-                <Border Style="{StaticResource CardBorderStyle}"
-                        Padding="12"
-                        Margin="0,0,0,8"
-                        MinHeight="95">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="◷" FontSize="21" Foreground="{StaticResource PrimaryBlue}" Margin="0,0,8,0"/>
-                            <TextBlock Text="Total time" FontSize="12" Foreground="{StaticResource DarkBlue}" VerticalAlignment="Center"/>
+                    <!-- Compact Total time card spacing -->
+                    <Border Style="{StaticResource CardBorderStyle}"
+                            Padding="10,6"
+                            Margin="0,0,0,6">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="◷" FontSize="18" Foreground="{StaticResource PrimaryBlue}" Margin="0,0,6,0"/>
+                                <TextBlock Text="Total time" FontSize="11" Foreground="{StaticResource DarkBlue}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding TotalTimeText, TargetNullValue=00:00.000, FallbackValue=00:00.000}"
+                                       FontSize="22"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource DarkBlue}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,3,0,0"/>
                         </StackPanel>
-                        <TextBlock Text="{Binding TotalTimeText, TargetNullValue=00:00:00, FallbackValue=00:00:00}"
-                                   FontSize="24"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource DarkBlue}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,6,0,0"/>
-                    </StackPanel>
-                </Border>
+                    </Border>
 
-                <Border Style="{StaticResource CardBorderStyle}"
-                        Padding="10"
-                        Margin="0,0,0,8">
-                    <StackPanel>
-                        <Grid Margin="0,1,0,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="●" Foreground="#19B889" FontSize="13" Margin="0,0,8,0"/>
-                                <TextBlock Text="Successful" Foreground="#159B70" FontSize="11" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <TextBlock Grid.Column="1" Text="{Binding SuccessfulCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
-                        </Grid>
+                    <Border Style="{StaticResource CardBorderStyle}"
+                            Padding="10,8"
+                            Margin="0,0,0,6">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="●" Foreground="#19B889" FontSize="12" Margin="0,0,7,0"/>
+                                    <TextBlock Text="Successful" Foreground="#159B70" FontSize="11" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding SuccessfulCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
+                            </Grid>
 
-                        <Border Height="1" Background="#E5EEF7" Margin="0,0,0,5"/>
+                            <Border Height="1" Background="#E5EEF7" Margin="0,0,0,4"/>
 
-                        <Grid Margin="0,0,0,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="✖" Foreground="#F45B68" FontSize="13" Margin="0,0,8,0"/>
-                                <TextBlock Text="Error" Foreground="#E34E5D" FontSize="11" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <TextBlock Grid.Column="1" Text="{Binding ErrorCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
-                        </Grid>
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="✖" Foreground="#F45B68" FontSize="12" Margin="0,0,7,0"/>
+                                    <TextBlock Text="Error" Foreground="#E34E5D" FontSize="11" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding ErrorCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
+                            </Grid>
 
-                        <Border Height="1" Background="#E5EEF7" Margin="0,0,0,5"/>
+                            <Border Height="1" Background="#E5EEF7" Margin="0,0,0,4"/>
 
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="━" Foreground="#8AA7C2" FontSize="12" Margin="0,0,7,0"/>
+                                    <TextBlock Text="Cancelled" Foreground="{StaticResource GrayText}" FontSize="11" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding CancelledCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Mode comparison card shown when both sequential and parallel runs match -->
+                    <Border Style="{StaticResource CardBorderStyle}"
+                            Padding="10,8"
+                            Margin="0,0,0,6"
+                            Visibility="{Binding HasComparison, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="Mode comparison"
+                                       FontWeight="Bold"
+                                       FontSize="11"
+                                       Foreground="{StaticResource DarkBlue}"
+                                       Margin="0,0,0,4"/>
+
+                            <Grid Margin="0,0,0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Sequential:" FontSize="10" Foreground="{StaticResource GrayText}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SequentialTimeComparisonText}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DarkBlue}"/>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Parallel:" FontSize="10" Foreground="{StaticResource GrayText}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding ParallelTimeComparisonText}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DarkBlue}"/>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Speed-up:" FontSize="10" Foreground="{StaticResource GrayText}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SpeedupComparisonText}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DarkBlue}"/>
+                            </Grid>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Values match:" FontSize="10" Foreground="{StaticResource GrayText}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding ValuesMatchComparisonText}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DarkBlue}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Keep CPU intensive card unclipped below summary cards -->
+                    <Border Style="{StaticResource CardBorderStyle}" Padding="10,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="26"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="━" Foreground="#8AA7C2" FontSize="13" Margin="0,0,8,0"/>
-                                <TextBlock Text="Cancelled" Foreground="{StaticResource GrayText}" FontSize="11" VerticalAlignment="Center"/>
+                            <TextBlock Text="▦" FontSize="18" Foreground="{StaticResource PrimaryBlue}" VerticalAlignment="Top"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="CPU intensive" FontWeight="Bold" FontSize="11" Foreground="{StaticResource DarkBlue}"/>
+                                <TextBlock Text="Running in background tasks." FontSize="10" TextWrapping="Wrap" Foreground="{StaticResource GrayText}" Margin="0,2,0,0"/>
                             </StackPanel>
-                            <TextBlock Grid.Column="1" Text="{Binding CancelledCount}" FontWeight="Bold" Foreground="{StaticResource DarkBlue}"/>
                         </Grid>
-                    </StackPanel>
-                </Border>
-
-                <Border Style="{StaticResource CardBorderStyle}" Padding="10">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="28"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="▦" FontSize="20" Foreground="{StaticResource PrimaryBlue}" VerticalAlignment="Top"/>
-                        <StackPanel Grid.Column="1">
-                            <TextBlock Text="CPU intensive" FontWeight="Bold" FontSize="11" Foreground="{StaticResource DarkBlue}"/>
-                            <TextBlock Text="Running in background tasks." FontSize="10" TextWrapping="Wrap" Foreground="{StaticResource GrayText}" Margin="0,3,0,0"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
 
             <Border Grid.Column="1"
                     Grid.ColumnSpan="2"
