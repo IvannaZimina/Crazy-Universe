@@ -66,6 +66,40 @@ namespace CrazyUniverse.Core.World
             GetAdapterForAnimal(animal).TriggerCrazyAction(animal);
         }
 
+        // Silently and atomically replaces repository contents without neighbor reactions or log events
+        public void Restore(IEnumerable<Animal> animals)
+        {
+            ArgumentNullException.ThrowIfNull(animals);
+
+            // Validate all incoming animals and duplicate IDs before mutating any repository
+            var materialised = animals.ToList();
+            var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var animal in materialised)
+            {
+                ArgumentNullException.ThrowIfNull(animal);
+
+                if (!seenIds.Add(animal.Id))
+                {
+                    throw new InvalidOperationException($"Duplicate animal ID during world restore: {animal.Id}");
+                }
+
+                // Ensure the animal's concrete type is known to the world adapters
+                _ = GetAdapterForAnimal(animal);
+            }
+
+            // Group validated animals by stable class name so each repository receives only its matching type
+            var groupedByType = materialised
+                .GroupBy(a => a.GetType().Name, StringComparer.Ordinal)
+                .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.Ordinal);
+
+            foreach (var pair in _adapters)
+            {
+                groupedByType.TryGetValue(pair.Key, out var itemsForType);
+                pair.Value.ReplaceAll(itemsForType ?? Enumerable.Empty<Animal>());
+            }
+        }
+
         // Returns all animals across all repositories
         public IReadOnlyList<Animal> GetAllAnimals()
         {
@@ -123,6 +157,7 @@ namespace CrazyUniverse.Core.World
             bool Remove(Animal animal);
             void TriggerCrazyAction(Animal animal);
             IEnumerable<Animal> GetAnimals();
+            void ReplaceAll(IEnumerable<Animal> items);
         }
 
         private sealed class TypedRepositoryAdapter<T> : IAnimalRepositoryAdapter where T : Animal
@@ -159,6 +194,11 @@ namespace CrazyUniverse.Core.World
             public IEnumerable<Animal> GetAnimals()
             {
                 return _repository.GetAll().Cast<Animal>();
+            }
+
+            public void ReplaceAll(IEnumerable<Animal> items)
+            {
+                _repository.ReplaceAll(items.Cast<T>());
             }
         }
     }
