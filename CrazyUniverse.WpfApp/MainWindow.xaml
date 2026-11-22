@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:res="clr-namespace:CrazyUniverse.Core.Resources;assembly=CrazyUniverse.Core"
         mc:Ignorable="d"
         Title="Crazy Zoo" Height="750" Width="1100"
         WindowStartupLocation="CenterScreen" Background="#F4F6F9">
@@ -81,7 +82,7 @@
             <RowDefinition Height="180"/>
         </Grid.RowDefinitions>
 
-        <!-- TOP HEADER BAR: Равномерно распределены название, поиск, кнопка симуляции и статистика -->
+        <!-- TOP HEADER BAR: Равномерно распределены название, поиск, кнопки сохранения/загрузки и симуляции, статистика -->
         <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,12" Padding="15,10">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -106,12 +107,25 @@
                     </TextBox.Resources>
                 </TextBox>
 
-                <!-- Кнопка Run Simulation размещена в шапке между поиском и статистикой -->
-                <Button Grid.Column="2" Content="▶ Run Simulation" 
-                        Style="{StaticResource ActionButtonStyle}" 
-                        Padding="12,6" FontSize="12" Height="34"
-                        VerticalAlignment="Center" Margin="0,0,12,0"
-                        Command="{Binding OpenSimulationCommand}"/>
+                <!-- Кнопки Save World, Load World и Run Simulation в шапке -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                    <Button Content="{x:Static res:Messages.UI_BtnSaveWorld}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Padding="10,6" FontSize="12" Height="34"
+                            Margin="0,0,6,0"
+                            Command="{Binding SaveWorldCommand}"/>
+
+                    <Button Content="{x:Static res:Messages.UI_BtnLoadWorld}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Padding="10,6" FontSize="12" Height="34"
+                            Margin="0,0,8,0"
+                            Command="{Binding LoadWorldCommand}"/>
+
+                    <Button Content="▶ Run Simulation"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Padding="12,6" FontSize="12" Height="34"
+                            Command="{Binding OpenSimulationCommand}"/>
+                </StackPanel>
 
                 <Border Grid.Column="3" Background="#E0F2FE" CornerRadius="15" Padding="12,6" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="{Binding ZooPopulation, StringFormat='Zoo Population: {0}'}" Foreground="#0369A1" FontWeight="SemiBold" FontSize="12"/>
