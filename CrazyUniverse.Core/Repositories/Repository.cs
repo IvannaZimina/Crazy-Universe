@@ -21,8 +21,8 @@ namespace CrazyUniverse.Core.Repositories
         // Adds item to internal list, triggers welcome reactions from existing neighbors, and logs them if not suppressed.
         public void Add(T item, bool suppressLog = false)
         {
-            if (item == null)
-                ArgumentNullException.ThrowIfNull(item);
+            // Single null guard for the incoming item
+            ArgumentNullException.ThrowIfNull(item);
 
             // Trigger welcome reactions from existing animals in this repository before adding the new one
             foreach (var existingAnimal in _items)
