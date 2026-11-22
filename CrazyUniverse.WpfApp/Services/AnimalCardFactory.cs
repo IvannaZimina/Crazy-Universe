@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using CrazyUniverse.Core.Models;
 using CrazyUniverse.Core.Resources;
 using CrazyUniverse.WpfApp.ViewModels;
@@ -8,45 +6,11 @@ using CrazyUniverse.WpfApp.ViewModels;
 namespace CrazyUniverse.WpfApp.Services
 {
     /// ==================== DESCRIPTION ====================
-    ///  Factory class responsible for creating simulation cards 
-    ///  either from default configurations or dynamically from real zoo animals.
+    /// Factory class responsible for creating simulation cards
+    /// dynamically from real zoo animals.
     /// =====================================================
     public static class AnimalCardFactory // Defines a static factory utility for building simulation cards.
     {
-        // Creates the default hardcoded simulation cards for initial testing or fallback.
-        public static ObservableCollection<SimulationCardViewModel> CreateDefaultCards() // Returns a collection of default simulation cards.
-        {
-            return new ObservableCollection<SimulationCardViewModel> // Creates and populates the observable collection.
-            {
-                new SimulationCardViewModel(
-                    "Monkey",
-                    "MON-001",
-                    "Monkey",
-                    68.0,
-                    "/Images/Monkyes_jump.JPG",
-                    Messages.Simulation_Card_Monkey_Title,
-                    Messages.Simulation_Card_Monkey_Description),
-
-                new SimulationCardViewModel(
-                    "Lion",
-                    "LIO-002",
-                    "Lion",
-                    72.0,
-                    "/Images/Lions_migration.jpg",
-                    Messages.Simulation_Card_Lion_Title,
-                    Messages.Simulation_Card_Lion_Description),
-
-                new SimulationCardViewModel(
-                    "Penguin",
-                    "PEN-003",
-                    "Penguin",
-                    45.0,
-                    "/Images/penguin_jump.JPG",
-                    Messages.Simulation_Card_Penguin_Title,
-                    Messages.Simulation_Card_Penguin_Description)
-            };
-        }
-
         // Creates simulation cards dynamically from real zoo animal instances, satisfying teacher feedback.
         public static IEnumerable<SimulationCardViewModel> CreateCardsFromAnimals(IEnumerable<Animal> animals) // Generates cards from actual active animals in the zoo.
         {

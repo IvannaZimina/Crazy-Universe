@@ -154,15 +154,6 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public ICommand RunParallelCommand { get; private set; } = null!;     // Command that starts simulations at the same time.
         public ICommand CancelCommand { get; private set; } = null!;          // Command that requests cancellation of the current run.
 
-        // Default constructor using default cards (fallback).
-        public SimulationViewModel()
-        {
-            _simulationService = new AnimalSimulationService();         // Creates the service that performs the calculations.
-            InitializeCommands();                                       // Sets up user commands.
-
-            PopulateCards(AnimalCardFactory.CreateDefaultCards());      // Loads default cards into master collection and groups.
-        }
-
         // Constructor accepting real zoo animals to build dynamic cards from actual app instances.
         public SimulationViewModel(IEnumerable<Animal> animals)         // Initializes ViewModel with real active animals from repositories.
         {
