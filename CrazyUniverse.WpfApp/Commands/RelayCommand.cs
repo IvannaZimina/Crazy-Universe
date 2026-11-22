@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Reflection.Metadata;
 using System.Windows.Input;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CrazyUniverse.WpfApp.Commands
 {
