@@ -153,7 +153,7 @@ namespace CrazyUniverse.Core.Models
                         _ => string.Format(Messages.Event_Crazy_Default, initiator.Name)
                     };
 
-                    return $"{baseReaction} ({Name} Satiety: {Satiety})";
+                    return string.Format(Messages.Event_Crazy_NeighborSatiety, baseReaction, Name, Satiety);
 
                 default:
                     return string.Empty;
