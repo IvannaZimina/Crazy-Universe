@@ -4,16 +4,17 @@ using CrazyUniverse.Core.Simulation;
 using CrazyUniverse.WpfApp.Commands;
 using CrazyUniverse.WpfApp.Services;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Data;
 
 namespace CrazyUniverse.WpfApp.ViewModels
 {
@@ -27,18 +28,30 @@ namespace CrazyUniverse.WpfApp.ViewModels
     // Stores the data and commands used by the simulation window.
     public sealed class SimulationViewModel : INotifyPropertyChanged
     {
+        private const double RelativeTolerance = 1e-9;
+
         private readonly AnimalSimulationService _simulationService;    // Provides the calculation logic for animal simulations.
         private CancellationTokenSource? _currentCts;                   // Allows the current simulation to receive a cancellation request.
         private bool _isBusy;                                           // Shows whether a simulation is currently running.
         private bool _simulateError;                                    // Controls whether the test error should be triggered.
         private int _workload = 10_000_000;                             // Sets the default number of calculation steps.
-        private string _totalTimeText = "00:00:00";                     // Stores the total simulation time as text.
+        private string _totalTimeText = "00:00.000";                    // Stores the total simulation time as text.
         private int _successfulCount;                                   // Counts simulations that finished successfully.
         private int _errorCount;                                        // Counts simulations that finished with an error.
-        private int _cancelledCount;                                    // Counts simulations that were cancelled.
+        private int _cancelledCount;                                   // Counts simulations that were cancelled.
+
+        private bool _hasComparison;
+        private string _sequentialTimeComparisonText = "-";
+        private string _parallelTimeComparisonText = "-";
+        private string _speedupComparisonText = "-";
+        private string _valuesMatchComparisonText = "-";
 
         // Keeps the same snapshots for sequential and parallel runs.
         private List<(SimulationCardViewModel Card, AnimalSnapshot Snapshot)>? _cachedSnapshots;
+
+        // Stores the latest results from each simulation mode.
+        private SimulationRunData? _sequentialRun;
+        private SimulationRunData? _parallelRun;
 
         public event PropertyChangedEventHandler? PropertyChanged;                          // Notifies the UI when a property value changes.
 
@@ -56,111 +69,168 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public ObservableCollection<string> EventLog { get; } = new();                      // Stores messages about simulation events.
 
         // Shows how many animals are currently selected.
-        public string SelectedAnimalsText =>                    // Provides the selected animal count as a text value.
-            string.Format(                                      // Inserts the selected count into the resource message.
-                Messages.Simulation_SelectedAnimals,            // Gets the message format from the resource file.
-                AnimalCards.Count(card => card.IsSelected));    // Counts only cards whose IsSelected value is true.
+        public string SelectedAnimalsText =>
+            string.Format(
+                Messages.Simulation_SelectedAnimals,
+                AnimalCards.Count(card => card.IsSelected));
 
         // Enables or disables the test error for the Lion simulation.
         public bool SimulateError
         {
-            get => _simulateError;                              // Returns the current test error setting.
-            set                                                 // Updates the test error setting.
+            get => _simulateError;
+            set
             {
-                if (_simulateError == value) return;            // Stops if the new value is the same as the current one.
+                if (_simulateError == value) return;
 
-                _simulateError = value;                         // Saves the new test error setting.
-                OnPropertyChanged();                            // Notifies the UI about the changed property.
+                _simulateError = value;
+                InvalidateStoredRuns();
+                OnPropertyChanged();
             }
         }
 
         // Sets the number of calculation steps.
         public int Workload
         {
-            get => _workload;                                           // Returns the current number of calculation steps.
-            set                                                         // Updates the number of calculation steps.
+            get => _workload;
+            set
             {
-                int newValue = Math.Clamp(value, 100_000, 100_000_000); // Keeps the workload between the allowed minimum and maximum.
+                int newValue = Math.Clamp(value, 100_000, 100_000_000);
 
-                if (_workload == newValue) return;                      // Stops if the workload has not changed.
+                if (_workload == newValue) return;
 
-                _workload = newValue;                                   // Saves the new workload value.
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                _workload = newValue;
+                InvalidateStoredRuns();
+                OnPropertyChanged();
             }
         }
 
         // Shows if a simulation is currently running.
         public bool IsBusy
         {
-            get => _isBusy;                                             // Returns whether a simulation is running.
-            set                                                         // Updates the running state.
+            get => _isBusy;
+            set
             {
-                if (_isBusy == value) return;                           // Stops if the running state has not changed.
+                if (_isBusy == value) return;
 
-                _isBusy = value;                                        // Saves the new running state.
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
-                CommandManager.InvalidateRequerySuggested();            // Makes WPF check again which commands can be executed.
+                _isBusy = value;
+                OnPropertyChanged();
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
         // Displays the total simulation time.
         public string TotalTimeText
         {
-            get => _totalTimeText;                                      // Returns the displayed total simulation time.
-            set                                                         // Updates the displayed total simulation time.
+            get => _totalTimeText;
+            set
             {
-                _totalTimeText = string.IsNullOrWhiteSpace(value)       // Checks whether the new value is empty or contains only spaces.
-                    ? "00:00:00"                                        // Uses the default time when no value was provided.
-                    : value;                                            // Otherwise, saves the provided time.
+                _totalTimeText = string.IsNullOrWhiteSpace(value)
+                    ? "00:00.000"
+                    : value;
 
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                OnPropertyChanged();
             }
         }
 
         // Stores the number of successful simulations.
         public int SuccessfulCount
         {
-            get => _successfulCount;                                    // Returns the number of successful simulations.
-            set                                                         // Updates the successful simulation count.
+            get => _successfulCount;
+            set
             {
-                _successfulCount = Math.Max(0, value);                  // Prevents the counter from becoming negative.
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                _successfulCount = Math.Max(0, value);
+                OnPropertyChanged();
             }
         }
 
         // Stores the number of simulations with errors.
         public int ErrorCount
         {
-            get => _errorCount;                                         // Returns the number of simulations with errors.
-            set                                                         // Updates the error count.
+            get => _errorCount;
+            set
             {
-                _errorCount = Math.Max(0, value);                       // Prevents the counter from becoming negative.
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                _errorCount = Math.Max(0, value);
+                OnPropertyChanged();
             }
         }
 
         // Stores the number of cancelled simulations.
         public int CancelledCount
         {
-            get => _cancelledCount;                                     // Returns the number of cancelled simulations.
-            set                                                         // Updates the cancelled simulation count.
+            get => _cancelledCount;
+            set
             {
-                _cancelledCount = Math.Max(0, value);                   // Prevents the counter from becoming negative.
-                OnPropertyChanged();                                    // Notifies the UI about the changed property.
+                _cancelledCount = Math.Max(0, value);
+                OnPropertyChanged();
             }
         }
 
-        public ICommand RunSequentialCommand { get; private set; } = null!;   // Command that starts simulations one after another.
-        public ICommand RunParallelCommand { get; private set; } = null!;     // Command that starts simulations at the same time.
-        public ICommand CancelCommand { get; private set; } = null!;          // Command that requests cancellation of the current run.
+        public bool HasComparison
+        {
+            get => _hasComparison;
+            private set
+            {
+                if (_hasComparison == value) return;
+                _hasComparison = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SequentialTimeComparisonText
+        {
+            get => _sequentialTimeComparisonText;
+            private set
+            {
+                if (_sequentialTimeComparisonText == value) return;
+                _sequentialTimeComparisonText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ParallelTimeComparisonText
+        {
+            get => _parallelTimeComparisonText;
+            private set
+            {
+                if (_parallelTimeComparisonText == value) return;
+                _parallelTimeComparisonText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SpeedupComparisonText
+        {
+            get => _speedupComparisonText;
+            private set
+            {
+                if (_speedupComparisonText == value) return;
+                _speedupComparisonText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ValuesMatchComparisonText
+        {
+            get => _valuesMatchComparisonText;
+            private set
+            {
+                if (_valuesMatchComparisonText == value) return;
+                _valuesMatchComparisonText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand RunSequentialCommand { get; private set; } = null!;
+        public ICommand RunParallelCommand { get; private set; } = null!;
+        public ICommand CancelCommand { get; private set; } = null!;
 
         // Constructor accepting real zoo animals to build dynamic cards from actual app instances.
-        public SimulationViewModel(IEnumerable<Animal> animals)         // Initializes ViewModel with real active animals from repositories.
+        public SimulationViewModel(IEnumerable<Animal> animals)
         {
-            _simulationService = new AnimalSimulationService();         // Creates the service that performs the calculations.
-            InitializeCommands();                                       // Sets up user commands.
+            _simulationService = new AnimalSimulationService();
+            InitializeCommands();
 
-            PopulateCards(AnimalCardFactory.CreateCardsFromAnimals(animals)); // Loads real cards into master collection and groups.
+            PopulateCards(AnimalCardFactory.CreateCardsFromAnimals(animals));
         }
 
         // Helper to populate master collection, set up property listeners, group by enclosures, and refresh central view
@@ -173,20 +243,40 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             foreach (var g in groups)
             {
-                var groupObj = new EnclosureSimulationGroup { EnclosureName = g.Key + "s" };
+                var groupObj = new EnclosureSimulationGroup
+                {
+                    EnclosureName = GetEnclosureDisplayName(g.Key)
+                };
+
                 foreach (var card in g)
                 {
                     card.PropertyChanged += AnimalCard_PropertyChanged;
                     AnimalCards.Add(card);
                     groupObj.Cards.Add(card);
                 }
+
                 EnclosureGroups.Add(groupObj);
             }
 
             RefreshSelectedCards();
         }
 
-        // Updates the central panel to contain ONLY cards where IsSelected is true
+        private static string GetEnclosureDisplayName(string animalType)
+        {
+            return animalType switch
+            {
+                "Monkey" => Messages.UI_MonkeyEnclosure,
+                "Lion" => Messages.UI_LionEnclosure,
+                "Penguin" => Messages.UI_PenguinEnclosure,
+                "HoneyBadger" => Messages.UI_HoneyBadgerEnclosure,
+                "Kangaroo" => Messages.UI_KangarooEnclosure,
+                "Dolphin" => Messages.UI_DolphinEnclosure,
+                "Frog" => Messages.UI_FrogEnclosure,
+                _ => animalType
+            };
+        }
+
+        // Updates the central panel to contain ONLY cards where IsSelected == true
         private void RefreshSelectedCards()
         {
             SelectedAnimalCards.Clear();
@@ -199,13 +289,15 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Initializes all UI commands.
         private void InitializeCommands()
         {
-            RunSequentialCommand = new RelayCommand(
-                async _ => await RunSequentialAsync(),
-                _ => !IsBusy);
+            RunSequentialCommand = new AsyncRelayCommand(
+                _ => RunSequentialAsync(),
+                _ => !IsBusy,
+                ex => LogEvent($"Unexpected error in sequential run: {ex.Message}"));
 
-            RunParallelCommand = new RelayCommand(
-                async _ => await RunParallelAsync(),
-                _ => !IsBusy);
+            RunParallelCommand = new AsyncRelayCommand(
+                _ => RunParallelAsync(),
+                _ => !IsBusy,
+                ex => LogEvent($"Unexpected error in parallel run: {ex.Message}"));
 
             CancelCommand = new RelayCommand(
                 _ => CancelExecution(),
@@ -220,9 +312,105 @@ namespace CrazyUniverse.WpfApp.ViewModels
             if (e.PropertyName == nameof(SimulationCardViewModel.IsSelected))
             {
                 _cachedSnapshots = null;
-                RefreshSelectedCards();                                         // Обновляем центральную сетку при изменении галочки
+                InvalidateStoredRuns();
+                RefreshSelectedCards();
                 OnPropertyChanged(nameof(SelectedAnimalsText));
             }
+        }
+
+        private void InvalidateStoredRuns()
+        {
+            _sequentialRun = null;
+            _parallelRun = null;
+            ResetComparison();
+        }
+
+        private void ResetComparison()
+        {
+            HasComparison = false;
+            SequentialTimeComparisonText = "-";
+            ParallelTimeComparisonText = "-";
+            SpeedupComparisonText = "-";
+            ValuesMatchComparisonText = "-";
+        }
+
+        private void UpdateComparisonIfPossible()
+        {
+            if (_sequentialRun == null || _parallelRun == null)
+            {
+                ResetComparison();
+                return;
+            }
+
+            if (_sequentialRun.Workload != _parallelRun.Workload ||
+                _sequentialRun.SimulateError != _parallelRun.SimulateError)
+            {
+                ResetComparison();
+                return;
+            }
+
+            var seqIds = _sequentialRun.Snapshots.Select(s => s.Id).ToList();
+            var parIds = _parallelRun.Snapshots.Select(s => s.Id).ToList();
+
+            if (!seqIds.SequenceEqual(parIds))
+            {
+                ResetComparison();
+                return;
+            }
+
+            int matchedCount = 0;
+            int comparableCount = 0;
+
+            foreach (string id in seqIds)
+            {
+                if (!_sequentialRun.Results.TryGetValue(id, out var seqRes) ||
+                    !_parallelRun.Results.TryGetValue(id, out var parRes))
+                {
+                    continue;
+                }
+
+                if (!seqRes.CalculationValue.HasValue || !parRes.CalculationValue.HasValue)
+                {
+                    continue;
+                }
+
+                comparableCount++;
+                double a = seqRes.CalculationValue.Value;
+                double b = parRes.CalculationValue.Value;
+                double tolerance = RelativeTolerance * Math.Max(1.0, Math.Abs(a));
+
+                if (Math.Abs(a - b) <= tolerance)
+                {
+                    matchedCount++;
+                }
+            }
+
+            double seqMs = _sequentialRun.TotalTime.TotalMilliseconds;
+            double parMs = _parallelRun.TotalTime.TotalMilliseconds;
+
+            SequentialTimeComparisonText = _sequentialRun.TotalTime.ToString(@"mm\:ss\.fff");
+            ParallelTimeComparisonText = _parallelRun.TotalTime.ToString(@"mm\:ss\.fff");
+
+            if (parMs > 0)
+            {
+                double speedup = seqMs / parMs;
+                SpeedupComparisonText = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0:F2}x",
+                    speedup);
+            }
+            else
+            {
+                SpeedupComparisonText = "N/A";
+            }
+
+            ValuesMatchComparisonText = string.Format(
+                CultureInfo.InvariantCulture,
+                "{0} of {1}",
+                matchedCount,
+                comparableCount);
+
+            HasComparison = true;
         }
 
         // Creates snapshots for selected animals or returns the cached ones.
@@ -254,7 +442,12 @@ namespace CrazyUniverse.WpfApp.ViewModels
             }
 
             PrepareForRun();
+
+            int runWorkload = Workload;
             bool simulateError = SimulateError;
+            var runSnapshots = selectedItems.Select(item => item.Snapshot).ToList();
+            var runResults = new ConcurrentDictionary<string, SimulationAnimalResult>();
+
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -271,7 +464,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     {
                         for (int j = i; j < selectedItems.Count; j++)
                         {
-                            MarkAsCancelled(selectedItems[j].Card);
+                            MarkAsCancelled(selectedItems[j].Card, runResults);
                         }
 
                         break;
@@ -284,7 +477,6 @@ namespace CrazyUniverse.WpfApp.ViewModels
                             Messages.Simulation_Log_StartingAnimal,
                             snapshot.Name));
 
-                    // Sends live progress updates to the individual animal card progress bar.
                     var progress = new Progress<SimulationProgress>(p =>
                     {
                         card.ProgressPercent = p.Total <= 0
@@ -299,18 +491,27 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
                     var result = await _simulationService.SimulateAsync(
                         snapshot,
-                        Workload,
+                        runWorkload,
                         progress,
                         _currentCts.Token,
                         simulateError);
 
-                    ProcessTaskResult(card, result);
+                    ProcessTaskResult(card, result, runResults);
                 }
             }
             finally
             {
                 stopwatch.Stop();
-                TotalTimeText = stopwatch.Elapsed.ToString(@"hh\:mm\:ss");
+                TotalTimeText = stopwatch.Elapsed.ToString(@"mm\:ss\.fff");
+
+                _sequentialRun = new SimulationRunData(
+                    runResults,
+                    stopwatch.Elapsed,
+                    runWorkload,
+                    runSnapshots,
+                    simulateError);
+
+                UpdateComparisonIfPossible();
 
                 LogEvent(
                     string.Format(
@@ -335,7 +536,12 @@ namespace CrazyUniverse.WpfApp.ViewModels
             }
 
             PrepareForRun();
+
+            int runWorkload = Workload;
             bool simulateError = SimulateError;
+            var runSnapshots = selectedItems.Select(item => item.Snapshot).ToList();
+            var runResults = new ConcurrentDictionary<string, SimulationAnimalResult>();
+
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -354,7 +560,6 @@ namespace CrazyUniverse.WpfApp.ViewModels
                             Messages.Simulation_Log_ScheduledTask,
                             snapshot.Name));
 
-                    // Sends live progress updates to the individual animal card progress bar in parallel mode.
                     var progress = new Progress<SimulationProgress>(p =>
                     {
                         card.ProgressPercent = p.Total <= 0
@@ -372,7 +577,9 @@ namespace CrazyUniverse.WpfApp.ViewModels
                         snapshot,
                         progress,
                         _currentCts!.Token,
-                        simulateError);
+                        simulateError,
+                        runWorkload,
+                        runResults);
 
                 }).ToArray();
 
@@ -381,7 +588,16 @@ namespace CrazyUniverse.WpfApp.ViewModels
             finally
             {
                 stopwatch.Stop();
-                TotalTimeText = stopwatch.Elapsed.ToString(@"hh\:mm\:ss");
+                TotalTimeText = stopwatch.Elapsed.ToString(@"mm\:ss\.fff");
+
+                _parallelRun = new SimulationRunData(
+                    runResults,
+                    stopwatch.Elapsed,
+                    runWorkload,
+                    runSnapshots,
+                    simulateError);
+
+                UpdateComparisonIfPossible();
 
                 LogEvent(
                     string.Format(
@@ -398,23 +614,31 @@ namespace CrazyUniverse.WpfApp.ViewModels
             AnimalSnapshot snapshot,
             IProgress<SimulationProgress> progress,
             CancellationToken token,
-            bool simulateError)
+            bool simulateError,
+            int runWorkload,
+            ConcurrentDictionary<string, SimulationAnimalResult> runResults)
         {
             var result = await _simulationService.SimulateAsync(
                 snapshot,
-                Workload,
+                runWorkload,
                 progress,
                 token,
                 simulateError);
 
-            ProcessTaskResult(card, result);
+            ProcessTaskResult(card, result, runResults);
         }
 
         // Updates the animal card, counters and results table.
         private void ProcessTaskResult(
             SimulationCardViewModel card,
-            SimulationResult result)
+            SimulationResult result,
+            ConcurrentDictionary<string, SimulationAnimalResult> runResults)
         {
+            runResults[card.Id] = new SimulationAnimalResult(
+                result.Status,
+                result.Status == "Success" ? result.CalculationValue : null,
+                result.Details);
+
             card.Status = result.Status;
 
             card.ProgressPercent = result.Status == "Success"
@@ -463,8 +687,15 @@ namespace CrazyUniverse.WpfApp.ViewModels
         }
 
         // Adds a report row for an animal that was not started.
-        private void MarkAsCancelled(SimulationCardViewModel card)
+        private void MarkAsCancelled(
+            SimulationCardViewModel card,
+            ConcurrentDictionary<string, SimulationAnimalResult> runResults)
         {
+            runResults[card.Id] = new SimulationAnimalResult(
+                "Cancelled",
+                null,
+                Messages.Simulation_Message_CancelledBeforeStart);
+
             card.Status = Messages.Simulation_Status_Cancelled;
             card.ProgressText = Messages.Simulation_Progress_CancelledBeforeStart;
 
@@ -499,7 +730,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         private void PrepareForRun()
         {
             IsBusy = true;
-            TotalTimeText = "00:00:00";
+            TotalTimeText = "00:00.000";
 
             SuccessfulCount = 0;
             ErrorCount = 0;
@@ -544,6 +775,48 @@ namespace CrazyUniverse.WpfApp.ViewModels
             PropertyChanged?.Invoke(
                 this,
                 new PropertyChangedEventArgs(propertyName));
+        }
+
+        // Stores the outcome of one animal calculation.
+        private sealed class SimulationAnimalResult
+        {
+            public string Status { get; }
+            public double? CalculationValue { get; }
+            public string Details { get; }
+
+            public SimulationAnimalResult(
+                string status,
+                double? calculationValue,
+                string details)
+            {
+                Status = status;
+                CalculationValue = calculationValue;
+                Details = details;
+            }
+        }
+
+        // Stores the results and input parameters of one simulation run.
+        private sealed class SimulationRunData
+        {
+            public IReadOnlyDictionary<string, SimulationAnimalResult> Results { get; }
+            public TimeSpan TotalTime { get; }
+            public int Workload { get; }
+            public IReadOnlyList<AnimalSnapshot> Snapshots { get; }
+            public bool SimulateError { get; }
+
+            public SimulationRunData(
+                ConcurrentDictionary<string, SimulationAnimalResult> results,
+                TimeSpan totalTime,
+                int workload,
+                IReadOnlyList<AnimalSnapshot> snapshots,
+                bool simulateError)
+            {
+                Results = new Dictionary<string, SimulationAnimalResult>(results);
+                TotalTime = totalTime;
+                Workload = workload;
+                Snapshots = snapshots.ToList();
+                SimulateError = simulateError;
+            }
         }
     }
 

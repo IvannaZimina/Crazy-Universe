@@ -1,7 +1,7 @@
 ﻿using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
-using CrazyUniverse.Core.Repositories;
 using CrazyUniverse.Core.Resources;
+using CrazyUniverse.Core.World;
 using CrazyUniverse.WpfApp.Commands;
 using CrazyUniverse.WpfApp.Factories;
 using System;
@@ -61,15 +61,10 @@ namespace CrazyUniverse.WpfApp.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         // ==========================================
-        // TYPE-BASED REPOSITORIES & ENCLOSURES
+        // WORLD & ENCLOSURES
         // ==========================================
-        private readonly IRepository<Monkey> _monkeyRepository = new Repository<Monkey>();
-        private readonly IRepository<Lion> _lionRepository = new Repository<Lion>();
-        private readonly IRepository<Penguin> _penguinRepository = new Repository<Penguin>();
-        private readonly IRepository<HoneyBadger> _honeyBadgerRepository = new Repository<HoneyBadger>();
-        private readonly IRepository<Kangaroo> _kangarooRepository = new Repository<Kangaroo>();
-        private readonly IRepository<Dolphin> _dolphinRepository = new Repository<Dolphin>();
-        private readonly IRepository<Frog> _frogRepository = new Repository<Frog>();
+        // Domain world owned in Core, encapsulating all type-based repositories and routing
+        private readonly ZooWorld _world;
 
         // Collection of enclosures for the accordion-based UI view
         public ObservableCollection<EnclosureViewModel> Enclosures { get; } = new ObservableCollection<EnclosureViewModel>();
@@ -163,13 +158,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // creates a collection of logs that is displayed in the user interface
         public ObservableCollection<string> LogMessages { get; } = new ObservableCollection<string>();
 
-        public int ZooPopulation => _monkeyRepository.GetAll().Count()
-                                    + _lionRepository.GetAll().Count()
-                                    + _penguinRepository.GetAll().Count()
-                                    + _honeyBadgerRepository.GetAll().Count()
-                                    + _kangarooRepository.GetAll().Count()
-                                    + _dolphinRepository.GetAll().Count()
-                                    + _frogRepository.GetAll().Count();
+        public int ZooPopulation => _world.GetAllAnimals().Count;
 
         public int TotalAnimalsCount => ZooPopulation;
 
@@ -178,14 +167,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         {
             get
             {
-                var allAnimals = _monkeyRepository.GetAll().Cast<Animal>()
-                    .Concat(_lionRepository.GetAll().Cast<Animal>())
-                    .Concat(_penguinRepository.GetAll().Cast<Animal>())
-                    .Concat(_honeyBadgerRepository.GetAll().Cast<Animal>())
-                    .Concat(_kangarooRepository.GetAll().Cast<Animal>())
-                    .Concat(_dolphinRepository.GetAll().Cast<Animal>())
-                    .Concat(_frogRepository.GetAll().Cast<Animal>())
-                    .ToList();
+                var allAnimals = _world.GetAllAnimals().ToList();
 
                 var predefinedCategories = new[]
                 {
@@ -235,51 +217,38 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         // PROPERTIES FOR DYNAMIC BUTTON TEXTS
         // ==========================================
+        // Reads swim cost through ISwimmable and shared default distance from Core without type-switch blocks
         public string SwimButtonText
         {
             get
             {
-                int cost = SelectedAnimal switch
-                {
-                    HoneyBadger hb => hb.SwimCost,
-                    Penguin p => p.SwimCost * 15,
-                    Dolphin d => d.SwimCost * 15,
-                    Frog f => f.SwimCost * 15,
-                    _ => 10
-                };
+                int cost = SelectedAnimal is ISwimmable swimmable
+                    ? (int)(swimmable.SwimCost * Animal.DefaultSwimDistance)
+                    : 0;
                 return string.Format(Messages.UI_BtnSwim, cost);
             }
         }
 
+        // Reads jump cost directly from IJumpable without type-switch blocks
         public string JumpButtonText
         {
             get
             {
-                int cost = SelectedAnimal switch
-                {
-                    Monkey m => m.JumpCost,
-                    Kangaroo k => k.JumpCost,
-                    Frog f => f.JumpCost,
-                    _ => 5
-                };
+                int cost = SelectedAnimal is IJumpable jumpable
+                    ? jumpable.JumpCost
+                    : 0;
                 return string.Format(Messages.UI_BtnJump, cost);
             }
         }
 
+        // Reads sound cost directly from IVocalizable without type-switch blocks
         public string MakeSoundButtonText
         {
             get
             {
-                int cost = SelectedAnimal switch
-                {
-                    HoneyBadger hb => hb.SoundCost,
-                    Lion l => 2,
-                    Monkey m => 2,
-                    Penguin p => 2,
-                    Kangaroo k => k.SoundCost,
-                    Dolphin d => d.SoundCost,
-                    _ => 2
-                };
+                int cost = SelectedAnimal is IVocalizable vocalizable
+                    ? vocalizable.SoundCost
+                    : 0;
                 return string.Format(Messages.UI_BtnMakeSound, cost);
             }
         }
@@ -287,53 +256,24 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         // CONSTRUCTOR
         // ==========================================
-        public MainViewModel()
+        public MainViewModel() : this(new ZooWorld())
         {
-            // Subscribe repositories to automatically route typed domain log messages (with Kind & Cause) to UI log collector
-            _monkeyRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
-            _lionRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
-            _penguinRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
-            _honeyBadgerRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
-            _kangarooRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
-            _dolphinRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
-            _frogRepository.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
+        }
+
+        // Accepts ZooWorld so repositories and type routing live in Core rather than inside ViewModel
+        public MainViewModel(ZooWorld world)
+        {
+            _world = world ?? throw new ArgumentNullException(nameof(world));
+            _world.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
 
             // Initialize enclosures collection based on available types from factory
             InitializeEnclosures();
 
-            // Get initial animals from factory and populate respective repositories and enclosure view models
+            // Get initial animals from factory and populate the Core world without initial log noise
             var defaultAnimals = AnimalFactory.CreateDefaultAnimals();
-
             foreach (var animal in defaultAnimals)
             {
-                if (animal is Monkey m)
-                {
-                    _monkeyRepository.Add(m, suppressLog: true);
-                }
-                else if (animal is Lion l)
-                {
-                    _lionRepository.Add(l, suppressLog: true);
-                }
-                else if (animal is Penguin p)
-                {
-                    _penguinRepository.Add(p, suppressLog: true);
-                }
-                else if (animal is HoneyBadger hb)
-                {
-                    _honeyBadgerRepository.Add(hb, suppressLog: true);
-                }
-                else if (animal is Kangaroo k)
-                {
-                    _kangarooRepository.Add(k, suppressLog: true);
-                }
-                else if (animal is Dolphin d)
-                {
-                    _dolphinRepository.Add(d, suppressLog: true);
-                }
-                else if (animal is Frog f)
-                {
-                    _frogRepository.Add(f, suppressLog: true);
-                }
+                _world.Add(animal, suppressLog: true);
             }
 
             // Load initial view for default selected repository type ("Monkey")
@@ -366,33 +306,14 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             foreach (var type in types)
             {
+                var sampleAnimal = AnimalCatalog.CreateAnimal(type, "_probe");
                 var enclosure = new EnclosureViewModel
                 {
                     Name = type,
-                    DisplayName = type switch
-                    {
-                        "Lion" => Messages.UI_LionEnclosure,
-                        "Penguin" => Messages.UI_PenguinEnclosure,
-                        "HoneyBadger" => Messages.UI_HoneyBadgerEnclosure,
-                        "Kangaroo" => Messages.UI_KangarooEnclosure,
-                        "Dolphin" => Messages.UI_DolphinEnclosure,
-                        "Frog" => Messages.UI_FrogEnclosure,
-                        _ => Messages.UI_MonkeyEnclosure
-                    }
+                    DisplayName = sampleAnimal.TypeName
                 };
 
-                IEnumerable<Animal> repoItems = type switch
-                {
-                    "Lion" => _lionRepository.GetAll().Cast<Animal>(),
-                    "Penguin" => _penguinRepository.GetAll().Cast<Animal>(),
-                    "HoneyBadger" => _honeyBadgerRepository.GetAll().Cast<Animal>(),
-                    "Kangaroo" => _kangarooRepository.GetAll().Cast<Animal>(),
-                    "Dolphin" => _dolphinRepository.GetAll().Cast<Animal>(),
-                    "Frog" => _frogRepository.GetAll().Cast<Animal>(),
-                    _ => _monkeyRepository.GetAll().Cast<Animal>()
-                };
-
-                foreach (var item in repoItems.OrderBy(a => a.Name))
+                foreach (var item in _world.GetAnimalsByType(type).OrderBy(a => a.Name))
                 {
                     enclosure.Animals.Add(item);
                 }
@@ -420,16 +341,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         {
             foreach (var enc in Enclosures)
             {
-                IEnumerable<Animal> repoItems = enc.Name switch
-                {
-                    "Lion" => _lionRepository.GetAll().Cast<Animal>(),
-                    "Penguin" => _penguinRepository.GetAll().Cast<Animal>(),
-                    "HoneyBadger" => _honeyBadgerRepository.GetAll().Cast<Animal>(),
-                    "Kangaroo" => _kangarooRepository.GetAll().Cast<Animal>(),
-                    "Dolphin" => _dolphinRepository.GetAll().Cast<Animal>(),
-                    "Frog" => _frogRepository.GetAll().Cast<Animal>(),
-                    _ => _monkeyRepository.GetAll().Cast<Animal>()
-                };
+                IEnumerable<Animal> repoItems = _world.GetAnimalsByType(enc.Name);
 
                 if (!string.IsNullOrWhiteSpace(SearchQuery))
                 {
@@ -483,15 +395,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Handler to open the simulation window as a modal dialog
         private void ExecuteOpenSimulation(object? parameter)
         {
-            // Collect all current animals from all type-based repositories
-            var allAnimals = _monkeyRepository.GetAll().Cast<Animal>()
-                .Concat(_lionRepository.GetAll().Cast<Animal>())
-                .Concat(_penguinRepository.GetAll().Cast<Animal>())
-                .Concat(_honeyBadgerRepository.GetAll().Cast<Animal>())
-                .Concat(_kangarooRepository.GetAll().Cast<Animal>())
-                .Concat(_dolphinRepository.GetAll().Cast<Animal>())
-                .Concat(_frogRepository.GetAll().Cast<Animal>())
-                .ToList();
+            // Collect all current animals from the Core world
+            var allAnimals = _world.GetAllAnimals().ToList();
 
             var simulationWindow = new SimulationWindow(allAnimals)
             {
@@ -546,35 +451,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                     dialog.AnimalDescription
                 );
 
-                // Add animal to the corresponding type repository and its enclosure (triggers welcome domain events)
-                if (newAnimal is Monkey m)
-                {
-                    _monkeyRepository.Add(m);
-                }
-                else if (newAnimal is Lion l)
-                {
-                    _lionRepository.Add(l);
-                }
-                else if (newAnimal is Penguin p)
-                {
-                    _penguinRepository.Add(p);
-                }
-                else if (newAnimal is HoneyBadger hb)
-                {
-                    _honeyBadgerRepository.Add(hb);
-                }
-                else if (newAnimal is Kangaroo k)
-                {
-                    _kangarooRepository.Add(k);
-                }
-                else if (newAnimal is Dolphin d)
-                {
-                    _dolphinRepository.Add(d);
-                }
-                else if (newAnimal is Frog f)
-                {
-                    _frogRepository.Add(f);
-                }
+                // Add animal through Core ZooWorld (triggers welcome domain events)
+                _world.Add(newAnimal);
 
                 UpdateDisplayedAnimals();
 
@@ -598,35 +476,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
             {
                 string name = SelectedAnimal.Name;
 
-                // Remove from appropriate type repository and its enclosure collection (triggers farewell domain events)
-                if (SelectedAnimal is Monkey m)
-                {
-                    _monkeyRepository.Remove(m);
-                }
-                else if (SelectedAnimal is Lion l)
-                {
-                    _lionRepository.Remove(l);
-                }
-                else if (SelectedAnimal is Penguin p)
-                {
-                    _penguinRepository.Remove(p);
-                }
-                else if (SelectedAnimal is HoneyBadger hb)
-                {
-                    _honeyBadgerRepository.Remove(hb);
-                }
-                else if (SelectedAnimal is Kangaroo k)
-                {
-                    _kangarooRepository.Remove(k);
-                }
-                else if (SelectedAnimal is Dolphin d)
-                {
-                    _dolphinRepository.Remove(d);
-                }
-                else if (SelectedAnimal is Frog f)
-                {
-                    _frogRepository.Remove(f);
-                }
+                // Remove through Core ZooWorld (triggers farewell domain events)
+                _world.Remove(SelectedAnimal);
 
                 UpdateDisplayedAnimals();
 
@@ -686,12 +537,12 @@ namespace CrazyUniverse.WpfApp.ViewModels
             return SelectedAnimal != null;
         }
 
-        // Logic for swimming action
+        // Logic for swimming action using the shared default distance from Core
         private void ExecuteSwim(object? parameter)
         {
             if (SelectedAnimal is ISwimmable swimmable)
             {
-                string resultMessage = swimmable.Swim(15);
+                string resultMessage = swimmable.Swim(Animal.DefaultSwimDistance);
                 OnPropertyChanged(nameof(SelectedAnimal));
                 OnPropertyChanged(nameof(SatietyGroupsSummary));
                 Log(resultMessage);
@@ -755,47 +606,31 @@ namespace CrazyUniverse.WpfApp.ViewModels
             return SelectedAnimal is IVocalizable && SelectedAnimal.Satiety > 0;
         }
 
-        // Logic for crazy action (triggers domain events via repository)
+        // Logic for crazy action (triggers domain events via Core world)
         private void ExecuteCrazyAction(object? parameter)
         {
-            if (SelectedNameCheck() && SelectedAnimal != null)
+            // Capture animal reference and Id before RefreshEnclosures rebuilds observable collections
+            var actingAnimal = SelectedAnimal;
+            if (actingAnimal != null)
             {
-                // Trigger crazy action through the appropriate repository to broadcast reactions to enclosure neighbors
-                if (SelectedAnimal is Monkey m)
-                {
-                    _monkeyRepository.TriggerCrazyAction(m);
-                }
-                else if (SelectedAnimal is Lion l)
-                {
-                    _lionRepository.TriggerCrazyAction(l);
-                }
-                else if (SelectedAnimal is Penguin p)
-                {
-                    _penguinRepository.TriggerCrazyAction(p);
-                }
-                else if (SelectedAnimal is HoneyBadger hb)
-                {
-                    _honeyBadgerRepository.TriggerCrazyAction(hb);
-                }
-                else if (SelectedAnimal is Kangaroo k)
-                {
-                    _kangarooRepository.TriggerCrazyAction(k);
-                }
-                else if (SelectedAnimal is Dolphin d)
-                {
-                    _dolphinRepository.TriggerCrazyAction(d);
-                }
-                else if (SelectedAnimal is Frog f)
-                {
-                    _frogRepository.TriggerCrazyAction(f);
-                }
+                string actingAnimalId = actingAnimal.Id;
 
-                OnPropertyChanged(nameof(SelectedAnimal));
+                // Trigger crazy action through Core ZooWorld to broadcast reactions to enclosure neighbors
+                _world.TriggerCrazyAction(actingAnimal);
+
+                // Refresh displayed lists and group summary because neighbor reactions can modify Satiety
+                RefreshEnclosures();
+
+                // Restore SelectedAnimal after collection refresh so UI controls stay enabled and bound to the animal
+                var restoredAnimal = _world.GetAllAnimals().FirstOrDefault(a => a.Id == actingAnimalId) ?? actingAnimal;
+                SelectedAnimal = restoredAnimal;
                 OnPropertyChanged(nameof(SatietyGroupsSummary));
+                CommandManager.InvalidateRequerySuggested();
 
-                if (SelectedAnimal.Satiety == 0)
+                // Check energy on the captured animal instance to avoid NullReferenceException if selection changed
+                if (actingAnimal.Satiety == 0)
                 {
-                    Log(string.Format(Messages.Action_NoEnergy, SelectedAnimal.Name));
+                    Log(string.Format(Messages.Action_NoEnergy, actingAnimal.Name));
                 }
             }
             else
@@ -803,8 +638,6 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 Log(Messages.Log_NoAnimalCrazy);
             }
         }
-
-        private bool SelectedNameCheck() => SelectedAnimal != null;
 
         // Condition: can perform crazy action only if an animal is selected
         private bool CanExecuteCrazyAction(object? parameter)
