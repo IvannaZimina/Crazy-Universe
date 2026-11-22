@@ -603,4 +603,68 @@
     <value>Feed (+{0})</value>
     <comment>UI action</comment>
   </data>
+<data name="Err_InvalidAnimalId" xml:space="preserve">
+    <value>Invalid animal identifier format.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_NameTooLong" xml:space="preserve">
+    <value>Animal name cannot exceed {0} characters.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_DescriptionTooLong" xml:space="preserve">
+    <value>Animal description cannot exceed {0} characters.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_SatietyOutOfRange" xml:space="preserve">
+    <value>Satiety ({0}) must be between {1} and {2}.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_UnknownAnimalType" xml:space="preserve">
+    <value>Unknown animal type: '{0}'.</value>
+    <comment>Error message</comment>
+  </data>
+<data name="Err_WorldDataNull" xml:space="preserve">
+    <value>Saved world data is missing or empty.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_UnsupportedWorldVersion" xml:space="preserve">
+    <value>Unsupported world save version: {0} (supported: {1}).</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_EnclosuresMissing" xml:space="preserve">
+    <value>World save data does not contain any enclosures.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_InvalidEnclosure" xml:space="preserve">
+    <value>Enclosure entry is invalid or missing an ID.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_DuplicateEnclosureId" xml:space="preserve">
+    <value>Duplicate enclosure ID found in save data: '{0}'.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_EnclosureMismatch" xml:space="preserve">
+    <value>Enclosure '{0}' does not match expected animal type '{1}'.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_CharactersMissing" xml:space="preserve">
+    <value>World save data is missing the characters list.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_InvalidCharacter" xml:space="preserve">
+    <value>Character entry in save data is null or invalid.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_InvalidCharacterId" xml:space="preserve">
+    <value>Character ID '{0}' is not a valid GUID.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_DuplicateCharacterId" xml:space="preserve">
+    <value>Duplicate character ID found in save data: '{0}'.</value>
+    <comment>Error message</comment>
+  </data>
+  <data name="Err_InvalidEnclosureForCharacter" xml:space="preserve">
+    <value>Character '{0}' has invalid enclosure '{1}' for animal type '{2}'.</value>
+    <comment>Error message</comment>
+  </data>
 </root>
