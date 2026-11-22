@@ -205,6 +205,14 @@
     <value>Added a new animal: {0}</value>
     <comment>Log message</comment>
   </data>
+  <data name="Log_AnimalAddedToZoo" xml:space="preserve">
+    <value>{0} has been added to the zoo.</value>
+    <comment>Log message</comment>
+  </data>
+  <data name="Log_AnimalRemovedFromZoo" xml:space="preserve">
+    <value>{0} has been removed from the zoo.</value>
+    <comment>Log message</comment>
+  </data>
   <data name="Action_AnimalFed" xml:space="preserve">
     <value>{0} was fed. Current satiety: {1}</value>
   </data>
@@ -457,6 +465,10 @@
     <value>{0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!</value>
     <comment>Event</comment>
   </data>
+  <data name="Event_Crazy_NeighborSatiety" xml:space="preserve">
+    <value>{0} ({1} Satiety: {2})</value>
+    <comment>Event</comment>
+  </data>
   <data name="SatietyGroup_Low" xml:space="preserve">
     <value>Low (0 - 30%)</value>
     <comment>SatietyGroup</comment>
@@ -586,5 +598,9 @@
   </data>
   <data name="Simulation_Message_CancelledBeforeStart" xml:space="preserve">
     <value>Simulation cancelled before it started.</value>
+  </data>
+  <data name="UI_BtnFeed" xml:space="preserve">
+    <value>Feed (+{0})</value>
+    <comment>UI action</comment>
   </data>
 </root>

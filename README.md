@@ -41,13 +41,14 @@ The solution consists of two main projects:
 
 ### 1. Core — `CrazyUniverse.Core`
 
-Contains the domain models, business logic, repositories, interfaces, events, and simulation services.
+Contains the domain models, business logic, world orchestration, repositories, interfaces, events, and simulation services.
 The Core project does not depend on WPF.
 
 **Main components:**
 
-- **Animal.cs:** Abstract base class for all animal types. Defines shared properties, identity, satiety state, feeding logic, and the abstract `CrazyAction()` method.
-- **Concrete Animal Classes:** `Monkey`, `Penguin`, `Lion`, `HoneyBadger`, and other animal types implement their own behaviours and special actions.
+- **Animal.cs:** Abstract base class for all animal types. Defines shared properties, identity, satiety state, feeding logic, neighbor reaction logic, and the abstract `CrazyAction()` method.
+- **Concrete Animal Classes:** `Monkey`, `Penguin`, `Lion`, `HoneyBadger`, `Kangaroo`, `Dolphin`, and `Frog` implement their own behaviours and special actions.
+- **World (`ZooWorld` & `AnimalCatalog`):** Encapsulates type-based repositories, animal type catalog entries, creation/restoration helpers, and forwarded domain events in Core.
 - **Interfaces:** Define animal capabilities such as `IJumpable`, `ISwimmable`, `IRunnable`, `IClimbable`, and `IVocalizable`.
 - **Repositories:** `IRepository<T>` and `Repository<T>` provide type-safe storage and management of animal objects.
 - **Domain Events:** `LogEventArgs` and event-related logic handle animal interactions and reactions.
@@ -60,10 +61,10 @@ The Core project does not depend on WPF.
 
 The ViewModels manage application state, commands, data binding, and communication between the Core and View layers.
 
-- **MainViewModel:** Manages animal repositories, selected animals, enclosure collections, population statistics, LINQ operations, and user commands.
-- **SimulationViewModel:** Manages selected animals, workload settings, sequential and parallel simulation modes, progress updates, cancellation, results, and execution statistics.
+- **MainViewModel:** Connects UI collections, enclosure views, population statistics, LINQ operations, and commands to `ZooWorld`.
+- **SimulationViewModel:** Manages selected animals, workload settings, sequential and parallel simulation modes, mode comparison, progress updates, cancellation, results, and execution statistics.
 - **AddAnimalViewModel:** Manages the animal creation dialog and validates the required input fields.
-- **RelayCommand:** Encapsulates user actions using the `ICommand` interface and supports `CanExecute` conditions.
+- **RelayCommand & AsyncRelayCommand:** Encapsulate synchronous and asynchronous user actions using `ICommand` and support `CanExecute` conditions.
 - **SimulationCardViewModel:** Provides data and state for individual animal simulation cards.
 
 ### 3. View — `CrazyUniverse.WpfApp`
@@ -136,14 +137,14 @@ Animal interactions are implemented in the Core domain layer rather than in WPF 
 
 Three main event scenarios are supported:
 - **Addition — Welcome:** When a new animal is added, existing animals in the same repository greet it. The newly added animal does not react to itself.
-- **Removal — Farewell:** When an animal is removed, the remaining animals in the same repository say goodbye. The removed animal unsubscribes from events and no longer reacts to future events.
+- **Removal — Farewell:** When an animal is removed, the remaining animals in the same repository say goodbye. The removed animal is removed from the repository list and no longer participates in subsequent repository reaction loops.
 - **CrazyAction:** When an animal performs its special action, other animals in the same repository react according to their individual behaviour.
 
 Additional rules:
 - Animals in different repositories do not react to each other's events.
 - The animal that caused an event does not react to itself.
 - Reactions create log entries.
-- At least one type of reaction changes the reacting animal's state.
+- Neighbour reactions to `CrazyAction` update the reacting animal's satiety within validated bounds (`0..100`).
 - Typed event arguments (`LogEventArgs`) provide the event kind (`Kind`) and the animal that caused the event (`Cause`).
 
 ### 3. LINQ Operations
@@ -163,12 +164,12 @@ The satiety groups are:
 
 The application follows the Model-View-ViewModel separation.
 
-- **Model/Core:** Contains animal classes, repositories, domain events, and reaction rules.
+- **Model/Core:** Contains animal classes, world/catalog orchestration, repositories, domain events, and reaction rules.
 - **ViewModel:** Manages selected animals, collections, LINQ results, application state, logs, and commands.
 - **View:** Displays data and sends user actions through data bindings and commands.
 
 The implementation uses:
-- `ICommand` and `RelayCommand` for user actions.
+- `ICommand`, `RelayCommand`, and `AsyncRelayCommand` for user actions.
 - `CanExecute` to control command availability.
 - `INotifyPropertyChanged` for property change notifications.
 - `ObservableCollection<T>` for automatic collection updates.
@@ -178,25 +179,21 @@ The implementation uses:
 
 A fellow student contributed three new animal types to the existing Crazy Zoo project.
 
-The contribution was developed in a separate branch and submitted through a pull request. The changes were reviewed and merged into the main branch.
-
-- **Partner:** [Partner name]
-- **Issue:** [Issue link]
-- **Pull Request:** [Pull request link]
+The contribution was developed in a separate branch and submitted through a pull request. The changes were reviewed and merged into the main branch. Details and links are documented in the **Peer Review & Collaboration** section below.
 
 ---
 
 ## Vol.3 — Asynchronous and Parallel Animal Simulation
 
-Vol.3 extends the existing project with CPU-intensive calculations for selected animals, enhanced UI grouping, filtering, and asynchronous execution monitoring.
+Vol.3 extends the existing project with CPU-intensive calculations for selected animals, enhanced UI grouping, filtering, mode comparison, and asynchronous execution monitoring.
 
-The user can select animals via enclosure groups, configure the workload, run calculations in two modes, compare execution times, and inspect individual results.
+The user can select animals via enclosure groups, configure the workload, run calculations in two modes, compare execution times and calculated values, and inspect individual results.
 
 ### 1. Animal Snapshots and Calculations
 
-- **AnimalSnapshot:** Stores a fixed copy of the selected animal's data before the simulation starts.
-- **CPU-Intensive Calculations:** Each selected animal performs a calculation based on its type and properties.
-- **Same Input Data:** Sequential and parallel modes use the same animal snapshots and workload, allowing a fair comparison.
+- **AnimalSnapshot:** Stores a fixed copy of the selected animal's data (`Id`, `Name`, `AnimalType`, `Satiety`) before the simulation starts.
+- **CPU-Intensive Calculations:** Each selected animal performs a deterministic calculation based on its type, snapshot properties, and workload.
+- **Same Input Data & Mode Comparison:** Sequential and parallel modes use the same snapshots and workload; when both modes have run on the same input, the UI displays sequential time, parallel time, speed-up, and the count of matching values within relative tolerance (`|a - b| <= 1e-9 * max(1, |a|)`). Stored comparison data resets when selection, workload, or error simulation settings change.
 
 ### 2. Execution Modes
 
@@ -208,7 +205,7 @@ The application provides two execution modes:
 ### 3. Progress Reporting and UI Filtering
 
 - `IProgress<SimulationProgress>` is used to report calculation progress.
-- **Enclosure Grouping & Selection:** Animals in the selection panel are grouped by enclosures (`EnclosureSimulationGroup`), allowing users to toggle individual animal selection with checkboxes.
+- **Enclosure Grouping & Selection:** Animals in the selection panel are grouped by enclosures (`EnclosureSimulationGroup`) with localized enclosure headers, allowing users to toggle individual animal selection with checkboxes.
 - **Dynamic Filtering:** The central simulation grid automatically filters and displays **only** the animals where `IsSelected == true`.
 - **Individual Asset Images:** Each animal type features its own custom profile image asset (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`, `Kangaroo`, `Dolphin`, `Frog`).
 
@@ -233,10 +230,11 @@ An error in one animal's calculation does not prevent other calculations from co
 The simulation interface displays:
 - Animal name and custom image.
 - Final calculation status.
-- Result details or error message.
+- Result details (including calculated value) or error message.
 - Individual execution time.
-- Total simulation time.
+- Total simulation time (including milliseconds `mm:ss.fff`).
 - Counters for successful, failed, and cancelled calculations.
+- Mode comparison summary when both modes were run on identical input.
 
 `Stopwatch` is used to measure the total duration of each simulation run.
 A test error option is available to demonstrate error handling with the Lion simulation.
@@ -248,9 +246,9 @@ The simulation uses `try/finally` to restore the application state and release t
 
 ### AnimalFactory
 
-Located in `CrazyUniverse.WpfApp/Factories/AnimalFactory.cs`.
+Located in `CrazyUniverse.WpfApp/Services/AnimalFactory.cs` (namespace `CrazyUniverse.WpfApp.Factories`).
 
-- Encapsulates the creation of concrete animal objects.
+- Delegates animal creation, default animals, and available type keys to `AnimalCatalog` in `CrazyUniverse.Core`.
 - Supports the animal creation dialog.
 - Keeps animal instantiation logic separate from the UI.
 
@@ -258,7 +256,7 @@ Located in `CrazyUniverse.WpfApp/Factories/AnimalFactory.cs`.
 
 Located in `CrazyUniverse.WpfApp/Services/AnimalCardFactory.cs`.
 
-- Creates simulation animal cards dynamically from active zoo animals or default configurations.
+- Creates simulation animal cards dynamically from active zoo animals (`CreateCardsFromAnimals`).
 - Assigns individual image assets, simulation titles, and specific descriptions based on the animal type (`Monkey`, `Lion`, `Penguin`, `HoneyBadger`, `Kangaroo`, `Dolphin`, `Frog`).
 - Keeps simulation card creation separate from the simulation ViewModel.
 
@@ -294,7 +292,7 @@ The following scenarios cover the main functionality introduced across all three
 ### Vol.2 — Repositories and Interactions
 
 6. **Repository Addition:** Add an animal and verify that existing animals in the same repository react to it.
-7. **Repository Removal:** Remove an animal and verify that the remaining animals react, while the removed animal no longer receives events.
+7. **Repository Removal:** Remove an animal and verify that the remaining animals react, while the removed animal no longer participates in subsequent events.
 8. **Event Isolation:** Verify that animals in other repositories do not react to events from a different repository.
 9. **State Changes:** Verify that the required neighbour reactions create log entries and update the reacting animal's state.
 10. **LINQ Operations:** Test filtering, sorting, and grouping in the UI.
@@ -310,24 +308,22 @@ The following scenarios cover the main functionality introduced across all three
 17. **Error Handling:** Enable the test error option and run the simulation with Lion selected. The Lion result should show `Error`, while other calculations continue.
 18. **Cancellation:** Start a simulation and press Cancel. Running calculations should stop after checking the cancellation token, and unstarted animals should be marked as cancelled.
 19. **Result Summary & Balanced Logs:** Check individual statuses, result details, execution times, total time, success/error/cancellation counters, and review events in the balanced console log.
+20. **Compare Sequential and Parallel Results:** Run both modes with the same selection, workload, and error setting, verify matching calculated values and speed-up in the comparison block, and verify reset when parameters change.
 
 ---
 
 ## Peer Review & Collaboration
 
-Tasks, collaboration guidelines, and review status are tracked through GitHub Issues and Pull Requests.
+Tasks and collaboration are tracked through GitHub Issues and Pull Requests.
 
-- **[Issue #5: Add new animal subclass and integrate capabilities](https://github.com/IvannaZimina/Crazy-Universe/issues/5)** — Maksym Kotkov
-  - **Pull Request:** [PR #1: feat: add HoneyBadger model](https://github.com/IvannaZimina/Crazy-Universe/pull/1)
-  - **Code Review & Verification:** Reviewed and tested by the project owner. The `HoneyBadger` subclass, its `CrazyAction()` behavior, and capability interfaces (`IClimbable`, `ISwimmable`, `IRunnable`, `IVocalizable`) were checked. The PR was successfully merged.
+- **Issue #5: Add new animal subclass and integrate capabilities** — Maksym Kotkov
+  - **Pull Request #1:** [feat: add HoneyBadger model](https://github.com/IvannaZimina/Crazy-Universe/pull/1)
 
-- **[Issue #6: Add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/issues/6)** — Arina Shishkova
-  - **Pull Request:** [PR #4: feat: add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/pull/4)
-  - **Code Review & Verification:** Reviewed, tested, and merged by the project owner. Added Kangaroo, Dolphin, and Frog, integrating them into `AnimalFactory`, repositories, enclosures, the AddAnimal dialog, and UI actions.
+- **Issue #6: Add and integrate three new animal types** — Arina Shishkova
+  - **Pull Request #4:** [feat: add and integrate three new animal types](https://github.com/IvannaZimina/Crazy-Universe/pull/4)
 
-- **[Issue #9: Implement asynchronous and parallel animal simulation (Vol.3)](https://github.com/IvannaZimina/Crazy-Universe/issues/9)**
-  - **Pull Request:** [PR #8: Feature/crazy zoo vol3](https://github.com/IvannaZimina/Crazy-Universe/pull/8)
-  - **Status:** Open — submitted for review. Implements CPU-intensive simulations, sequential and parallel execution, cancellation, error handling, and execution-time reporting.
+- **Issue #9: Implement asynchronous and parallel animal simulation (Vol.3)**
+  - **Pull Request #8:** [Feature/crazy zoo vol3](https://github.com/IvannaZimina/Crazy-Universe/pull/8)
 
 ---
 
@@ -349,11 +345,4 @@ While developing this project, I used artificial intelligence (Gemini) as an arc
 <img width="1079" height="702" alt="image" src="https://github.com/user-attachments/assets/a450660a-3cb1-45c8-92fa-00985ce1932f" />
 <img width="1078" height="700" alt="image" src="https://github.com/user-attachments/assets/ae74e0a5-787a-4735-b426-a6f90b37a95d" />
 <img width="1157" height="730" alt="image" src="https://github.com/user-attachments/assets/ad90d066-d80d-4f87-9e38-617671156b99" />
-<img width="1157" height="725" alt="image" src="https://github.com/user-attachments/assets/432cffc3-a4ea-4b60-9c7a-5f111d123297" />
-<img width="1157" height="728" alt="image" src="https://github.com/user-attachments/assets/7ac55349-9113-4aa5-ae46-b36fa0ce3ae7" />
-<img width="1157" height="732" alt="image" src="https://github.com/user-attachments/assets/143a84f9-7d1d-4209-a6c6-59337a0fcac9" />
-<img width="1076" height="703" alt="image" src="https://github.com/user-attachments/assets/a82ae57f-a21e-4e2e-be68-9632f437ae28" />
-<img width="1157" height="753" alt="image" src="https://github.com/user-attachments/assets/8626e0fc-f18b-4bb8-a149-5d8fac1a376c" />
-<img width="1357" height="892" alt="image" src="https://github.com/user-attachments/assets/778562fa-6506-4ce0-bfd2-240afe86a7eb" />
-
-
+<img width="1157" height="753" alt="image" src="https://github.com/user-attachments/assets/9c857400-1415-4b30-aa04-474fecedd43a" />

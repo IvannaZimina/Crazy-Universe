@@ -9,12 +9,12 @@ namespace CrazyUniverse.Core.Simulation
     /// ===========================================
     public sealed class AnimalSnapshot
     {
-        public Guid Id { get; }
+        public string Id { get; }
         public string Name { get; }
         public string AnimalType { get; }
         public double Satiety { get; }
 
-        public AnimalSnapshot(Guid id, string name, string animalType, double satiety)
+        public AnimalSnapshot(string id, string name, string animalType, double satiety)
         {
             Id = id;
             Name = name;

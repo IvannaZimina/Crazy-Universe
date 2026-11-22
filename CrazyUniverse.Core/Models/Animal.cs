@@ -9,9 +9,15 @@ namespace CrazyUniverse.Core.Models
     // Declare an abstract base class representing any animal in the Crazy Zoo and implement INotifyPropertyChanged
     public abstract class Animal : INotifyPropertyChanged
     {
+        // Shared default swimming distance in metres used by UI action labels and swimming commands
+        public const double DefaultSwimDistance = 15.0;
+
+        // Validated satiety delta applied when a neighbor reacts to a CrazyAction
+        private const int CrazyNeighborReactionSatietyDelta = 2;
+
         // Read-only property for the unique identifier, automatically generated using Guid
         // example: "3f2504e0-4f89-11d3-9a0c-0305e82c3301"
-        public string Id { get; } = Guid.NewGuid().ToString();
+        public string Id { get; private set; } = Guid.NewGuid().ToString();
 
         private int _satiety;       // Private variable to store the satiety level
 
@@ -63,7 +69,19 @@ namespace CrazyUniverse.Core.Models
             }
         }
 
-        // Virtual method for feeding: adds 5 points if the animal is not fully stuffed
+        // Restores persisted Id and validated Satiety state within Core without exposing public setters
+        protected internal void RestoreState(string id, int satiety)
+        {
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                Id = id.Trim();
+                OnPropertyChanged(nameof(Id));
+            }
+
+            Satiety = satiety;
+        }
+
+        // Virtual method for feeding: adds FeedCost points if the animal is not already fully stuffed
         public virtual string Feed()
         {
             // Check if the animal is already at maximum satiety (100)
@@ -72,7 +90,7 @@ namespace CrazyUniverse.Core.Models
                 return string.Format(Messages.Action_FeedAlreadyFull, Name);
             }
 
-            Satiety += FeedCost;   // Increase satiety by 5 points per feeding action
+            Satiety += FeedCost;   // Increase satiety by FeedCost points per feeding action
 
             // Return a descriptive message about the feeding action and current state
             return string.Format(Messages.Action_FeedSuccess, Name, Satiety);
@@ -120,8 +138,13 @@ namespace CrazyUniverse.Core.Models
                     };
 
                 case "CrazyAction":
-                    // Соседи теперь только реагируют в логе, не теряя сытость при чужом безумии
-                    return this switch
+                    // Neighboring animals react to a crazy action and lose a small validated amount of satiety (clamped at 0)
+                    if (Satiety > 0)
+                    {
+                        Satiety -= CrazyNeighborReactionSatietyDelta;
+                    }
+
+                    string baseReaction = this switch
                     {
                         Monkey => string.Format(Messages.Event_Crazy_Monkey, initiator.Name),
                         Lion => string.Format(Messages.Event_Crazy_Lion, initiator.Name),
@@ -129,6 +152,8 @@ namespace CrazyUniverse.Core.Models
                         HoneyBadger => string.Format(Messages.Event_Crazy_HoneyBadger, initiator.Name),
                         _ => string.Format(Messages.Event_Crazy_Default, initiator.Name)
                     };
+
+                    return string.Format(Messages.Event_Crazy_NeighborSatiety, baseReaction, Name, Satiety);
 
                 default:
                     return string.Empty;
