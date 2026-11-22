@@ -145,6 +145,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 OnPropertyChanged(nameof(CanSelectedAnimalSwim));
                 OnPropertyChanged(nameof(CanSelectedAnimalJump));
                 OnPropertyChanged(nameof(CanSelectedAnimalMakeSound));
+                OnPropertyChanged(nameof(FeedButtonText));
                 OnPropertyChanged(nameof(SwimButtonText));
                 OnPropertyChanged(nameof(JumpButtonText));
                 OnPropertyChanged(nameof(MakeSoundButtonText));
@@ -161,6 +162,12 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public int ZooPopulation => _world.GetAllAnimals().Count;
 
         public int TotalAnimalsCount => ZooPopulation;
+
+        public string ZooPopulationText => string.Format(Messages.UI_ZooPopulation, ZooPopulation);
+
+        public string TotalAnimalsText => string.Format(Messages.UI_TotalAnimals, TotalAnimalsCount);
+
+        public string EnclosureNotFoundText => Messages.UI_Enclosure_NotFound;
 
         // LINQ GroupBy Statistics: groups all zoo animals by Satiety ranges using resource keys (guaranteeing all 3 rows always appear)
         public IEnumerable<object> SatietyGroupsSummary
@@ -217,6 +224,16 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // ==========================================
         // PROPERTIES FOR DYNAMIC BUTTON TEXTS
         // ==========================================
+        // Reads feed gain from Animal.FeedCost in Core
+        public string FeedButtonText
+        {
+            get
+            {
+                int gain = SelectedAnimal?.FeedCost ?? 0;
+                return string.Format(Messages.UI_BtnFeed, gain);
+            }
+        }
+
         // Reads swim cost through ISwimmable and shared default distance from Core without type-switch blocks
         public string SwimButtonText
         {
@@ -375,6 +392,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
             OnPropertyChanged(nameof(ZooPopulation));
             OnPropertyChanged(nameof(TotalAnimalsCount));
+            OnPropertyChanged(nameof(ZooPopulationText));
+            OnPropertyChanged(nameof(TotalAnimalsText));
             OnPropertyChanged(nameof(SatietyGroupsSummary));
         }
 
@@ -462,6 +481,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 // Notify UI that counter properties have changed
                 OnPropertyChanged(nameof(ZooPopulation));
                 OnPropertyChanged(nameof(TotalAnimalsCount));
+                OnPropertyChanged(nameof(ZooPopulationText));
+                OnPropertyChanged(nameof(TotalAnimalsText));
                 OnPropertyChanged(nameof(SatietyGroupsSummary));
 
                 // Log the addition action
@@ -488,6 +509,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 // Notify UI that counter properties have changed
                 OnPropertyChanged(nameof(ZooPopulation));
                 OnPropertyChanged(nameof(TotalAnimalsCount));
+                OnPropertyChanged(nameof(ZooPopulationText));
+                OnPropertyChanged(nameof(TotalAnimalsText));
                 OnPropertyChanged(nameof(SatietyGroupsSummary));
 
                 // Log the removal action
