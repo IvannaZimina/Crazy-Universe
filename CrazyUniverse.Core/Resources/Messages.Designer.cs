@@ -554,6 +554,15 @@ namespace CrazyUniverse.Core.Resources {
                 return ResourceManager.GetString("Event_Crazy_Penguin", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} ({1} Satiety: {2}).
+        /// </summary>
+        public static string Event_Crazy_NeighborSatiety {
+            get {
+                return ResourceManager.GetString("Event_Crazy_NeighborSatiety", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} leaves the enclosure. The remaining animals share a quiet, awkward moment of silence..
@@ -606,6 +615,24 @@ namespace CrazyUniverse.Core.Resources {
         public static string Log_AddedAnimal {
             get {
                 return ResourceManager.GetString("Log_AddedAnimal", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has been added to the zoo..
+        /// </summary>
+        public static string Log_AnimalAddedToZoo {
+            get {
+                return ResourceManager.GetString("Log_AnimalAddedToZoo", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has been removed from the zoo..
+        /// </summary>
+        public static string Log_AnimalRemovedFromZoo {
+            get {
+                return ResourceManager.GetString("Log_AnimalRemovedFromZoo", resourceCulture);
             }
         }
         
@@ -1002,6 +1029,15 @@ namespace CrazyUniverse.Core.Resources {
         public static string UI_BtnCrazyAction {
             get {
                 return ResourceManager.GetString("UI_BtnCrazyAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feed (+{0}).
+        /// </summary>
+        public static string UI_BtnFeed {
+            get {
+                return ResourceManager.GetString("UI_BtnFeed", resourceCulture);
             }
         }
         
