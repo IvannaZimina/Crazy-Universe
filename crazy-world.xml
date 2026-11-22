@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<World xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1">
+  <Enclosures>
+    <Enclosure>
+      <Id>enclosure-monkey</Id>
+      <Name>Monkey</Name>
+      <AnimalType>Monkey</AnimalType>
+    </Enclosure>
+    <Enclosure>
+      <Id>enclosure-lion</Id>
+      <Name>Lion</Name>
+      <AnimalType>Lion</AnimalType>
+    </Enclosure>
+    <Enclosure>
+      <Id>enclosure-penguin</Id>
+      <Name>Penguin</Name>
+      <AnimalType>Penguin</AnimalType>
+    </Enclosure>
+    <Enclosure>
+      <Id>enclosure-honeybadger</Id>
+      <Name>Honey Badger</Name>
+      <AnimalType>HoneyBadger</AnimalType>
+    </Enclosure>
+    <Enclosure>
+      <Id>enclosure-kangaroo</Id>
+      <Name>Kangaroo</Name>
+      <AnimalType>Kangaroo</AnimalType>
+    </Enclosure>
+    <Enclosure>
+      <Id>enclosure-dolphin</Id>
+      <Name>Dolphin</Name>
+      <AnimalType>Dolphin</AnimalType>
+    </Enclosure>
+    <Enclosure>
+      <Id>enclosure-frog</Id>
+      <Name>Frog</Name>
+      <AnimalType>Frog</AnimalType>
+    </Enclosure>
+  </Enclosures>
+  <Characters>
+    <Character>
+      <Id>877ba670-6940-42bd-89c7-13f0267fb4cc</Id>
+      <Type>Monkey</Type>
+      <Name>George</Name>
+      <Description>A professional chaos enthusiast who believes keyboards are edible and physics is optional. Constantly plots to steal the zookeeper's keys and throw banana peels.</Description>
+      <Satiety>68</Satiety>
+      <EnclosureId>enclosure-monkey</EnclosureId>
+    </Character>
+    <Character>
+      <Id>bdaf6de3-05e2-4063-82ed-b30d956c47e0</Id>
+      <Type>Lion</Type>
+      <Name>Simba</Name>
+      <Description>A dramatic king of the concrete jungle suffering from existential dread and chronic hair gel addiction. Refuses to roar unless the echo sounds cool.</Description>
+      <Satiety>100</Satiety>
+      <EnclosureId>enclosure-lion</EnclosureId>
+    </Character>
+    <Character>
+      <Id>740026b2-9b24-4218-b5e6-a8a7c718b34a</Id>
+      <Type>Penguin</Type>
+      <Name>Skipper</Name>
+      <Description>An elite tactical spy trapped in a tuxedo, plotting a global ice-cube robbery. Dances wildly on the ice whenever nobody is watching.</Description>
+      <Satiety>60</Satiety>
+      <EnclosureId>enclosure-penguin</EnclosureId>
+    </Character>
+    <Character>
+      <Id>7f2b4e4b-b456-49d0-bb22-f1149e2abc82</Id>
+      <Type>HoneyBadger</Type>
+      <Name>Rambo</Name>
+      <Description>A tiny, furious legend who does not care. Hungry? Picks a fight with a lion. Full? Still picks a fight, but with style.</Description>
+      <Satiety>100</Satiety>
+      <EnclosureId>enclosure-honeybadger</EnclosureId>
+    </Character>
+    <Character>
+      <Id>38ecd9d5-814a-4c0c-830e-0eb215855eb2</Id>
+      <Type>Kangaroo</Type>
+      <Name>Joey</Name>
+      <Description>An energetic kangaroo who treats the entire zoo like one enormous trampoline.</Description>
+      <Satiety>100</Satiety>
+      <EnclosureId>enclosure-kangaroo</EnclosureId>
+    </Character>
+    <Character>
+      <Id>43a57cde-d904-4833-9b71-23a44a3cf9c9</Id>
+      <Type>Dolphin</Type>
+      <Name>Flipper</Name>
+      <Description>A cheerful dolphin who believes every pool is a stage for an aquatic show.</Description>
+      <Satiety>100</Satiety>
+      <EnclosureId>enclosure-dolphin</EnclosureId>
+    </Character>
+    <Character>
+      <Id>cc787a8b-b9c7-447b-8f73-e0ee9681d106</Id>
+      <Type>Frog</Type>
+      <Name>Freddy</Name>
+      <Description>A tiny frog with huge ambitions and absolutely no respect for personal space.</Description>
+      <Satiety>100</Satiety>
+      <EnclosureId>enclosure-frog</EnclosureId>
+    </Character>
+  </Characters>
+</World>

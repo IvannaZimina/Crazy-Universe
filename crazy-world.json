@@ -1,0 +1,98 @@
+{
+  "Version": 1,
+  "Enclosures": [
+    {
+      "Id": "enclosure-monkey",
+      "Name": "Monkey",
+      "AnimalType": "Monkey"
+    },
+    {
+      "Id": "enclosure-lion",
+      "Name": "Lion",
+      "AnimalType": "Lion"
+    },
+    {
+      "Id": "enclosure-penguin",
+      "Name": "Penguin",
+      "AnimalType": "Penguin"
+    },
+    {
+      "Id": "enclosure-honeybadger",
+      "Name": "Honey Badger",
+      "AnimalType": "HoneyBadger"
+    },
+    {
+      "Id": "enclosure-kangaroo",
+      "Name": "Kangaroo",
+      "AnimalType": "Kangaroo"
+    },
+    {
+      "Id": "enclosure-dolphin",
+      "Name": "Dolphin",
+      "AnimalType": "Dolphin"
+    },
+    {
+      "Id": "enclosure-frog",
+      "Name": "Frog",
+      "AnimalType": "Frog"
+    }
+  ],
+  "Characters": [
+    {
+      "Id": "84251624-6587-4082-9939-d74fd272aa48",
+      "Type": "Monkey",
+      "Name": "George",
+      "Description": "A professional chaos enthusiast who believes keyboards are edible and physics is optional. Constantly plots to steal the zookeeper\u0027s keys and throw banana peels.",
+      "Satiety": 500,
+      "EnclosureId": "enclosure-monkey"
+    },
+    {
+      "Id": "f1552b29-cafc-46f8-bc77-fdd24078502f",
+      "Type": "Lion",
+      "Name": "Simba",
+      "Description": "A dramatic king of the concrete jungle suffering from existential dread and chronic hair gel addiction. Refuses to roar unless the echo sounds cool.",
+      "Satiety": 35,
+      "EnclosureId": "enclosure-lion"
+    },
+    {
+      "Id": "f792f0ae-5947-4355-b2c6-42cb8fe8708b",
+      "Type": "Penguin",
+      "Name": "Skipper",
+      "Description": "An elite tactical spy trapped in a tuxedo, plotting a global ice-cube robbery. Dances wildly on the ice whenever nobody is watching.",
+      "Satiety": 100,
+      "EnclosureId": "enclosure-penguin"
+    },
+    {
+      "Id": "3c8b2b1b-232a-4674-98e9-8e0d8c52ac6d",
+      "Type": "HoneyBadger",
+      "Name": "Rambo",
+      "Description": "A tiny, furious legend who does not care. Hungry? Picks a fight with a lion. Full? Still picks a fight, but with style.",
+      "Satiety": 100,
+      "EnclosureId": "enclosure-honeybadger"
+    },
+    {
+      "Id": "391c1b1c-6f87-43d3-ac6c-7c18cdcab13a",
+      "Type": "Kangaroo",
+      "Name": "Joey",
+      "Description": "An energetic kangaroo who treats the entire zoo like one enormous trampoline.",
+      "Satiety": 100,
+      "EnclosureId": "enclosure-kangaroo"
+    },
+    {
+      "Id": "941654dd-2ea9-40c0-b8d3-644d1c62df65",
+      "Type": "Dolphin",
+      "Name": "Flipper",
+      "Description": "A cheerful dolphin who believes every pool is a stage for an aquatic show.",
+      "Satiety": 100,
+      "EnclosureId": "enclosure-dolphin"
+    },
+    {
+      "Id": "dd29370f-ef41-435d-8682-596c8d99174c",
+      "Type": "Frog",
+      "Name": "Freddy",
+      "Description": "A tiny frog with huge ambitions and absolutely no respect for personal space.",
+      "Satiety": 100,
+      "EnclosureId": "enclosure-frog"
+    }
+  ]
+}
