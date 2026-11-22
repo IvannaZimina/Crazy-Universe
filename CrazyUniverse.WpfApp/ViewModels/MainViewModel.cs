@@ -1,18 +1,26 @@
 ﻿using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
+using CrazyUniverse.Core.Persistence;
 using CrazyUniverse.Core.Resources;
+using CrazyUniverse.Core.Storage;
 using CrazyUniverse.Core.World;
 using CrazyUniverse.WpfApp.Commands;
 using CrazyUniverse.WpfApp.Factories;
+using CrazyUniverse.WpfApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using CrazyUniverse.Core.Events;
 using CrazyUniverse.WpfApp.Views; // Added views namespace for simulation window
+using Microsoft.Data.SqlClient;
 
 namespace CrazyUniverse.WpfApp.ViewModels
 {
@@ -61,10 +69,31 @@ namespace CrazyUniverse.WpfApp.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         // ==========================================
-        // WORLD & ENCLOSURES
+        // WORLD, PERSISTENCE & ENCLOSURES
         // ==========================================
         // Domain world owned in Core, encapsulating all type-based repositories and routing
         private readonly ZooWorld _world;
+        private readonly IWorldStorage? _worldStorage;
+        private readonly WorldMapper _worldMapper;
+        private readonly IFileDialogService? _fileDialogService;
+        private readonly string _storageProvider;
+        private readonly string _connectionString;
+
+        private bool _isBusy;
+        // Indicates whether an async save or load operation is currently running
+        public bool IsBusy
+        {
+            get => _isBusy;
+            private set
+            {
+                if (_isBusy != value)
+                {
+                    _isBusy = value;
+                    OnPropertyChanged(nameof(IsBusy));
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
 
         // Collection of enclosures for the accordion-based UI view
         public ObservableCollection<EnclosureViewModel> Enclosures { get; } = new ObservableCollection<EnclosureViewModel>();
@@ -213,6 +242,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
         public ICommand SelectAnimalCommand { get; } // Command to handle robust animal selection across multi-list accordions
         public ICommand ToggleSortCommand { get; } // Command to toggle sorting direction inside specific enclosure via LINQ OrderBy
         public ICommand OpenSimulationCommand { get; } // Command to open the heavy CPU simulation dialog window
+        public ICommand SaveWorldCommand { get; } // Command to save the world asynchronously
+        public ICommand LoadWorldCommand { get; } // Command to load and restore the world asynchronously
 
         // ==========================================
         // PROPERTIES FOR SELECTED ANIMAL ABILITIES
@@ -279,8 +310,26 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         // Accepts ZooWorld so repositories and type routing live in Core rather than inside ViewModel
         public MainViewModel(ZooWorld world)
+            : this(world, null, new WorldMapper(), null, "Json", string.Empty)
+        {
+        }
+
+        // DI constructor receiving storage, mapper, file dialog service, and configuration values
+        public MainViewModel(
+            ZooWorld world,
+            IWorldStorage? worldStorage,
+            WorldMapper? worldMapper,
+            IFileDialogService? fileDialogService,
+            string storageProvider,
+            string connectionString)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
+            _worldStorage = worldStorage;
+            _worldMapper = worldMapper ?? new WorldMapper();
+            _fileDialogService = fileDialogService;
+            _storageProvider = string.IsNullOrWhiteSpace(storageProvider) ? "Json" : storageProvider.Trim();
+            _connectionString = connectionString ?? string.Empty;
+
             _world.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
 
             // Initialize enclosures collection based on available types from factory
@@ -297,7 +346,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
             UpdateDisplayedAnimals();
 
             // Initialize commands with actions and conditions
-            AddAnimalCommand = new RelayCommand(ExecuteAddAnimal);
+            AddAnimalCommand = new RelayCommand(ExecuteAddAnimal, _ => !IsBusy);
             RemoveAnimalCommand = new RelayCommand(ExecuteRemoveAnimal, CanExecuteRemoveAnimal);
             FeedCommand = new RelayCommand(ExecuteFeed, CanExecuteFeed);
             SwimCommand = new RelayCommand(ExecuteSwim, CanExecuteSwim);
@@ -305,13 +354,130 @@ namespace CrazyUniverse.WpfApp.ViewModels
             MakeSoundCommand = new RelayCommand(ExecuteMakeSound, CanExecuteMakeSound);
             CrazyActionCommand = new RelayCommand(ExecuteCrazyAction, CanExecuteCrazyAction);
             SelectAnimalCommand = new RelayCommand(ExecuteSelectAnimal);
-            ToggleSortCommand = new RelayCommand(ExecuteToggleSort);
+            ToggleSortCommand = new RelayCommand(ExecuteToggleSort, _ => !IsBusy);
 
             // Initialize simulation window opening command
-            OpenSimulationCommand = new RelayCommand(ExecuteOpenSimulation);
+            OpenSimulationCommand = new RelayCommand(ExecuteOpenSimulation, _ => !IsBusy);
+
+            // Initialize async save and load commands
+            SaveWorldCommand = new AsyncRelayCommand(_ => ExecuteSaveWorldAsync(CancellationToken.None), _ => CanExecutePersistenceCommand());
+            LoadWorldCommand = new AsyncRelayCommand(_ => ExecuteLoadWorldAsync(CancellationToken.None), _ => CanExecutePersistenceCommand());
 
             // Log initial application startup message
             Log(Messages.Log_ZooInit);
+        }
+
+        private bool CanExecutePersistenceCommand() => !IsBusy && _worldStorage != null;
+
+        private bool IsDatabaseProvider() =>
+            string.Equals(_storageProvider, "LocalDb", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(_storageProvider, "EfCore", StringComparison.OrdinalIgnoreCase);
+
+        // Saves the current world snapshot and writes result/error/cancellation to Event Log
+        private async Task ExecuteSaveWorldAsync(CancellationToken token)
+        {
+            if (_worldStorage == null)
+                return;
+
+            string targetPath = string.Empty;
+            if (!IsDatabaseProvider())
+            {
+                string? chosenPath = _fileDialogService?.ShowSaveFileDialog(_storageProvider);
+                if (string.IsNullOrWhiteSpace(chosenPath))
+                {
+                    // Log when the user cancels the save dialog so the action is visible in Event Log
+                    Log(Messages.Log_OperationCancelled);
+                    return;
+                }
+                targetPath = chosenPath;
+            }
+
+            IsBusy = true;
+            try
+            {
+                WorldDto dto = _worldMapper.ToDto(_world);
+                await _worldStorage.SaveAsync(dto, targetPath, token);
+
+                string locationInfo = IsDatabaseProvider() ? _storageProvider : $"{_storageProvider}: {targetPath}";
+                Log(string.Format(Messages.Log_WorldSaved, locationInfo));
+            }
+            catch (OperationCanceledException)
+            {
+                Log(Messages.Log_OperationCancelled);
+            }
+            catch (Exception ex) when (
+                ex is InvalidWorldDataException ||
+                ex is IOException ||
+                ex is UnauthorizedAccessException ||
+                ex is JsonException ||
+                ex is InvalidOperationException ||
+                ex is SqlException)
+            {
+                Log(string.Format(Messages.Log_SaveFailed, ex.Message));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        // Loads a world snapshot, validates/restores it atomically, and logs the outcome
+        private async Task ExecuteLoadWorldAsync(CancellationToken token)
+        {
+            if (_worldStorage == null)
+                return;
+
+            string targetPath = string.Empty;
+            if (!IsDatabaseProvider())
+            {
+                string? chosenPath = _fileDialogService?.ShowOpenFileDialog(_storageProvider);
+                if (string.IsNullOrWhiteSpace(chosenPath))
+                {
+                    // Log when the user cancels the open dialog so the action is visible in Event Log
+                    Log(Messages.Log_OperationCancelled);
+                    return;
+                }
+                targetPath = chosenPath;
+            }
+
+            IsBusy = true;
+            try
+            {
+                WorldDto dto = await _worldStorage.LoadAsync(targetPath, token);
+                IReadOnlyList<Animal> restoredAnimals = _worldMapper.ToAnimals(dto);
+
+                // Replace animals silently and atomically; if anything throws, existing world remains unchanged
+                _world.Restore(restoredAnimals);
+
+                UpdateDisplayedAnimals();
+                SelectedAnimal = null;
+                OnPropertyChanged(nameof(ZooPopulation));
+                OnPropertyChanged(nameof(TotalAnimalsCount));
+                OnPropertyChanged(nameof(ZooPopulationText));
+                OnPropertyChanged(nameof(TotalAnimalsText));
+                OnPropertyChanged(nameof(SatietyGroupsSummary));
+
+                string locationInfo = IsDatabaseProvider() ? _storageProvider : $"{_storageProvider}: {targetPath}";
+                Log(string.Format(Messages.Log_WorldLoaded, locationInfo));
+            }
+            catch (OperationCanceledException)
+            {
+                Log(Messages.Log_OperationCancelled);
+            }
+            catch (Exception ex) when (
+                ex is InvalidWorldDataException ||
+                ex is IOException ||
+                ex is UnauthorizedAccessException ||
+                ex is JsonException ||
+                ex is InvalidOperationException ||
+                ex is SqlException)
+            {
+                Log(string.Format(Messages.Log_LoadFailed, ex.Message));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         // ==========================================
@@ -526,7 +692,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Condition: can remove only if an animal is selected
         private bool CanExecuteRemoveAnimal(object? parameter)
         {
-            return SelectedAnimal != null;
+            return !IsBusy && SelectedAnimal != null;
         }
 
         // Logic for feeding the selected animal
@@ -557,7 +723,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Condition: can feed only if an animal is selected
         private bool CanExecuteFeed(object? parameter)
         {
-            return SelectedAnimal != null;
+            return !IsBusy && SelectedAnimal != null;
         }
 
         // Logic for swimming action using the shared default distance from Core
@@ -580,7 +746,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Condition: can swim only if selected animal implements ISwimmable
         private bool CanExecuteSwim(object? parameter)
         {
-            return SelectedAnimal is ISwimmable && SelectedAnimal.Satiety > 0;
+            return !IsBusy && SelectedAnimal is ISwimmable && SelectedAnimal.Satiety > 0;
         }
 
         // Logic for jumping action
@@ -603,7 +769,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Condition: can jump only if selected animal implements IJumpable
         private bool CanExecuteJump(object? parameter)
         {
-            return SelectedAnimal is IJumpable && SelectedAnimal.Satiety > 0;
+            return !IsBusy && SelectedAnimal is IJumpable && SelectedAnimal.Satiety > 0;
         }
 
         // Logic for making sound action
@@ -626,7 +792,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Condition: can make sound only if selected animal implements IVocalizable
         private bool CanExecuteMakeSound(object? parameter)
         {
-            return SelectedAnimal is IVocalizable && SelectedAnimal.Satiety > 0;
+            return !IsBusy && SelectedAnimal is IVocalizable && SelectedAnimal.Satiety > 0;
         }
 
         // Logic for crazy action (triggers domain events via Core world)
@@ -665,7 +831,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
         // Condition: can perform crazy action only if an animal is selected
         private bool CanExecuteCrazyAction(object? parameter)
         {
-            return SelectedAnimal != null && SelectedAnimal.Satiety > 0;
+            return !IsBusy && SelectedAnimal != null && SelectedAnimal.Satiety > 0;
         }
 
         // ==========================================
