@@ -4,6 +4,7 @@ using System.Linq;
 using CrazyUniverse.Core.Events;
 using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
+using CrazyUniverse.Core.Resources;
 
 namespace CrazyUniverse.Core.Repositories
 {
@@ -39,7 +40,7 @@ namespace CrazyUniverse.Core.Repositories
             // Log the addition event with Kind and Cause only if log is not suppressed
             if (!suppressLog)
             {
-                LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Add, item, $"{item.Name} has been added to the zoo."));
+                LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Add, item, string.Format(Messages.Log_AnimalAddedToZoo, item.Name)));
             }
         }
 
@@ -66,7 +67,7 @@ namespace CrazyUniverse.Core.Repositories
             if (removed)
             {
                 // Log the removal event with Kind and Cause
-                LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Remove, item, $"{item.Name} has been removed from the zoo."));
+                LogMessageGenerated?.Invoke(this, new LogEventArgs(EventKind.Remove, item, string.Format(Messages.Log_AnimalRemovedFromZoo, item.Name)));
             }
 
             return removed;
