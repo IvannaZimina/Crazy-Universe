@@ -30,6 +30,12 @@ namespace CrazyUniverse.Core.Models
         {
         }
 
+        // Restores a frog with its existing ID, description, and satiety
+        internal Frog(string id, string name, string? description, int satiety)
+            : base(id, name, description, satiety)
+        {
+        }
+
         /// <summary>
         /// Performs the frog's unique crazy action based on its satiety.
         /// </summary>

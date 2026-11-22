@@ -31,6 +31,12 @@ namespace CrazyUniverse.Core.Models
             // name validation, ID generation, custom description, and sets the starting satiety to 100.
         }
 
+        // Restores a monkey with its existing ID, description, and satiety
+        internal Monkey(string id, string name, string? description, int satiety)
+            : base(id, name, description, satiety)
+        {
+        }
+
         // Since the CrazyAction() method was abstract (empty) in the parent Animal class, 
         // the Monkey class is required to implement it with its own unique logic.
         // override - keyword meaning "redefine" or "fill in". 

@@ -25,6 +25,12 @@ namespace CrazyUniverse.Core.Models
         {
         }
 
+        // Restores a lion with its existing ID, description, and satiety
+        internal Lion(string id, string name, string? description, int satiety)
+            : base(id, name, description, satiety)
+        {
+        }
+
         // Since the CrazyAction() method was abstract in the parent Animal class, 
         // the Lion class implements it with its own unique logic.
         public override string CrazyAction()

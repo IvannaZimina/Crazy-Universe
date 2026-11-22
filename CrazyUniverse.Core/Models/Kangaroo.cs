@@ -30,6 +30,12 @@ namespace CrazyUniverse.Core.Models
         {
         }
 
+        // Restores a kangaroo with its existing ID, description, and satiety
+        internal Kangaroo(string id, string name, string? description, int satiety)
+            : base(id, name, description, satiety)
+        {
+        }
+
         /// <summary>
         /// Performs the kangaroo's unique crazy action based on its satiety.
         /// </summary>

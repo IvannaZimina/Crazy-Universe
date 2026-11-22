@@ -23,6 +23,12 @@ namespace CrazyUniverse.Core.Models
         {
         }
 
+        // Restores a honey badger with its existing ID, description, and satiety
+        internal HoneyBadger(string id, string name, string? description, int satiety)
+            : base(id, name, description, satiety)
+        {
+        }
+
         public override string CrazyAction()
         {
             if (Satiety <= 0)
