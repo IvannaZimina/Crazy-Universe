@@ -25,6 +25,12 @@ namespace CrazyUniverse.Core.Models
         {
         }
 
+        // Restores a penguin with its existing ID, description, and satiety
+        internal Penguin(string id, string name, string? description, int satiety)
+            : base(id, name, description, satiety)
+        {
+        }
+
         // Since the CrazyAction() method was abstract in the parent Animal class, 
         // the Penguin class implements it with its own unique logic.
         public override string CrazyAction()

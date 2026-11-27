@@ -30,6 +30,12 @@ namespace CrazyUniverse.Core.Models
         {
         }
 
+        // Restores a dolphin with its existing ID, description, and satiety
+        internal Dolphin(string id, string name, string? description, int satiety)
+            : base(id, name, description, satiety)
+        {
+        }
+
         /// <summary>
         /// Performs the dolphin's unique crazy action based on its satiety.
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using CrazyUniverse.WpfApp.ViewModels;
 
 namespace CrazyUniverse.WpfApp
@@ -6,15 +7,11 @@ namespace CrazyUniverse.WpfApp
     // Interaction logic for MainWindow.xaml
     public partial class MainWindow : Window
     {
-        // Constructor of the main window class
-        public MainWindow()
+        // Receives MainViewModel from DI and sets it as the window DataContext[cite: 24, 28]
+        public MainWindow(MainViewModel viewModel)
         {
-            // Initialize all WPF UI components defined in the XAML file
             InitializeComponent();
-
-            // Set DataContext of the window to an instance of MainViewModel
-            DataContext = new MainViewModel();
+            DataContext = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
         }
     }
-
 }

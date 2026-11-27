@@ -15,6 +15,12 @@ namespace CrazyUniverse.Core.Models
         // Validated satiety delta applied when a neighbor reacts to a CrazyAction
         private const int CrazyNeighborReactionSatietyDelta = 2;
 
+        // Allowed bounds for validating restored animal state
+        public const int MaxNameLength = 100;
+        public const int MaxDescriptionLength = 500;
+        public const int MinSatiety = 0;
+        public const int MaxSatiety = 100;
+
         // Read-only property for the unique identifier, automatically generated using Guid
         // example: "3f2504e0-4f89-11d3-9a0c-0305e82c3301"
         public string Id { get; private set; } = Guid.NewGuid().ToString();
@@ -60,25 +66,84 @@ namespace CrazyUniverse.Core.Models
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(Messages.Err_AnimalNameRequired, nameof(name));
 
-            Name = name.Trim(); // Clean up any accidental spaces around the name and save it
-            Satiety = 100;      // Give every new animal a maximum satiety level of 100 right from the start
+            string trimmedName = name.Trim(); // Clean up any accidental spaces around the name and save it
+            if (trimmedName.Length > MaxNameLength)
+                throw new ArgumentException(string.Format(Messages.Err_NameTooLong, MaxNameLength), nameof(name));
+
+            Name = trimmedName;
+            Satiety = MaxSatiety; // Give every new animal a maximum satiety level of 100 right from the start
 
             if (!string.IsNullOrWhiteSpace(description))
             {
-                Description = description.Trim();
+                string trimmedDescription = description.Trim();
+                if (trimmedDescription.Length > MaxDescriptionLength)
+                    throw new ArgumentException(string.Format(Messages.Err_DescriptionTooLong, MaxDescriptionLength), nameof(description));
+
+                Description = trimmedDescription;
             }
         }
 
-        // Restores persisted Id and validated Satiety state within Core without exposing public setters
-        protected internal void RestoreState(string id, int satiety)
+        // Protected restore constructor: validates and restores ID, name, optional description, and satiety from saved data
+        protected Animal(string id, string name, string? description, int satiety)
         {
-            if (!string.IsNullOrWhiteSpace(id))
+            // Validate that restored ID is a non-empty valid GUID
+            if (string.IsNullOrWhiteSpace(id) || !Guid.TryParse(id.Trim(), out _))
+                throw new ArgumentException(Messages.Err_InvalidAnimalId, nameof(id));
+
+            // Validate that restored name is present and within allowed length
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(Messages.Err_AnimalNameRequired, nameof(name));
+
+            string trimmedName = name.Trim();
+            if (trimmedName.Length > MaxNameLength)
+                throw new ArgumentException(string.Format(Messages.Err_NameTooLong, MaxNameLength), nameof(name));
+
+            // Validate that optional restored description does not exceed allowed length
+            string? trimmedDescription = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+            if (trimmedDescription != null && trimmedDescription.Length > MaxDescriptionLength)
+                throw new ArgumentException(string.Format(Messages.Err_DescriptionTooLong, MaxDescriptionLength), nameof(description));
+
+            // Reject out-of-range satiety when restoring saved data instead of silently clamping it
+            if (satiety < MinSatiety || satiety > MaxSatiety)
+                throw new ArgumentOutOfRangeException(
+                    nameof(satiety),
+                    string.Format(Messages.Err_SatietyOutOfRange, satiety, MinSatiety, MaxSatiety));
+
+            Id = id.Trim();
+            Name = trimmedName;
+            if (trimmedDescription != null)
             {
-                Id = id.Trim();
-                OnPropertyChanged(nameof(Id));
+                Description = trimmedDescription;
+            }
+            _satiety = satiety;
+        }
+
+        // Restores persisted Id, optional Description, and validated Satiety state within Core without exposing public setters
+        protected internal void RestoreState(string id, string? description, int satiety)
+        {
+            // Validate ID and satiety range before applying restored values
+            if (string.IsNullOrWhiteSpace(id) || !Guid.TryParse(id.Trim(), out _))
+                throw new ArgumentException(Messages.Err_InvalidAnimalId, nameof(id));
+
+            if (satiety < MinSatiety || satiety > MaxSatiety)
+                throw new ArgumentOutOfRangeException(
+                    nameof(satiety),
+                    string.Format(Messages.Err_SatietyOutOfRange, satiety, MinSatiety, MaxSatiety));
+
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                string trimmedDescription = description.Trim();
+                if (trimmedDescription.Length > MaxDescriptionLength)
+                    throw new ArgumentException(string.Format(Messages.Err_DescriptionTooLong, MaxDescriptionLength), nameof(description));
+
+                Description = trimmedDescription;
             }
 
-            Satiety = satiety;
+            Id = id.Trim();
+            _satiety = satiety;
+            OnPropertyChanged(nameof(Id));
+            OnPropertyChanged(nameof(Description));
+            OnPropertyChanged(nameof(Satiety));
         }
 
         // Virtual method for feeding: adds FeedCost points if the animal is not already fully stuffed

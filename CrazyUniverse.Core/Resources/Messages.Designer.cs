@@ -421,11 +421,74 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to World save data is missing the characters list..
+        /// </summary>
+        public static string Err_CharactersMissing {
+            get {
+                return ResourceManager.GetString("Err_CharactersMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Animal description cannot be empty..
         /// </summary>
         public static string Err_DescriptionRequired {
             get {
                 return ResourceManager.GetString("Err_DescriptionRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Animal description cannot exceed {0} characters..
+        /// </summary>
+        public static string Err_DescriptionTooLong {
+            get {
+                return ResourceManager.GetString("Err_DescriptionTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate character ID found in save data: &apos;{0}&apos;..
+        /// </summary>
+        public static string Err_DuplicateCharacterId {
+            get {
+                return ResourceManager.GetString("Err_DuplicateCharacterId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate enclosure ID found in save data: &apos;{0}&apos;..
+        /// </summary>
+        public static string Err_DuplicateEnclosureId {
+            get {
+                return ResourceManager.GetString("Err_DuplicateEnclosureId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enclosure &apos;{0}&apos; does not match expected animal type &apos;{1}&apos;..
+        /// </summary>
+        public static string Err_EnclosureMismatch {
+            get {
+                return ResourceManager.GetString("Err_EnclosureMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to World save data does not contain any enclosures..
+        /// </summary>
+        public static string Err_EnclosuresMissing {
+            get {
+                return ResourceManager.GetString("Err_EnclosuresMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid animal identifier format..
+        /// </summary>
+        public static string Err_InvalidAnimalId {
+            get {
+                return ResourceManager.GetString("Err_InvalidAnimalId", resourceCulture);
             }
         }
         
@@ -439,11 +502,92 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character entry in save data is null or invalid..
+        /// </summary>
+        public static string Err_InvalidCharacter {
+            get {
+                return ResourceManager.GetString("Err_InvalidCharacter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character ID &apos;{0}&apos; is not a valid GUID..
+        /// </summary>
+        public static string Err_InvalidCharacterId {
+            get {
+                return ResourceManager.GetString("Err_InvalidCharacterId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid input! Distance must be greater than zero. {0} stays put, state remains unchanged..
         /// </summary>
         public static string Err_InvalidDistance {
             get {
                 return ResourceManager.GetString("Err_InvalidDistance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enclosure entry is invalid or missing an ID..
+        /// </summary>
+        public static string Err_InvalidEnclosure {
+            get {
+                return ResourceManager.GetString("Err_InvalidEnclosure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character &apos;{0}&apos; has invalid enclosure &apos;{1}&apos; for animal type &apos;{2}&apos;..
+        /// </summary>
+        public static string Err_InvalidEnclosureForCharacter {
+            get {
+                return ResourceManager.GetString("Err_InvalidEnclosureForCharacter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Animal name cannot exceed {0} characters..
+        /// </summary>
+        public static string Err_NameTooLong {
+            get {
+                return ResourceManager.GetString("Err_NameTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Satiety ({0}) must be between {1} and {2}..
+        /// </summary>
+        public static string Err_SatietyOutOfRange {
+            get {
+                return ResourceManager.GetString("Err_SatietyOutOfRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown animal type: &apos;{0}&apos;..
+        /// </summary>
+        public static string Err_UnknownAnimalType {
+            get {
+                return ResourceManager.GetString("Err_UnknownAnimalType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported world save version: {0} (supported: {1})..
+        /// </summary>
+        public static string Err_UnsupportedWorldVersion {
+            get {
+                return ResourceManager.GetString("Err_UnsupportedWorldVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved world data is missing or empty..
+        /// </summary>
+        public static string Err_WorldDataNull {
+            get {
+                return ResourceManager.GetString("Err_WorldDataNull", resourceCulture);
             }
         }
         
@@ -547,20 +691,20 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!.
-        /// </summary>
-        public static string Event_Crazy_Penguin {
-            get {
-                return ResourceManager.GetString("Event_Crazy_Penguin", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to {0} ({1} Satiety: {2}).
         /// </summary>
         public static string Event_Crazy_NeighborSatiety {
             get {
                 return ResourceManager.GetString("Event_Crazy_NeighborSatiety", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} starts digging a chaotic tunnel to freedom! The honey badgers get inspired!.
+        /// </summary>
+        public static string Event_Crazy_Penguin {
+            get {
+                return ResourceManager.GetString("Event_Crazy_Penguin", resourceCulture);
             }
         }
         
@@ -617,7 +761,7 @@ namespace CrazyUniverse.Core.Resources {
                 return ResourceManager.GetString("Log_AddedAnimal", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to {0} has been added to the zoo..
         /// </summary>
@@ -626,7 +770,7 @@ namespace CrazyUniverse.Core.Resources {
                 return ResourceManager.GetString("Log_AnimalAddedToZoo", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to {0} has been removed from the zoo..
         /// </summary>
@@ -1051,11 +1195,29 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load World.
+        /// </summary>
+        public static string UI_BtnLoadWorld {
+            get {
+                return ResourceManager.GetString("UI_BtnLoadWorld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make Sound (-{0}).
         /// </summary>
         public static string UI_BtnMakeSound {
             get {
                 return ResourceManager.GetString("UI_BtnMakeSound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save World.
+        /// </summary>
+        public static string UI_BtnSaveWorld {
+            get {
+                return ResourceManager.GetString("UI_BtnSaveWorld", resourceCulture);
             }
         }
         
@@ -1236,6 +1398,61 @@ namespace CrazyUniverse.Core.Resources {
         public static string UI_ZooPopulation {
             get {
                 return ResourceManager.GetString("UI_ZooPopulation", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load world: {0}..
+        /// </summary>
+        public static string Log_LoadFailed
+        {
+            get
+            {
+                return ResourceManager.GetString("Log_LoadFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Operation cancelled..
+        /// </summary>
+        public static string Log_OperationCancelled
+        {
+            get
+            {
+                return ResourceManager.GetString("Log_OperationCancelled", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save world: {0}..
+        /// </summary>
+        public static string Log_SaveFailed
+        {
+            get
+            {
+                return ResourceManager.GetString("Log_SaveFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to World loaded ({0})..
+        /// </summary>
+        public static string Log_WorldLoaded
+        {
+            get
+            {
+                return ResourceManager.GetString("Log_WorldLoaded", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to World saved ({0})..
+        /// </summary>
+        public static string Log_WorldSaved
+        {
+            get
+            {
+                return ResourceManager.GetString("Log_WorldSaved", resourceCulture);
             }
         }
     }
