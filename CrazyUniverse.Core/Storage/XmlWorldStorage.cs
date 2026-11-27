@@ -29,14 +29,6 @@ namespace CrazyUniverse.Core.Storage
                 Directory.CreateDirectory(directory);
             }
 
-            var xmlSettings = new XmlWriterSettings
-            {
-                Indent = true,
-                Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                OmitXmlDeclaration = false,
-                Async = true
-            };
-
             // Serialize into MemoryStream first, then strip/avoid duplicate declaration when writing out
             using var memoryStream = new MemoryStream();
             var serializerSettings = new XmlWriterSettings
