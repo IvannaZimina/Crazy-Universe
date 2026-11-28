@@ -675,7 +675,7 @@
     <value>Load World</value>
     <comment>UI</comment>
   </data>
-<data name="Log_WorldSaved" xml:space="preserve">
+  <data name="Log_WorldSaved" xml:space="preserve">
     <value>World saved ({0}).</value>
     <comment>Log message</comment>
   </data>
@@ -694,5 +694,9 @@
   <data name="Log_OperationCancelled" xml:space="preserve">
     <value>Operation cancelled.</value>
     <comment>Log message</comment>
+  </data>
+  <data name="Err_UnknownRecordType" xml:space="preserve">
+    <value>Unknown character record type: '{0}'.</value>
+    <comment>Error message</comment>
   </data>
 </root>

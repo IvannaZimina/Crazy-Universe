@@ -1,4 +1,5 @@
-﻿using CrazyUniverse.Core.Interfaces;
+﻿using CrazyUniverse.Core.Events;
+using CrazyUniverse.Core.Interfaces;
 using CrazyUniverse.Core.Models;
 using CrazyUniverse.Core.Persistence;
 using CrazyUniverse.Core.Resources;
@@ -7,10 +8,13 @@ using CrazyUniverse.Core.World;
 using CrazyUniverse.WpfApp.Commands;
 using CrazyUniverse.WpfApp.Factories;
 using CrazyUniverse.WpfApp.Services;
+using CrazyUniverse.WpfApp.Views; // Added views namespace for simulation window
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+// Uses generic DbException so ViewModel stays independent of SqlClient and works with EfCore too.
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -18,9 +22,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using CrazyUniverse.Core.Events;
-using CrazyUniverse.WpfApp.Views; // Added views namespace for simulation window
-using Microsoft.Data.SqlClient;
 
 namespace CrazyUniverse.WpfApp.ViewModels
 {
@@ -77,7 +78,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
         private readonly WorldMapper _worldMapper;
         private readonly IFileDialogService? _fileDialogService;
         private readonly string _storageProvider;
-        private readonly string _connectionString;
+        // Decouples ViewModel from hardcoded database provider names (OCP/DIP).
+        private readonly bool _isFileBasedStorage;
 
         private bool _isBusy;
         // Indicates whether an async save or load operation is currently running
@@ -310,7 +312,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         // Accepts ZooWorld so repositories and type routing live in Core rather than inside ViewModel
         public MainViewModel(ZooWorld world)
-            : this(world, null, new WorldMapper(), null, "Json", string.Empty)
+            : this(world, null, new WorldMapper(), null, "Json", isFileBasedStorage: true)
         {
         }
 
@@ -321,14 +323,14 @@ namespace CrazyUniverse.WpfApp.ViewModels
             WorldMapper? worldMapper,
             IFileDialogService? fileDialogService,
             string storageProvider,
-            string connectionString)
+            bool isFileBasedStorage = true)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
             _worldStorage = worldStorage;
             _worldMapper = worldMapper ?? new WorldMapper();
             _fileDialogService = fileDialogService;
             _storageProvider = string.IsNullOrWhiteSpace(storageProvider) ? "Json" : storageProvider.Trim();
-            _connectionString = connectionString ?? string.Empty;
+            _isFileBasedStorage = isFileBasedStorage;
 
             _world.LogMessageGenerated += (s, e) => HandleRepositoryLog(e);
 
@@ -369,10 +371,6 @@ namespace CrazyUniverse.WpfApp.ViewModels
 
         private bool CanExecutePersistenceCommand() => !IsBusy && _worldStorage != null;
 
-        private bool IsDatabaseProvider() =>
-            string.Equals(_storageProvider, "LocalDb", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(_storageProvider, "EfCore", StringComparison.OrdinalIgnoreCase);
-
         // Saves the current world snapshot and writes result/error/cancellation to Event Log
         private async Task ExecuteSaveWorldAsync(CancellationToken token)
         {
@@ -380,7 +378,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 return;
 
             string targetPath = string.Empty;
-            if (!IsDatabaseProvider())
+            // Prompts for a file path only when using a file-based storage provider.
+            if (_isFileBasedStorage)
             {
                 string? chosenPath = _fileDialogService?.ShowSaveFileDialog(_storageProvider);
                 if (string.IsNullOrWhiteSpace(chosenPath))
@@ -398,7 +397,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 WorldDto dto = _worldMapper.ToDto(_world);
                 await _worldStorage.SaveAsync(dto, targetPath, token);
 
-                string locationInfo = IsDatabaseProvider() ? _storageProvider : $"{_storageProvider}: {targetPath}";
+                string locationInfo = _isFileBasedStorage ? $"{_storageProvider}: {targetPath}" : _storageProvider;
                 Log(string.Format(Messages.Log_WorldSaved, locationInfo));
             }
             catch (OperationCanceledException)
@@ -411,7 +410,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 ex is UnauthorizedAccessException ||
                 ex is JsonException ||
                 ex is InvalidOperationException ||
-                ex is SqlException)
+                // Catches ADO.NET and EF Core database errors through a common base type.
+                ex is DbException)
             {
                 Log(string.Format(Messages.Log_SaveFailed, ex.Message));
             }
@@ -428,7 +428,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 return;
 
             string targetPath = string.Empty;
-            if (!IsDatabaseProvider())
+            // Prompts for a file path only when using a file-based storage provider.
+            if (_isFileBasedStorage)
             {
                 string? chosenPath = _fileDialogService?.ShowOpenFileDialog(_storageProvider);
                 if (string.IsNullOrWhiteSpace(chosenPath))
@@ -457,7 +458,7 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 OnPropertyChanged(nameof(TotalAnimalsText));
                 OnPropertyChanged(nameof(SatietyGroupsSummary));
 
-                string locationInfo = IsDatabaseProvider() ? _storageProvider : $"{_storageProvider}: {targetPath}";
+                string locationInfo = _isFileBasedStorage ? $"{_storageProvider}: {targetPath}" : _storageProvider;
                 Log(string.Format(Messages.Log_WorldLoaded, locationInfo));
             }
             catch (OperationCanceledException)
@@ -470,7 +471,8 @@ namespace CrazyUniverse.WpfApp.ViewModels
                 ex is UnauthorizedAccessException ||
                 ex is JsonException ||
                 ex is InvalidOperationException ||
-                ex is SqlException)
+                // Catches ADO.NET and EF Core database errors through a common base type.
+                ex is DbException)
             {
                 Log(string.Format(Messages.Log_LoadFailed, ex.Message));
             }

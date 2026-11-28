@@ -18,4 +18,9 @@ build/
 packages/
 *.nupkg
 
+# Local database files
+*.mdf
+*.ldf
+*.ndf
+
 .vp-state.vptrace
