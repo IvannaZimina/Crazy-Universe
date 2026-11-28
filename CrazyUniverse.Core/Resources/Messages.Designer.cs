@@ -574,6 +574,15 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unknown character record type: &apos;{0}&apos;..
+        /// </summary>
+        public static string Err_UnknownRecordType {
+            get {
+                return ResourceManager.GetString("Err_UnknownRecordType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsupported world save version: {0} (supported: {1})..
         /// </summary>
         public static string Err_UnsupportedWorldVersion {
@@ -790,6 +799,15 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to load world: {0}.
+        /// </summary>
+        public static string Log_LoadFailed {
+            get {
+                return ResourceManager.GetString("Log_LoadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning: Please select an animal to perform a crazy action..
         /// </summary>
         public static string Log_NoAnimalCrazy {
@@ -817,11 +835,47 @@ namespace CrazyUniverse.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation cancelled..
+        /// </summary>
+        public static string Log_OperationCancelled {
+            get {
+                return ResourceManager.GetString("Log_OperationCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} removed from the zoo..
         /// </summary>
         public static string Log_RemovedAnimal {
             get {
                 return ResourceManager.GetString("Log_RemovedAnimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save world: {0}.
+        /// </summary>
+        public static string Log_SaveFailed {
+            get {
+                return ResourceManager.GetString("Log_SaveFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to World loaded ({0})..
+        /// </summary>
+        public static string Log_WorldLoaded {
+            get {
+                return ResourceManager.GetString("Log_WorldLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to World saved ({0})..
+        /// </summary>
+        public static string Log_WorldSaved {
+            get {
+                return ResourceManager.GetString("Log_WorldSaved", resourceCulture);
             }
         }
         
@@ -1398,61 +1452,6 @@ namespace CrazyUniverse.Core.Resources {
         public static string UI_ZooPopulation {
             get {
                 return ResourceManager.GetString("UI_ZooPopulation", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to load world: {0}..
-        /// </summary>
-        public static string Log_LoadFailed
-        {
-            get
-            {
-                return ResourceManager.GetString("Log_LoadFailed", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Operation cancelled..
-        /// </summary>
-        public static string Log_OperationCancelled
-        {
-            get
-            {
-                return ResourceManager.GetString("Log_OperationCancelled", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to save world: {0}..
-        /// </summary>
-        public static string Log_SaveFailed
-        {
-            get
-            {
-                return ResourceManager.GetString("Log_SaveFailed", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to World loaded ({0})..
-        /// </summary>
-        public static string Log_WorldLoaded
-        {
-            get
-            {
-                return ResourceManager.GetString("Log_WorldLoaded", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to World saved ({0})..
-        /// </summary>
-        public static string Log_WorldSaved
-        {
-            get
-            {
-                return ResourceManager.GetString("Log_WorldSaved", resourceCulture);
             }
         }
     }
